@@ -7,7 +7,7 @@ YELLOW = "\\033[33m"
 RESET = "\\033[0m"
 
 CC=g++
-CFLAGS=-Wall -Wextra -ggdb
+CFLAGS=-Wall -Wextra -ggdb -std=c++17
 LFLAGS=-lpulse-simple -lpulse -lm
 
 %.o: %.cpp %.hpp

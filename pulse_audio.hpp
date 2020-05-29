@@ -11,7 +11,6 @@ class PulseAudio {
 
 		template<typename T>
 		void write(T buf[], unsigned int length) {
-			std::cout << "Writing buffer " << length << " bytes to " << _s << std::endl;
 			int error;
 			pa_simple_write(_s, (void*)buf, length, &error);
 			handleError("pa_simple_write", error);

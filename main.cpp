@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
+#include <map>
 #include "pulse_audio.hpp"
 
 constexpr unsigned int BUFSIZE = 1024;
@@ -51,10 +52,45 @@ class Oscillator {
 		float _phase;
 };
 
+class Synth {
+	public:
+		struct Voice {
+				Voice(float vol) : volume(vol) { }
+				float volume;
+				Oscillator oscillator;
+			};
+
+			void addVoice(int note, float volume = 1.0) {
+				_voices.insert(std::pair(note, Voice(volume)));
+			}
+
+			void removeVoice(int note) {
+				_voices.erase(note);
+			}
+
+			float mix(float sampleRate) {
+				float sum = 0.0;
+
+				for (auto & [note, voice] : _voices) {
+					float freq = noteToFrequency(note);
+					sum += voice.oscillator.sine(freq, sampleRate);
+				}
+
+				return sum;
+			}
+
+	private:
+		std::map<int, Voice> _voices;
+};
+
 int main(int argc, char *argv[]) {
 	PulseAudio pa(argv[0], SAMPLE_RATE, NUM_CHANNELS);
 
-	Oscillator oscillators[2];
+	//Oscillator oscillators[NUM_CHANNELS];
+	Synth synth;
+	synth.addVoice(69);
+	synth.addVoice(69 + 4);
+	synth.addVoice(69 + 7);
 
 	int prevNote = 0;
 
@@ -71,11 +107,13 @@ int main(int argc, char *argv[]) {
 
 		for (unsigned int j = 0; j < BUFSIZE / NUM_CHANNELS; j++) {
 			for (unsigned int channel = 0; channel < NUM_CHANNELS; channel++) {
-				float frequency = noteToFrequency(channel == 0 ? note : note + 7);
-				float v = oscillators[channel].sine(frequency, SAMPLE_RATE);
+	//			float frequency = noteToFrequency(channel == 0 ? note : note + 7);
+	//			float v = oscillators[channel].sine(frequency, SAMPLE_RATE);
 
+	//			int16_t value = clip<int16_t>(v * amplitude);
+
+				float v = synth.mix(SAMPLE_RATE);
 				int16_t value = clip<int16_t>(v * amplitude);
-
 				size_t idx = j * NUM_CHANNELS + channel;
 
 				buf[idx] = value;
