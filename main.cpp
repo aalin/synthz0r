@@ -84,15 +84,17 @@ int main(int argc, char *argv[]) {
 
 		Sequencer sequencer(8, 8.0);
 
+		const int shift = -12;
+
 		sequencer
-			.setStep(0, 52 + 24)
-			.setStep(1, 55 + 24)
-			.setStep(2, 57 + 24)
-			.setStep(3, 55 + 24)
-			.setStep(4, 62 + 24)
-			.setStep(5, 60 + 24)
-			.setStep(6, 62 + 24)
-			.setStep(7, 64 + 24);
+			.setStep(0, 52 + shift)
+			.setStep(1, 55 + shift)
+			.setStep(2, 57 + shift)
+			.setStep(3, 55 + shift)
+			.setStep(4, 62 + shift)
+			.setStep(5, 60 + shift)
+			.setStep(6, 62 + shift)
+			.setStep(7, 64 + shift);
 
 		while (engine.running()) {
 			const float time = engine.getTime();

@@ -26,7 +26,7 @@ class Synth : public Device {
 
 				for (auto & [note, voice] : _voices) {
 					float freq = noteToFrequency(note);
-					sum += voice.oscillator.sine(freq, sampleRate);
+					sum += voice.oscillator.update(freq, sampleRate);
 				}
 
 				return sum;

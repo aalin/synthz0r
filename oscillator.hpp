@@ -5,11 +5,68 @@
 
 class Oscillator {
 	public:
-		Oscillator() : _phase(0) {
+		enum Type {
+			SINE,
+			SAW,
+			TRIANGLE,
+			SQUARE,
+			NOISE
+		};
+
+		Oscillator(Type type = Type::SQUARE)
+		: _type(type),
+		  _phase(0) { }
+
+		float update(float frequency, float sampleRate) {
+			switch (_type) {
+				case SINE:
+					return sine(frequency, sampleRate);
+				case SAW:
+					return saw(frequency, sampleRate);
+				case TRIANGLE:
+					return triangle(frequency, sampleRate);
+				case SQUARE:
+					return square(frequency, sampleRate);
+				case NOISE:
+					return noise(frequency, sampleRate);
+				default:
+					return 0.0;
+			}
+		}
+
+		float noise(float frequency, float sampleRate) {
+			updatePhase(frequency, sampleRate);
+			return (rand() / static_cast<float>(RAND_MAX)) * 2.0 - 1.0;
 		}
 
 		float sine(float frequency, float sampleRate) {
-			constexpr float TWO_PI = 2.0 * M_PI;
+			return std::sin(updatePhase(frequency, sampleRate));
+		}
+
+		float saw(float frequency, float sampleRate) {
+			float phase = updatePhase(frequency, sampleRate) / M_PI;
+			return (phase - std::floor(phase)) * 2.0 - 1.0;
+		}
+
+		float triangle(float frequency, float sampleRate) {
+			constexpr float HALF_PI = M_PI / 2.0;
+
+			return std::asin(std::cos(updatePhase(frequency, sampleRate))) / HALF_PI;
+		}
+
+		float square(float frequency, float sampleRate) {
+			if (sine(frequency, sampleRate) < 0.0) {
+				return -1.0;
+			} else {
+				return 1.0;
+			}
+		}
+
+	private:
+		float updatePhase(float frequency, float sampleRate) {
+			constexpr float TWO_PI = M_PI * 2.0;
+
+			float oldPhase = _phase;
 
 			_phase += TWO_PI * frequency / sampleRate;
 
@@ -21,11 +78,11 @@ class Oscillator {
 				_phase += TWO_PI;
 			}
 
-			return std::sin(_phase);
+			return oldPhase;
 		}
 
-	private:
 		float _phase;
+		Type _type;
 };
 
 #endif
