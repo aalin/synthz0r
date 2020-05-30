@@ -10,6 +10,15 @@ constexpr unsigned int BUFFER_SIZE = 1024;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
+template<typename T>
+T mod(T n, T m) {
+  if (n < 0) {
+    return ((n % m) + m) % m;
+  }
+
+  return n % m;
+}
+
 class Sequencer {
 	public:
 		Sequencer(size_t steps, float speed) {
@@ -36,10 +45,10 @@ class Sequencer {
 		void update(std::shared_ptr<Synth> synth, float time) {
 			const size_t step = static_cast<size_t>(time * _speed) % _notes.size();
 
-			std::cout << "Step: " << step << std::endl;
 
 			if (step != _currentStep) {
-				const int oldNote = _notes[(step - 1 + _notes.size()) % _notes.size()];
+				std::cout << "Step: " << step << std::endl;
+				const int oldNote = _notes[mod(step - 1, _notes.size())];
 
 				if (oldNote != -1) {
 					synth->removeVoice(oldNote);
@@ -91,7 +100,7 @@ int main(int argc, char *argv[]) {
 			sequencer.setSpeed(8.0 + std::sin(time / 4.0) / 2.0);
 			sequencer.update(synth, time);
 
-			std::cout << "Time: " << time << std::endl;
+			// std::cout << "Time: " << time << std::endl;
 			engine.update();
 		}
 	} catch (const char *msg) {
