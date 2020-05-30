@@ -1,17 +1,12 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
-#include <map>
 #include "pulse_audio.hpp"
+#include "synth.hpp"
 
 constexpr unsigned int BUFSIZE = 1024;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
-constexpr float TWO_PI = 2.0 * M_PI;
-
-float noteToFrequency(float note) {
-	return std::pow(2, (note - 69) / 12) * 440.0;
-}
 
 template<typename T, typename X> T clip(X value) {
 	constexpr T min = std::numeric_limits<T>::min();
@@ -27,61 +22,6 @@ template<typename T, typename X> T clip(X value) {
 
 	return value;
 }
-
-class Oscillator {
-	public:
-		Oscillator() : _phase(0) {
-			std::cout << "Creating oscillator" << std::endl;
-		}
-
-		float sine(float frequency, float sampleRate) {
-			_phase += TWO_PI * frequency / sampleRate;
-
-			while(_phase >= TWO_PI) {
-				_phase -= TWO_PI;
-			}
-
-			while(_phase < 0.0) {
-				_phase += TWO_PI;
-			}
-
-			return std::sin(_phase);
-		}
-
-	private:
-		float _phase;
-};
-
-class Synth {
-	public:
-		struct Voice {
-				Voice(float vol) : volume(vol) { }
-				float volume;
-				Oscillator oscillator;
-			};
-
-			void addVoice(int note, float volume = 1.0) {
-				_voices.insert(std::pair(note, Voice(volume)));
-			}
-
-			void removeVoice(int note) {
-				_voices.erase(note);
-			}
-
-			float mix(float sampleRate) {
-				float sum = 0.0;
-
-				for (auto & [note, voice] : _voices) {
-					float freq = noteToFrequency(note);
-					sum += voice.oscillator.sine(freq, sampleRate);
-				}
-
-				return sum;
-			}
-
-	private:
-		std::map<int, Voice> _voices;
-};
 
 int main(int argc, char *argv[]) {
 	PulseAudio pa(argv[0], SAMPLE_RATE, NUM_CHANNELS);
