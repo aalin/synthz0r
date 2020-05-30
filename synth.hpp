@@ -13,11 +13,11 @@ class Synth : public Device {
 				Oscillator oscillator;
 			};
 
-			void addVoice(int note, float volume = 1.0) {
+			void noteOn(int note, float volume = 1.0) {
 				_voices.insert(std::pair(note, Voice(volume)));
 			}
 
-			void removeVoice(int note) {
+			void noteOff(int note) {
 				_voices.erase(note);
 			}
 

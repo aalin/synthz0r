@@ -51,11 +51,11 @@ class Sequencer {
 				const int oldNote = _notes[mod(step - 1, _notes.size())];
 
 				if (oldNote != -1) {
-					synth->removeVoice(oldNote);
+					synth->noteOff(oldNote);
 				}
 
 				if (_notes[step] != -1) {
-					synth->addVoice(_notes[step]);
+					synth->noteOn(_notes[step]);
 				}
 
 				_currentStep = step;
@@ -76,9 +76,9 @@ int main(int argc, char *argv[]) {
 
 		auto synth = std::make_shared<Synth>();
 
-		//synth->addVoice(69);
-		//synth->addVoice(69 + 4);
-		//synth->addVoice(69 + 7);
+		//synth->noteOn(69);
+		//synth->noteOn(69 + 4);
+		//synth->noteOn(69 + 7);
 
 		engine.addDevice(synth);
 
