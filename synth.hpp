@@ -1,10 +1,11 @@
 #ifndef SYNTH_HPP
 #define SYNTH_HPP
 
-#include "oscillator.hpp"
 #include <map>
+#include "oscillator.hpp"
+#include "device.hpp"
 
-class Synth {
+class Synth : public Device {
 	public:
 		struct Voice {
 				Voice(float vol) : volume(vol) { }
@@ -20,7 +21,7 @@ class Synth {
 				_voices.erase(note);
 			}
 
-			float mix(float sampleRate) {
+			float update(float time, float sampleRate) {
 				float sum = 0.0;
 
 				for (auto & [note, voice] : _voices) {

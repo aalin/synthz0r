@@ -1,8 +1,8 @@
 #include <iostream>
 #include "pulse_audio.hpp"
 
-PulseAudio::PulseAudio(const char *name, unsigned int rate, unsigned int channels) : _s(0) {
-	_ss.format = PA_SAMPLE_S16LE;
+PulseAudio::PulseAudio(pa_sample_format_t sampleFormat, const char *name, unsigned int rate, unsigned int channels) : _s(0) {
+	_ss.format = sampleFormat;
 	_ss.rate = rate;
 	_ss.channels = channels;
 
@@ -21,7 +21,7 @@ PulseAudio::PulseAudio(const char *name, unsigned int rate, unsigned int channel
 	);
 
 	if (_s == 0) {
-		throw "what the fuck";
+		throw "Could not initialize PulseAudio";
 	}
 
 	handleError("pa_simple_new", error);

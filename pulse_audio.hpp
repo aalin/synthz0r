@@ -3,10 +3,12 @@
 
 #include <pulse/simple.h>
 #include <pulse/error.h>
+#include "pa_sample_format.hpp"
 
 class PulseAudio {
 	public:
-		PulseAudio(const char *name, unsigned int rate, unsigned int channels);
+		PulseAudio(pa_sample_format_t sampleFormat, const char *name, unsigned int rate, unsigned int channels);
+
 		~PulseAudio();
 
 		template<typename T>
@@ -19,7 +21,6 @@ class PulseAudio {
 		void drain();
 
 	private:
-		unsigned int _bufferSize;
 		pa_simple *_s;
 		pa_sample_spec _ss;
 		pa_usec_t _latency;
