@@ -6,6 +6,7 @@
 #include <memory>
 #include <limits>
 #include <list>
+#include <cmath>
 #include "device.hpp"
 #include "pulse_audio.hpp"
 
@@ -41,15 +42,24 @@ class Engine {
 			return device;
 		}
 
-		float getTime() const {
+		float getTime() {
+			return _tick;
+		}
+
+		float getScaledTime() const {
 			return  _tick / static_cast<float>(_sampleRate);
 		}
 
 		float update() {
-			float amplitude = 0.2 * std::numeric_limits<BufferType>::max();
+			float amplitude = std::numeric_limits<BufferType>::max();
+
+			const float time = getScaledTime();
+
+			for (auto device : _devices) {
+				device->tick(time, _sampleRate);
+			}
 
 			for (unsigned int i = 0; i < _bufferSize / _numChannels; i++) {
-				const float time = getTime();
 
 				float v = 0.0;
 
@@ -74,7 +84,7 @@ class Engine {
 
 			_pa.write(_buffer, sizeof(BufferType) * _bufferSize);
 
-			return getTime();
+			return getScaledTime();
 		}
 
 		void stop() {

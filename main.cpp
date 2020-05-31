@@ -21,8 +21,9 @@ T mod(T n, T m) {
 
 class Sequencer {
 	public:
-		Sequencer(size_t steps, float speed) {
+		Sequencer(size_t steps, float speed, float velocity) {
 			_speed = speed;
+			_velocity = velocity;
 			_currentStep = 0;
 			_notes.resize(steps, -1);
 		}
@@ -42,12 +43,15 @@ class Sequencer {
 			return *this;
 		}
 
+		Sequencer & setVelocity(float velocity) {
+			_velocity = velocity;
+			return *this;
+		}
+
 		void update(std::shared_ptr<Synth> synth, float time) {
 			const size_t step = static_cast<size_t>(time * _speed) % _notes.size();
 
-
 			if (step != _currentStep) {
-				std::cout << "Step: " << step << std::endl;
 				const int oldNote = _notes[mod(step - 1, _notes.size())];
 
 				if (oldNote != -1) {
@@ -55,7 +59,7 @@ class Sequencer {
 				}
 
 				if (_notes[step] != -1) {
-					synth->noteOn(_notes[step]);
+					synth->noteOn(_notes[step], _velocity);
 				}
 
 				_currentStep = step;
@@ -66,6 +70,7 @@ class Sequencer {
 		std::vector<int> _notes;
 		unsigned int _currentStep;
 		float _speed;
+		float _velocity;
 };
 
 int main(int argc, char *argv[]) {
@@ -74,35 +79,57 @@ int main(int argc, char *argv[]) {
 
 		engine.start();
 
-		auto synth = std::make_shared<Synth>();
+		auto synth1 = std::make_shared<Synth>(Oscillator::Type::SAW);
+		synth1->amplitude = 0.8;
+		synth1->transpose = 0;
+		synth1->envelope
+			.setAttack(0.25)
+			.setDecay(0.25)
+			.setSustain(0.5)
+			.setRelease(0.05);
+		engine.addDevice(synth1);
 
-		//synth->noteOn(69);
-		//synth->noteOn(69 + 4);
-		//synth->noteOn(69 + 7);
+		auto synth2 = std::make_shared<Synth>(Oscillator::Type::SQUARE);
+		synth2->amplitude = 0.4;
+		synth2->transpose = 0;
+		synth2->envelope
+			.setAttack(0.25)
+			.setDecay(0.25)
+			.setSustain(0.5)
+			.setRelease(0.05);
+		engine.addDevice(synth2);
 
-		engine.addDevice(synth);
+		Sequencer sequencer1(8, 1.0, 1.0);
+		sequencer1
+			.setStep(0, 52)
+			.setStep(1, 55)
+			.setStep(2, 57)
+			.setStep(3, 55)
+			.setStep(4, 62)
+			.setStep(5, 60)
+			.setStep(6, 62)
+			.setStep(7, 64);
 
-		Sequencer sequencer(8, 8.0);
-
-		const int shift = -12;
-
-		sequencer
-			.setStep(0, 52 + shift)
-			.setStep(1, 55 + shift)
-			.setStep(2, 57 + shift)
-			.setStep(3, 55 + shift)
-			.setStep(4, 62 + shift)
-			.setStep(5, 60 + shift)
-			.setStep(6, 62 + shift)
-			.setStep(7, 64 + shift);
+		Sequencer sequencer2(8, 1.0, 1.0);
+		sequencer2
+			.setStep(0, 52)
+			.setStep(1, 55)
+			.setStep(2, 57)
+			.setStep(3, 55)
+			.setStep(4, 62)
+			.setStep(5, 60)
+			.setStep(6, 62)
+			.setStep(7, 64);
 
 		while (engine.running()) {
-			const float time = engine.getTime();
+			const float time = engine.getScaledTime();
+			std::cout << "Time: " << time << std::endl;
 
-			sequencer.setSpeed(8.0 + std::sin(time / 4.0) / 2.0);
-			sequencer.update(synth, time);
+			sequencer1.setSpeed(8.0 + std::sin(time / 4.0) / 2.0);
+			sequencer1.update(synth1, time);
+			sequencer2.setSpeed(7.0 + std::sin(time / 3.0) / 2.0);
+			sequencer2.update(synth2, time);
 
-			// std::cout << "Time: " << time << std::endl;
 			engine.update();
 		}
 	} catch (const char *msg) {

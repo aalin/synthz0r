@@ -81,8 +81,8 @@ class Oscillator {
 			return oldPhase;
 		}
 
-		float _phase;
 		Type _type;
+		float _phase;
 };
 
 #endif
