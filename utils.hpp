@@ -3,6 +3,11 @@
 
 namespace Utils {
 	template<typename T>
+	T lerp(T a, T b, T f) {
+		return a + f * (b - a);
+	}
+
+	template<typename T>
 	T clamp(T value, T min, T max) {
 		if (value < min) {
 			return min;

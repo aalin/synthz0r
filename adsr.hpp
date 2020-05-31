@@ -1,7 +1,7 @@
 #ifndef ADSR_HPP
 #define ADSR_HPP
 
-#include <iostream>
+#include "utils.hpp"
 
 class ADSR {
 	public:
@@ -41,9 +41,7 @@ class ADSR {
 
 		bool isNoteDone(float time, float noteOffTime) {
 			if (noteOffTime >= 0.0 && time >= noteOffTime) {
-				const float dt = time - noteOffTime;
-
-				return dt > _release;
+				return time > noteOffTime +_release;
 			}
 
 			return false;
@@ -57,20 +55,17 @@ class ADSR {
 					return 0.0;
 				}
 
-				float v = lerp(_sustain, 0.0, dt / _release);
-
-				return lerp(_sustain, 0.0, dt / _release);
+				return Utils::lerp(_sustain, 0.0f, dt / _release);
 			}
 
 			const float dt = time - noteOnTime;
 
 			if (dt < _attack) {
-				float v = lerp(0.0, 1.0, dt / _attack);
-				return lerp(0.0, 1.0, dt / _attack);
+				return Utils::lerp(0.0f, 1.0f, dt / _attack);
 			}
 
 			if (dt < _attack + _decay) {
-				return lerp(1.0, _sustain, (dt - _attack) / _decay);
+				return Utils::lerp(1.0f, _sustain, (dt - _attack) / _decay);
 			}
 
 			return _sustain;
@@ -81,10 +76,6 @@ class ADSR {
 		float _decay;
 		float _sustain;
 		float _release;
-
-		float lerp(float a, float b, float f) {
-			return a + f * (b - a);
-		}
 };
 
 #endif
