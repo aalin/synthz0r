@@ -6,6 +6,7 @@
 #include "oscillator.hpp"
 #include "device.hpp"
 #include "adsr.hpp"
+#include "effect.hpp"
 
 class Synth : public Device {
 	public:
@@ -38,6 +39,10 @@ class Synth : public Device {
 			  transpose(0),
 			  _oscillatorType(oscillatorType)
 			{}
+
+			void addEffect(std::shared_ptr<Effect> effect) {
+				_effects.push_back(effect);
+			}
 
 			void noteOn(int note, float velocity = 2.0) {
 				_voices.push_back(Voice(_oscillatorType, note, velocity, _time));
@@ -76,6 +81,10 @@ class Synth : public Device {
 					sum += (std::exp(value * voice.velocity * env * amplitude) - 1) / (2.718281828459045 - 1);
 				}
 
+				for (auto &effect : _effects) {
+					sum = effect->apply(sum);
+				}
+
 				return sum;
 			}
 
@@ -88,6 +97,7 @@ class Synth : public Device {
 		float _time;
 		Oscillator::Type _oscillatorType;
 		std::vector<Voice> _voices;
+		std::vector<std::shared_ptr<Effect> > _effects;
 
 		float noteToFrequency(float note) {
 			return std::pow(2, (note - 69) / 12) * 440.0;

@@ -5,19 +5,12 @@
 #include "pulse_audio.hpp"
 #include "synth.hpp"
 #include "engine.hpp"
+#include "bitcrusher.hpp"
+#include "utils.hpp"
 
 constexpr unsigned int BUFFER_SIZE = 1024;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
-
-template<typename T>
-T mod(T n, T m) {
-  if (n < 0) {
-    return ((n % m) + m) % m;
-  }
-
-  return n % m;
-}
 
 class Sequencer {
 	public:
@@ -52,7 +45,7 @@ class Sequencer {
 			const size_t step = static_cast<size_t>(time * _speed) % _notes.size();
 
 			if (step != _currentStep) {
-				const int oldNote = _notes[mod(step - 1, _notes.size())];
+				const int oldNote = _notes[Utils::mod(step - 1, _notes.size())];
 
 				if (oldNote != -1) {
 					synth->noteOff(oldNote);
@@ -80,26 +73,32 @@ int main(int argc, char *argv[]) {
 		engine.start();
 
 		auto synth1 = std::make_shared<Synth>(Oscillator::Type::SAW);
-		synth1->amplitude = 0.8;
+
+		synth1->amplitude = 1.0;
 		synth1->transpose = 0;
 		synth1->envelope
 			.setAttack(0.25)
 			.setDecay(0.25)
 			.setSustain(0.5)
 			.setRelease(0.05);
+
+		synth1->addEffect(std::make_shared<Bitcrusher>(8));
+
 		engine.addDevice(synth1);
 
 		auto synth2 = std::make_shared<Synth>(Oscillator::Type::SQUARE);
+
 		synth2->amplitude = 0.4;
 		synth2->transpose = 0;
 		synth2->envelope
-			.setAttack(0.25)
-			.setDecay(0.25)
-			.setSustain(0.5)
+			.setAttack(0.15)
+			.setDecay(0.55)
+			.setSustain(0.2)
 			.setRelease(0.05);
 		engine.addDevice(synth2);
 
 		Sequencer sequencer1(8, 1.0, 1.0);
+
 		sequencer1
 			.setStep(0, 52)
 			.setStep(1, 55)
@@ -111,6 +110,7 @@ int main(int argc, char *argv[]) {
 			.setStep(7, 64);
 
 		Sequencer sequencer2(8, 1.0, 1.0);
+
 		sequencer2
 			.setStep(0, 52)
 			.setStep(1, 55)
@@ -134,6 +134,7 @@ int main(int argc, char *argv[]) {
 		}
 	} catch (const char *msg) {
 		std::cerr << "Error: " << msg << std::endl;
+		return 1;
 	}
 
 	return 0;

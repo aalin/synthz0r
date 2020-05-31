@@ -9,6 +9,7 @@
 #include <cmath>
 #include "device.hpp"
 #include "pulse_audio.hpp"
+#include "utils.hpp"
 
 template<typename BufferType>
 class Engine {
@@ -75,7 +76,7 @@ class Engine {
 						continue;
 					}
 
-					BufferType value = clip<BufferType>(v * amplitude);
+					BufferType value = Utils::clip<BufferType>(v * amplitude);
 					_buffer[idx] = value;
 				}
 
@@ -104,21 +105,6 @@ class Engine {
 		BufferType *_buffer;
 
 		std::list<std::shared_ptr<Device> > _devices;
-
-		template<typename T, typename X> T clip(X value) {
-			constexpr T min = std::numeric_limits<T>::min();
-			constexpr T max = std::numeric_limits<T>::max();
-
-			if (value < min) {
-				return min;
-			}
-
-			if (value > max) {
-				return max;
-			}
-
-			return value;
-		}
 };
 
 #endif
