@@ -78,7 +78,7 @@ class Synth : public Device {
 					float value = voice.oscillator.update(freq, sampleRate);
 					float env = envelope.getValue(time, voice.noteOnTime, voice.noteOffTime);
 
-					sum += (std::exp(value * voice.velocity * env * amplitude) - 1) / (2.718281828459045 - 1);
+					sum += Utils::volume(value * voice.velocity * env * amplitude);
 				}
 
 				for (auto &effect : _effects) {

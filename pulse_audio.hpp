@@ -12,7 +12,7 @@ class PulseAudio {
 		~PulseAudio();
 
 		template<typename T>
-		void write(T buf[], unsigned int length) {
+		void write(T buf[], unsigned int length) const {
 			int error;
 			pa_simple_write(_s, (void*)buf, length, &error);
 			handleError("pa_simple_write", error);
@@ -25,7 +25,7 @@ class PulseAudio {
 		pa_sample_spec _ss;
 		pa_usec_t _latency;
 
-		void handleError(const char *function, int error);
+		void handleError(const char *function, int error) const;
 };
 
 #endif

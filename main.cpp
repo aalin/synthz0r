@@ -13,10 +13,15 @@ constexpr unsigned int BUFFER_SIZE = 1024;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
+typedef AudioBuffer<uint8_t> AudioBuffer8Bit;
+typedef AudioBuffer<int16_t> AudioBuffer16Bit;
+typedef AudioBuffer<int32_t> AudioBuffer32Bit;
+typedef AudioBuffer<float> AudioBufferFloat;
 
 int main(int argc, char *argv[]) {
 	try {
-		Engine<int16_t> engine(argv[0], SAMPLE_RATE, NUM_CHANNELS, BUFFER_SIZE);
+		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
+		Engine engine(argv[0], SAMPLE_RATE, buffer);
 
 		engine.start();
 

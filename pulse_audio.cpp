@@ -47,7 +47,7 @@ PulseAudio::~PulseAudio() {
 	}
 }
 
-void PulseAudio::handleError(const char *function, int error) {
+void PulseAudio::handleError(const char *function, int error) const {
 	if (error >= 0) {
 		return;
 	}

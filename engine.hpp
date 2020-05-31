@@ -9,25 +9,22 @@
 #include <cmath>
 #include "device.hpp"
 #include "pulse_audio.hpp"
+#include "audio_buffer.hpp"
 #include "utils.hpp"
 
-template<typename BufferType>
 class Engine {
 	public:
-		Engine(const char *appName, unsigned int sampleRate, unsigned int numChannels, unsigned int bufferSize)
+		Engine(const char *appName, unsigned int sampleRate, std::shared_ptr<AudioBufferBase> buffer)
 		: _running(false),
 		  _tick(0),
-		  _pa(PA::SampleFormat<BufferType>::format(), appName, sampleRate, numChannels),
-		  _sampleRate(sampleRate),
-		  _numChannels(numChannels),
-		  _bufferSize(bufferSize)
+		  _pa(buffer->pulseAudioSampleFormat(), appName, sampleRate, buffer->numChannels()),
+		  _sampleRate(sampleRate)
 		{
-			_buffer = new BufferType[bufferSize];
+			_buffer = buffer;
 		}
 
 		~Engine() {
 			_pa.drain();
-			delete[] _buffer;
 		}
 
 		bool running() const {
@@ -52,38 +49,32 @@ class Engine {
 		}
 
 		float update() {
-			float amplitude = std::numeric_limits<BufferType>::max();
-
 			const float time = getScaledTime();
 
 			for (auto device : _devices) {
 				device->tick(time, _sampleRate);
 			}
 
-			for (unsigned int i = 0; i < _bufferSize / _numChannels; i++) {
-
+			for (unsigned int i = 0; i < _buffer->size() / _buffer->numChannels(); i++) {
 				float v = 0.0;
 
 				for (auto device : _devices) {
 					v += device->update(time, _sampleRate);
 				}
 
-				for (unsigned int channel = 0; channel < _numChannels; channel++) {
-					size_t idx = i * _numChannels + channel;
-
+				for (unsigned int channel = 0; channel < _buffer->numChannels(); channel++) {
 					if (channel == 1) {
-						_buffer[idx] = 0;
+						_buffer->set(i, channel, 0.0);
 						continue;
 					}
 
-					BufferType value = Utils::clip<BufferType>(v * amplitude);
-					_buffer[idx] = value;
+					_buffer->set(i, channel, v);
 				}
 
 				_tick++;
 			}
 
-			_pa.write(_buffer, sizeof(BufferType) * _bufferSize);
+			_buffer->write(_pa);
 
 			return getScaledTime();
 		}
@@ -99,10 +90,8 @@ class Engine {
 		PulseAudio _pa;
 
 		const unsigned int _sampleRate;
-		const unsigned int _numChannels;
-		const unsigned int _bufferSize;
 
-		BufferType *_buffer;
+		std::shared_ptr<AudioBufferBase> _buffer;
 
 		std::list<std::shared_ptr<Device> > _devices;
 };

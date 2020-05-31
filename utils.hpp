@@ -1,6 +1,8 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <type_traits>
+
 namespace Utils {
 	template<typename T>
 	T lerp(T a, T b, T f) {
@@ -27,13 +29,13 @@ namespace Utils {
 		return n % m;
 	}
 
-	template<typename T> T clip(T value) {
-		return value;
-	}
-
 	template<typename T, typename V> T clip(V value) {
 		constexpr T min = std::numeric_limits<T>::min();
 		constexpr T max = std::numeric_limits<T>::max();
+
+		if (std::is_same<T, int8_t>::value) {
+			return ((value + 1.0) / 2.0) * 255.0;
+		}
 
 		if (value < min) {
 			return min;
@@ -44,6 +46,10 @@ namespace Utils {
 		}
 
 		return value;
+	}
+
+	inline float volume(float value) {
+		return (std::exp(value) - 1) / (2.718281828459045 - 1);
 	}
 };
 
