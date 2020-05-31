@@ -21,18 +21,22 @@ class ADSR {
 
 		ADSR & setAttack(float attack) {
 			_attack = attack;
+			return *this;
 		}
 
 		ADSR & setDecay(float decay) {
 			_decay = decay;
+			return *this;
 		}
 
 		ADSR & setSustain(float sustain) {
 			_sustain = sustain;
+			return *this;
 		}
 
 		ADSR & setRelease(float release) {
 			_release = release;
+			return *this;
 		}
 
 		bool isNoteDone(float time, float noteOffTime) {
