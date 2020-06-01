@@ -20,7 +20,7 @@ class Delay : public BaseEffect {
 			}
 		}
 
-		float apply(float value) {
+		float apply(const float &value) {
 			const size_t t = tick();
 			size_t delaySamples = static_cast<size_t>(_time / 1000.0 * _sampleRate);
 			size_t index = Utils::mod(t + delaySamples, bufferSize);
@@ -28,6 +28,10 @@ class Delay : public BaseEffect {
 			float v = Utils::lerp(value, _buffer[t], _mix);
 			_buffer[index] = v * _decay;
 			return v;
+		}
+
+		StereoSample apply(const StereoSample &sample) {
+			return StereoSample(apply(sample.mono()));
 		}
 
 	private:

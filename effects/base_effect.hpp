@@ -7,7 +7,7 @@
 namespace Effects {
 class BaseEffect {
 	public:
-		virtual float apply(float value) {
+		virtual float apply(const float &value) {
 			return value;
 		}
 

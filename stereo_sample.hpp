@@ -2,15 +2,20 @@
 #define STEREO_SAMPLE_HPP
 
 struct StereoSample {
-	StereoSample()
-	: left(0.0),
-	  right(0.0)
+	StereoSample(float mono = 0.0)
+	: left(mono),
+	  right(mono)
 	{}
 
-	StereoSample(const StereoSample &other) {
-		left = other.left;
-		right = other.right;
-	}
+	StereoSample(float left, float right)
+	: left(left),
+	  right(right)
+	{}
+
+	StereoSample(const StereoSample &other)
+	: left(other.left),
+	  right(other.right)
+	{}
 
 	StereoSample & reset() {
 		left = 0.0;
@@ -48,7 +53,7 @@ struct StereoSample {
 		return *this;
 	}
 
-	float monoSample() const {
+	float mono() const {
 		return (left + right) / 2.0;
 	}
 

@@ -45,6 +45,10 @@ class Synth : public BaseDevice {
 
 			const char * name() const { return "Synth"; }
 
+			void setPanning(float value) {
+				_panning = value;
+			}
+
 			void addEffect(std::shared_ptr<Effects::BaseEffect> effect) {
 				_effects.push_back(effect);
 			}
@@ -62,30 +66,23 @@ class Synth : public BaseDevice {
 			}
 
 			void update(const Timer &timer, float pitchBend = 0.0) {
-				StereoSample out;
+				removeFinishedVoices(timer);
 
-				for (auto it = _voices.begin(); it != _voices.end();) {
-					auto const &voice = *it;
-
-					if (envelope.isNoteDone(timer, voice.noteOffTime)) {
-						_voices.erase(it);
-					} else {
-						++it;
-					}
-				}
+				float v = 0.0;
 
 				for (auto &voice : _voices) {
-					float freq = noteToFrequency(voice.note + transpose + pitchBendRange * pitchBend);
+					float freq = Utils::noteToFrequency(voice.note + transpose + pitchBendRange * pitchBend);
 					float value = voice.oscillator.update(freq, timer);
 					float env = envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
-					out.add(Utils::volume(value * voice.velocity * env * amplitude));
+					v += Utils::volume(value * voice.velocity * env * amplitude);
 				}
 
 				for (auto &effect : _effects) {
-					out = effect->apply(out);
+					v = effect->apply(v);
 				}
 
+				StereoSample out = Utils::pan(v, _panning);
 				output(timer, out);
 			}
 
@@ -100,8 +97,16 @@ class Synth : public BaseDevice {
 		std::vector<std::shared_ptr<Effects::BaseEffect> > _effects;
 		float _panning;
 
-		float noteToFrequency(float note) {
-			return std::pow(2, (note - 69) / 12) * 440.0;
+		void removeFinishedVoices(const Timer &timer) {
+			for (auto it = _voices.begin(); it != _voices.end();) {
+				auto const &voice = *it;
+
+				if (envelope.isNoteDone(timer, voice.noteOffTime)) {
+					it = _voices.erase(it);
+				} else {
+					++it;
+				}
+			}
 		}
 };
 };

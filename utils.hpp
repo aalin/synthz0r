@@ -51,6 +51,25 @@ namespace Utils {
 	inline float volume(float value) {
 		return (std::exp(value) - 1) / (2.718281828459045 - 1);
 	}
+
+	StereoSample pan(float value, float f) {
+		constexpr const float x = std::sqrt(2.0) / 2.0;
+		constexpr const float radians = M_PI / 180.0;
+		const float r = f * 45.0f * radians;
+		const float c = std::sin(r);
+		const float s = std::cos(r);
+
+		StereoSample out(
+			value * x * (c + s),
+			value * x * (c - s)
+		);
+
+		return out;
+	}
+
+	float noteToFrequency(float note) {
+		return std::pow(2, (note - 69) / 12) * 440.0;
+	}
 };
 
 #endif

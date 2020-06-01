@@ -23,7 +23,7 @@ int main(int, char *argv[]) {
 
 		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
 
-		synth1->amplitude = 1.0;
+		synth1->amplitude = 0.4;
 		synth1->transpose = 0;
 		synth1->envelope
 			.setAttack(0.2)
@@ -31,10 +31,10 @@ int main(int, char *argv[]) {
 			.setSustain(0.0)
 			.setRelease(0.05);
 
-		synth1->addEffect(std::make_shared<Effects::Overdrive>(8));
+		//synth1->addEffect(std::make_shared<Effects::Overdrive>(8, 0.2));
 		synth1->addEffect(std::make_shared<Effects::Delay>(250, 0.8, 0.8, SAMPLE_RATE));
 		synth1->addEffect(std::make_shared<Effects::Delay>(125, 0.5, 0.5, SAMPLE_RATE));
-		// synth1->addEffect(std::make_shared<Effects::Bitcrusher>(6));
+		//synth1->addEffect(std::make_shared<Effects::Bitcrusher>(4));
 
 		synth1->addOutput(engine.getOutputDevice());
 		engine.addDevice(synth1);
@@ -70,7 +70,7 @@ int main(int, char *argv[]) {
 
 		synth2->addEffect(std::make_shared<Effects::Overdrive>(32, 0.05));
 
-		engine.addDevice(synth2);
+		//engine.addDevice(synth2);
 
 		Sequencer sequencer2(32, 1.0, 1.0);
 
@@ -113,6 +113,9 @@ int main(int, char *argv[]) {
 			std::cout << "Time: " << timer.getSeconds() << std::endl;
 
 			sequencer1.setSpeed(2.0);
+			float pan = std::sin(timer.getSeconds() / 1.0);
+			std::cout << "Pan " << pan << std::endl;
+			synth1->setPanning(pan);
 			sequencer1.update(timer, synth1);
 			sequencer2.setSpeed(4.0);
 			sequencer2.update(timer, synth2);
