@@ -1,10 +1,11 @@
 #ifndef BITCRUSHER_HPP
 #define BITCRUSHER_HPP
 
-#include "effect.hpp"
-#include "utils.hpp"
+#include "base_effect.hpp"
+#include "../utils.hpp"
 
-class Bitcrusher : public Effect {
+namespace Effects {
+class Bitcrusher : public BaseEffect {
 	public:
 		Bitcrusher(uint8_t bits = 2)
 		: _bits(bits)
@@ -19,5 +20,6 @@ class Bitcrusher : public Effect {
 	private:
 		uint8_t _bits;
 };
+}
 
 #endif

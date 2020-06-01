@@ -6,7 +6,7 @@
 #include "oscillator.hpp"
 #include "device.hpp"
 #include "adsr.hpp"
-#include "effect.hpp"
+#include "effects/base_effect.hpp"
 
 class Synth : public Device {
 	public:
@@ -40,7 +40,7 @@ class Synth : public Device {
 			  _oscillatorType(oscillatorType)
 			{}
 
-			void addEffect(std::shared_ptr<Effect> effect) {
+			void addEffect(std::shared_ptr<Effects::BaseEffect> effect) {
 				_effects.push_back(effect);
 			}
 
@@ -58,6 +58,7 @@ class Synth : public Device {
 
 			float tick(float time, float _sampleRate) {
 				_time = time;
+				return 0.0;
 			}
 
 			float update(float time, float sampleRate, float pitchBend = 0.0) {
@@ -97,7 +98,7 @@ class Synth : public Device {
 		float _time;
 		Oscillator::Type _oscillatorType;
 		std::vector<Voice> _voices;
-		std::vector<std::shared_ptr<Effect> > _effects;
+		std::vector<std::shared_ptr<Effects::BaseEffect> > _effects;
 
 		float noteToFrequency(float note) {
 			return std::pow(2, (note - 69) / 12) * 440.0;

@@ -5,7 +5,9 @@
 #include "pulse_audio.hpp"
 #include "synth.hpp"
 #include "engine.hpp"
-#include "bitcrusher.hpp"
+#include "effects/bitcrusher.hpp"
+#include "effects/overdrive.hpp"
+#include "effects/delay.hpp"
 #include "utils.hpp"
 #include "sequencer.hpp"
 
@@ -30,12 +32,12 @@ int main(int argc, char *argv[]) {
 		synth1->amplitude = 1.0;
 		synth1->transpose = 0;
 		synth1->envelope
-			.setAttack(0.15)
-			.setDecay(0.5)
-			.setSustain(0.2)
+			.setAttack(0.05)
+			.setDecay(0.05)
+			.setSustain(0.0)
 			.setRelease(0.05);
 
-		synth1->addEffect(std::make_shared<Bitcrusher>(8));
+		synth1->addEffect(std::make_shared<Effects::Bitcrusher>(8));
 
 		engine.addDevice(synth1);
 
@@ -45,9 +47,13 @@ int main(int argc, char *argv[]) {
 		synth2->transpose = 0;
 		synth2->envelope
 			.setAttack(0.15)
-			.setDecay(0.55)
-			.setSustain(0.2)
+			.setDecay(0.25)
+			.setSustain(0.1)
 			.setRelease(0.05);
+
+		synth1->addEffect(std::make_shared<Effects::Overdrive>(8));
+		synth1->addEffect(std::make_shared<Effects::Delay>(10, 1.0, 0.5, SAMPLE_RATE));
+
 		engine.addDevice(synth2);
 
 		Sequencer sequencer1(8, 1.0, 1.0);
@@ -78,10 +84,10 @@ int main(int argc, char *argv[]) {
 			const float time = engine.getScaledTime();
 			std::cout << "Time: " << time << std::endl;
 
-			sequencer1.setSpeed(8.0 + std::sin(time / 4.0) / 2.0);
+			sequencer1.setSpeed(2.0 + std::sin(time / 4.0) / 4.0);
 			sequencer1.update(synth1, time);
 			sequencer2.setSpeed(7.0 + std::sin(time / 3.0) / 2.0);
-			sequencer2.update(synth2, time);
+//			sequencer2.update(synth2, time);
 
 			engine.update();
 		}
