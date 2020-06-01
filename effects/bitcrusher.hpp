@@ -7,14 +7,15 @@
 namespace Effects {
 class Bitcrusher : public BaseEffect {
 	public:
-		Bitcrusher(uint8_t bits = 2)
-		: _bits(bits)
+		Bitcrusher(uint8_t bits = 2, float volume = 1.0)
+		: _bits(bits),
+		  _volume(volume)
 		{ }
 
 		float apply(const float &value) {
 			float max = pow(_bits, 2);
 			int clamped = Utils::clamp(value * max, -max, max);
-			return clamped / max;
+			return (clamped / max) * _volume;
 		}
 
 		StereoSample apply(const StereoSample &sample) {
@@ -26,6 +27,7 @@ class Bitcrusher : public BaseEffect {
 
 	private:
 		uint8_t _bits;
+		float _volume;
 };
 }
 

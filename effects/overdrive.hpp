@@ -12,7 +12,7 @@ class Overdrive : public BaseEffect {
 		  _volume(volume)
 		{ }
 
-		float apply(float value) {
+		float apply(const float &value) {
 			return Utils::clamp(value * _gain, -1.0f, 1.0f) * _volume;
 		}
 

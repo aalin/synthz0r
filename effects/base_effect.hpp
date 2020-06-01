@@ -12,7 +12,10 @@ class BaseEffect {
 		}
 
 		virtual StereoSample apply(const StereoSample &sample) {
-			return sample;
+			return StereoSample(
+				apply(sample.left),
+				apply(sample.right)
+			);
 		}
 };
 

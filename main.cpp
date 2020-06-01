@@ -23,7 +23,7 @@ int main(int, char *argv[]) {
 
 		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
 
-		synth1->amplitude = 0.4;
+		synth1->amplitude = 0.7;
 		synth1->transpose = 0;
 		synth1->envelope
 			.setAttack(0.2)
@@ -31,7 +31,7 @@ int main(int, char *argv[]) {
 			.setSustain(0.0)
 			.setRelease(0.05);
 
-		//synth1->addEffect(std::make_shared<Effects::Overdrive>(8, 0.2));
+		synth1->addEffect(std::make_shared<Effects::Overdrive>(8, 0.2));
 		synth1->addEffect(std::make_shared<Effects::Delay>(250, 0.8, 0.8, SAMPLE_RATE));
 		synth1->addEffect(std::make_shared<Effects::Delay>(125, 0.5, 0.5, SAMPLE_RATE));
 		//synth1->addEffect(std::make_shared<Effects::Bitcrusher>(4));
@@ -58,19 +58,22 @@ int main(int, char *argv[]) {
 			.setStep(13, NOTE(A,4))
 			.setStep(14, NOTE(G,4));
 
-		auto synth2 = std::make_shared<Devices::Synth>(Oscillator::Type::SQUARE);
+		auto synth2 = std::make_shared<Devices::Synth>(Oscillator::Type::SAW);
 
 		synth2->amplitude = 0.1;
-		synth2->transpose = -24;
+		synth2->transpose = -12 * 3;
 		synth2->envelope
 			.setAttack(0.15)
 			.setDecay(0.25)
 			.setSustain(0.1)
 			.setRelease(0.05);
 
-		synth2->addEffect(std::make_shared<Effects::Overdrive>(32, 0.05));
+		synth2->addEffect(std::make_shared<Effects::Overdrive>(32, 1.0));
+		synth2->addEffect(std::make_shared<Effects::Bitcrusher>(2, 0.02));
+		//synth1->addEffect(std::make_shared<Effects::Delay>(250, 0.9, 0.5, SAMPLE_RATE));
+		synth2->addOutput(engine.getOutputDevice());
 
-		//engine.addDevice(synth2);
+		engine.addDevice(synth2);
 
 		Sequencer sequencer2(32, 1.0, 1.0);
 
@@ -112,11 +115,13 @@ int main(int, char *argv[]) {
 			const Timer &timer = engine.timer();
 			std::cout << "Time: " << timer.getSeconds() << std::endl;
 
-			sequencer1.setSpeed(2.0);
 			float pan = std::sin(timer.getSeconds() / 1.0);
 			std::cout << "Pan " << pan << std::endl;
 			synth1->setPanning(pan);
+
+			sequencer1.setSpeed(2.0);
 			sequencer1.update(timer, synth1);
+
 			sequencer2.setSpeed(4.0);
 			sequencer2.update(timer, synth2);
 
