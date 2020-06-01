@@ -6,7 +6,7 @@
 namespace Effects {
 class Delay : public BaseEffect {
 	public:
-		static constexpr size_t bufferSize = 1024 * 1024;
+		static constexpr size_t bufferSize = 1024 * 1024 * 4;
 
 		Delay(float time, float decay, float mix, float sampleRate)
 		: _time(time),
@@ -22,7 +22,7 @@ class Delay : public BaseEffect {
 
 		float apply(float value) {
 			const size_t t = tick();
-			size_t delaySamples = static_cast<size_t>(_time / 100.0 * _sampleRate);
+			size_t delaySamples = static_cast<size_t>(_time / 1000.0 * _sampleRate);
 			size_t index = Utils::mod(t + delaySamples, bufferSize);
 
 			float v = Utils::lerp(value, _buffer[t], _mix);

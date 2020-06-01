@@ -8,7 +8,7 @@ class Sequencer {
 		Sequencer(size_t steps, float speed, float velocity) {
 			_speed = speed;
 			_velocity = velocity;
-			_currentStep = 0;
+			_currentStep = -1;
 			_notes.resize(steps, -1);
 		}
 
@@ -33,7 +33,7 @@ class Sequencer {
 		}
 
 		void update(std::shared_ptr<Synth> synth, float time) {
-			const size_t step = static_cast<size_t>(time * _speed) % _notes.size();
+			const size_t step = Utils::mod(static_cast<size_t>(time * _speed), _notes.size());
 
 			if (step != _currentStep) {
 				const int oldNote = _notes[Utils::mod(step - 1, _notes.size())];
@@ -52,7 +52,7 @@ class Sequencer {
 
 	private:
 		std::vector<int> _notes;
-		unsigned int _currentStep;
+		int _currentStep;
 		float _speed;
 		float _velocity;
 };
