@@ -14,7 +14,7 @@ constexpr unsigned int BUFFER_SIZE = 1024 * 1;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
-int main(int argc, char *argv[]) {
+int main(int, char *argv[]) {
 	try {
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
 		Engine engine(argv[0], SAMPLE_RATE, buffer);
@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
 		synth1->addEffect(std::make_shared<Effects::Delay>(125, 0.5, 0.5, SAMPLE_RATE));
 		// synth1->addEffect(std::make_shared<Effects::Bitcrusher>(6));
 
+		synth1->addOutput(engine.getOutputDevice());
 		engine.addDevice(synth1);
 
 		Sequencer sequencer1(16, 1.0, 1.0);

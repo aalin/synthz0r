@@ -8,6 +8,7 @@
 #include <list>
 #include <cmath>
 #include "devices/base_device.hpp"
+#include "devices/output_device.hpp"
 #include "pulse_audio.hpp"
 #include "audio_buffer.hpp"
 #include "utils.hpp"
@@ -15,14 +16,14 @@
 
 class Engine {
 	public:
-		Engine(const char *appName, unsigned int sampleRate, std::shared_ptr<AudioBufferBase> buffer)
+		Engine(const char *appName, unsigned int sampleRate, AudioBufferPtr buffer)
 		: _running(false),
 		  _timer(sampleRate),
 		  _pa(buffer->pulseAudioSampleFormat(), appName, sampleRate, buffer->numChannels()),
-		  _sampleRate(sampleRate)
-		{
-			_buffer = buffer;
-		}
+		  _sampleRate(sampleRate),
+		  _outputDevice(std::make_shared<Devices::OutputDevice>()),
+		  _buffer(buffer)
+		{ }
 
 		~Engine() {
 			_pa.drain();
@@ -45,29 +46,20 @@ class Engine {
 			return device;
 		}
 
+		std::shared_ptr<Devices::OutputDevice> getOutputDevice() {
+			return _outputDevice;
+		}
+
 		float update() {
-			const float seconds = _timer.getSeconds();
-
-			for (auto device : _devices) {
-				device->tick(_timer);
-			}
-
 			for (unsigned int i = 0; i < _buffer->size() / _buffer->numChannels(); i++) {
-				float v = 0.0;
-
 				for (auto device : _devices) {
-					v += device->update(_timer);
+					device->update(_timer, 0.0);
 				}
 
-				for (unsigned int channel = 0; channel < _buffer->numChannels(); channel++) {
-					if (channel == 1) {
-						_buffer->set(i, channel, 0.0);
-						continue;
-					}
+				const StereoSample &sample = _outputDevice->getSample();
+				_buffer->set(i, sample);
 
-					_buffer->set(i, channel, v);
-				}
-
+				_outputDevice->reset();
 				_timer.tick();
 			}
 
@@ -88,8 +80,9 @@ class Engine {
 
 		const unsigned int _sampleRate;
 
-		std::shared_ptr<AudioBufferBase> _buffer;
+		std::shared_ptr<Devices::OutputDevice> _outputDevice;
 
+		AudioBufferPtr _buffer;
 		std::list<Devices::DevicePtr> _devices;
 };
 

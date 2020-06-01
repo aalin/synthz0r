@@ -7,6 +7,7 @@
 #include "../units/oscillator.hpp"
 #include "../units/adsr.hpp"
 #include "../effects/base_effect.hpp"
+#include "../stereo_sample.hpp"
 
 namespace Devices {
 class Synth : public BaseDevice {
@@ -38,8 +39,11 @@ class Synth : public BaseDevice {
 			: BaseDevice(),
 			  pitchBendRange(2.0),
 			  transpose(0),
-			  _oscillatorType(oscillatorType)
+			  _oscillatorType(oscillatorType),
+			  _panning(0.0)
 			{}
+
+			const char * name() const { return "Synth"; }
 
 			void addEffect(std::shared_ptr<Effects::BaseEffect> effect) {
 				_effects.push_back(effect);
@@ -57,8 +61,8 @@ class Synth : public BaseDevice {
 				}
 			}
 
-			float update(const Timer &timer, float pitchBend = 0.0) {
-				float sum = 0.0;
+			void update(const Timer &timer, float pitchBend = 0.0) {
+				StereoSample out;
 
 				for (auto it = _voices.begin(); it != _voices.end();) {
 					auto const &voice = *it;
@@ -75,14 +79,14 @@ class Synth : public BaseDevice {
 					float value = voice.oscillator.update(freq, timer);
 					float env = envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
-					sum += Utils::volume(value * voice.velocity * env * amplitude);
+					out.add(Utils::volume(value * voice.velocity * env * amplitude));
 				}
 
 				for (auto &effect : _effects) {
-					sum = effect->apply(sum);
+					out = effect->apply(out);
 				}
 
-				return sum;
+				output(timer, out);
 			}
 
 			ADSR envelope;
@@ -94,6 +98,7 @@ class Synth : public BaseDevice {
 		Oscillator::Type _oscillatorType;
 		std::vector<Voice> _voices;
 		std::vector<std::shared_ptr<Effects::BaseEffect> > _effects;
+		float _panning;
 
 		float noteToFrequency(float note) {
 			return std::pow(2, (note - 69) / 12) * 440.0;

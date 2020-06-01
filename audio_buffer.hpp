@@ -3,6 +3,7 @@
 
 #include "pa_sample_format.hpp"
 #include "utils.hpp"
+#include "stereo_sample.hpp"
 
 class AudioBufferBase {
 	public:
@@ -11,6 +12,7 @@ class AudioBufferBase {
 		virtual size_t size() const = 0;
 		virtual size_t numChannels() const = 0;
 		virtual void set(size_t index, size_t channel, float value) = 0;
+		virtual void set(size_t index, const StereoSample &sample) = 0;
 };
 
 template<typename BufferType>
@@ -49,12 +51,18 @@ class AudioBuffer : public AudioBufferBase {
 			_buffer[idx] = Utils::clip<BufferType>(value * amplitude);
 		}
 
+		void set(size_t index, const StereoSample &sample) {
+			set(index, 0, sample.left);
+			set(index, 1, sample.right);
+		}
+
 	private:
 		const size_t _numChannels;
 		const size_t _size;
 		BufferType *_buffer;
 };
 
+typedef std::shared_ptr<AudioBufferBase> AudioBufferPtr;
 typedef AudioBuffer<uint8_t> AudioBuffer8Bit;
 typedef AudioBuffer<int16_t> AudioBuffer16Bit;
 typedef AudioBuffer<int32_t> AudioBuffer32Bit;
