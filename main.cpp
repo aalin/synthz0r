@@ -67,12 +67,14 @@ int main(int argc, char *argv[]) {
 		auto synth2 = std::make_shared<Synth>(Oscillator::Type::SQUARE);
 
 		synth2->amplitude = 0.1;
-		synth2->transpose = -12;
+		synth2->transpose = -24;
 		synth2->envelope
 			.setAttack(0.15)
 			.setDecay(0.25)
 			.setSustain(0.1)
 			.setRelease(0.05);
+
+		synth2->addEffect(std::make_shared<Effects::Overdrive>(32, 0.05));
 
 		engine.addDevice(synth2);
 
@@ -92,7 +94,7 @@ int main(int argc, char *argv[]) {
 			.setStep(10, NOTE(E,4))
 			.setStep(11, NOTE(E,5))
 			.setStep(12, NOTE(D,4))
-			.setStep(13, NOTE(D,5))
+			.setStep(13, NOTE(D,3))
 			.setStep(14, NOTE(D,4))
 			.setStep(15, NOTE(D,5))
 			.setStep(16, NOTE(C,4))
@@ -108,7 +110,7 @@ int main(int argc, char *argv[]) {
 			.setStep(26, NOTE(A,3))
 			.setStep(27, NOTE(A,4))
 			.setStep(28, NOTE(G,3))
-			.setStep(29, NOTE(G,4))
+			.setStep(29, NOTE(G,2))
 			.setStep(30, NOTE(G,3))
 			.setStep(31, NOTE(G,4));
 

@@ -33,10 +33,11 @@ class Sequencer {
 		}
 
 		void update(std::shared_ptr<Synth> synth, float time) {
-			const size_t step = Utils::mod(static_cast<size_t>(time * _speed), _notes.size());
+			const int length = _notes.size();
+			const int step = Utils::mod(static_cast<int>(time * _speed), length);
 
 			if (step != _currentStep) {
-				const int oldNote = _notes[Utils::mod(step - 1, _notes.size())];
+				const int oldNote = _notes[Utils::mod(step - 1, length)];
 
 				if (oldNote != -1) {
 					synth->noteOff(oldNote);
