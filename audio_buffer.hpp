@@ -55,4 +55,9 @@ class AudioBuffer : public AudioBufferBase {
 		BufferType *_buffer;
 };
 
+typedef AudioBuffer<uint8_t> AudioBuffer8Bit;
+typedef AudioBuffer<int16_t> AudioBuffer16Bit;
+typedef AudioBuffer<int32_t> AudioBuffer32Bit;
+typedef AudioBuffer<float> AudioBufferFloat;
+
 #endif

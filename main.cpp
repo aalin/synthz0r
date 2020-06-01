@@ -2,9 +2,7 @@
 #include <memory>
 #include <vector>
 #include "engine.hpp"
-#include "pulse_audio.hpp"
-#include "synth.hpp"
-#include "engine.hpp"
+#include "devices/synth.hpp"
 #include "effects/bitcrusher.hpp"
 #include "effects/overdrive.hpp"
 #include "effects/delay.hpp"
@@ -16,11 +14,6 @@ constexpr unsigned int BUFFER_SIZE = 1024 * 1;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
-typedef AudioBuffer<uint8_t> AudioBuffer8Bit;
-typedef AudioBuffer<int16_t> AudioBuffer16Bit;
-typedef AudioBuffer<int32_t> AudioBuffer32Bit;
-typedef AudioBuffer<float> AudioBufferFloat;
-
 int main(int argc, char *argv[]) {
 	try {
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
@@ -28,7 +21,7 @@ int main(int argc, char *argv[]) {
 
 		engine.start();
 
-		auto synth1 = std::make_shared<Synth>(Oscillator::Type::SINE);
+		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
 
 		synth1->amplitude = 1.0;
 		synth1->transpose = 0;
@@ -64,7 +57,7 @@ int main(int argc, char *argv[]) {
 			.setStep(13, NOTE(A,4))
 			.setStep(14, NOTE(G,4));
 
-		auto synth2 = std::make_shared<Synth>(Oscillator::Type::SQUARE);
+		auto synth2 = std::make_shared<Devices::Synth>(Oscillator::Type::SQUARE);
 
 		synth2->amplitude = 0.1;
 		synth2->transpose = -24;
@@ -115,13 +108,13 @@ int main(int argc, char *argv[]) {
 			.setStep(31, NOTE(G,4));
 
 		while (engine.running()) {
-			const float time = engine.getScaledTime();
-			std::cout << "Time: " << time << std::endl;
+			const Timer &timer = engine.timer();
+			std::cout << "Time: " << timer.getSeconds() << std::endl;
 
 			sequencer1.setSpeed(2.0);
-			sequencer1.update(synth1, time);
+			sequencer1.update(timer, synth1);
 			sequencer2.setSpeed(4.0);
-			sequencer2.update(synth2, time);
+			sequencer2.update(timer, synth2);
 
 			engine.update();
 		}

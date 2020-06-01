@@ -1,6 +1,8 @@
 #ifndef EFFECT_HPP
 #define EFFECT_HPP
 
+#include <memory>
+
 namespace Effects {
 class BaseEffect {
 	public:
@@ -8,6 +10,8 @@ class BaseEffect {
 			return value;
 		}
 };
-}
+
+typedef std::shared_ptr<BaseEffect> EffectPtr;
+};
 
 #endif

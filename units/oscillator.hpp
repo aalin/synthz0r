@@ -17,7 +17,9 @@ class Oscillator {
 		: _type(type),
 		  _phase(0) { }
 
-		float update(float frequency, float sampleRate) {
+		float update(float frequency, const Timer &timer) {
+			float sampleRate = timer.getSampleRate();
+
 			switch (_type) {
 				case SINE:
 					return sine(frequency, sampleRate);
@@ -34,6 +36,8 @@ class Oscillator {
 			}
 		}
 
+
+	private:
 		float noise(float frequency, float sampleRate) {
 			updatePhase(frequency, sampleRate);
 			return (rand() / static_cast<float>(RAND_MAX)) * 2.0 - 1.0;
@@ -62,7 +66,6 @@ class Oscillator {
 			}
 		}
 
-	private:
 		float updatePhase(float frequency, float sampleRate) {
 			constexpr float TWO_PI = M_PI * 2.0;
 

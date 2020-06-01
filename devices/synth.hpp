@@ -3,12 +3,13 @@
 
 #include <map>
 #include <list>
-#include "oscillator.hpp"
-#include "device.hpp"
-#include "adsr.hpp"
-#include "effects/base_effect.hpp"
+#include "base_device.hpp"
+#include "../units/oscillator.hpp"
+#include "../units/adsr.hpp"
+#include "../effects/base_effect.hpp"
 
-class Synth : public Device {
+namespace Devices {
+class Synth : public BaseDevice {
 	public:
 		struct Voice {
 				Voice(Oscillator::Type oscillatorType, int note, float velocity, float noteOnTime = 0.0)
@@ -34,7 +35,7 @@ class Synth : public Device {
 			};
 
 			Synth(Oscillator::Type oscillatorType)
-			: Device(),
+			: BaseDevice(),
 			  pitchBendRange(2.0),
 			  transpose(0),
 			  _oscillatorType(oscillatorType)
@@ -44,30 +45,25 @@ class Synth : public Device {
 				_effects.push_back(effect);
 			}
 
-			void noteOn(int note, float velocity = 2.0) {
-				_voices.push_back(Voice(_oscillatorType, note, velocity, _time));
+			void noteOn(const Timer &timer, int note, float velocity = 2.0) {
+				_voices.push_back(Voice(_oscillatorType, note, velocity, timer.getSeconds()));
 			}
 
-			void noteOff(int note) {
+			void noteOff(const Timer &timer, int note) {
 				for (auto &v : _voices) {
 					if (v.note == note && v.noteOffTime < 0.0) {
-						v.noteOffTime = _time;
+						v.noteOffTime = timer.getSeconds();
 					}
 				}
 			}
 
-			float tick(float time, float _sampleRate) {
-				_time = time;
-				return 0.0;
-			}
-
-			float update(float time, float sampleRate, float pitchBend = 0.0) {
+			float update(const Timer &timer, float pitchBend = 0.0) {
 				float sum = 0.0;
 
 				for (auto it = _voices.begin(); it != _voices.end();) {
 					auto const &voice = *it;
 
-					if (envelope.isNoteDone(time, voice.noteOffTime)) {
+					if (envelope.isNoteDone(timer, voice.noteOffTime)) {
 						_voices.erase(it);
 					} else {
 						++it;
@@ -76,8 +72,8 @@ class Synth : public Device {
 
 				for (auto &voice : _voices) {
 					float freq = noteToFrequency(voice.note + transpose + pitchBendRange * pitchBend);
-					float value = voice.oscillator.update(freq, sampleRate);
-					float env = envelope.getValue(time, voice.noteOnTime, voice.noteOffTime);
+					float value = voice.oscillator.update(freq, timer);
+					float env = envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
 					sum += Utils::volume(value * voice.velocity * env * amplitude);
 				}
@@ -95,7 +91,6 @@ class Synth : public Device {
 			int transpose;
 
 	private:
-		float _time;
 		Oscillator::Type _oscillatorType;
 		std::vector<Voice> _voices;
 		std::vector<std::shared_ptr<Effects::BaseEffect> > _effects;
@@ -103,6 +98,7 @@ class Synth : public Device {
 		float noteToFrequency(float note) {
 			return std::pow(2, (note - 69) / 12) * 440.0;
 		}
+};
 };
 
 #endif

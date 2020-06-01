@@ -1,7 +1,7 @@
 #ifndef SEQUENCER_HPP
 #define SEQUENCER_HPP
 
-#include "synth.hpp"
+#include "devices/synth.hpp"
 
 class Sequencer {
 	public:
@@ -32,19 +32,19 @@ class Sequencer {
 			return *this;
 		}
 
-		void update(std::shared_ptr<Synth> synth, float time) {
+		void update(const Timer &timer, std::shared_ptr<Devices::Synth> synth) {
 			const int length = _notes.size();
-			const int step = Utils::mod(static_cast<int>(time * _speed), length);
+			const int step = Utils::mod(static_cast<int>(timer.getSeconds() * _speed), length);
 
 			if (step != _currentStep) {
 				const int oldNote = _notes[Utils::mod(step - 1, length)];
 
 				if (oldNote != -1) {
-					synth->noteOff(oldNote);
+					synth->noteOff(timer, oldNote);
 				}
 
 				if (_notes[step] != -1) {
-					synth->noteOn(_notes[step], _velocity);
+					synth->noteOn(timer, _notes[step], _velocity);
 				}
 
 				_currentStep = step;

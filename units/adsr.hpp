@@ -1,7 +1,8 @@
 #ifndef ADSR_HPP
 #define ADSR_HPP
 
-#include "utils.hpp"
+#include "../utils.hpp"
+#include "../timer.hpp"
 
 class ADSR {
 	public:
@@ -39,15 +40,19 @@ class ADSR {
 			return *this;
 		}
 
-		bool isNoteDone(float time, float noteOffTime) {
-			if (noteOffTime >= 0.0 && time >= noteOffTime) {
-				return time > noteOffTime +_release;
+		bool isNoteDone(const Timer &timer, float noteOffTime) {
+			const float seconds = timer.getSeconds();
+
+			if (noteOffTime >= 0.0 && seconds >= noteOffTime) {
+				return seconds > noteOffTime +_release;
 			}
 
 			return false;
 		}
 
-		float getValue(float time, float noteOnTime, float noteOffTime) {
+		float update(const Timer &timer, float noteOnTime, float noteOffTime) {
+			const float time = timer.getSeconds();
+
 			if (noteOffTime >= 0.0 && time >= noteOffTime) {
 				const float dt = time - noteOffTime;
 
