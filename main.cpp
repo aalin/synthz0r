@@ -38,7 +38,8 @@ int main(int, char *argv[]) {
 		synth1->addEffect(std::make_shared<Effects::Delay>(125, 0.5, 0.5, SAMPLE_RATE));
 		//synth1->addEffect(std::make_shared<Effects::Bitcrusher>(4));
 
-		synth1->addOutput(engine.getOutputDevice());
+		synth1->outputs().add(engine.getOutputDevice());
+
 		engine.addDevice(synth1);
 
 		Sequencer sequencer1(16, 1.0, 1.0);
@@ -75,7 +76,7 @@ int main(int, char *argv[]) {
 		synth2->addEffect(std::make_shared<Effects::Overdrive>(32, 1.0));
 		synth2->addEffect(std::make_shared<Effects::Bitcrusher>(2, 0.02));
 		//synth1->addEffect(std::make_shared<Effects::Delay>(250, 0.9, 0.5, SAMPLE_RATE));
-		synth2->addOutput(engine.getOutputDevice());
+		synth2->outputs().add(engine.getOutputDevice());
 
 		engine.addDevice(synth2);
 

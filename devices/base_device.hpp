@@ -28,14 +28,6 @@ class BaseDevice {
 			return _outputs;
 		}
 
-		void addOutput(DevicePtr output) {
-			_outputs.add(output);
-		}
-
-		void removeOutput(DevicePtr output) {
-			_outputs.remove(output);
-		}
-
 		virtual void input(const Timer &, const float &) {
 			throw "BaseDevice received input";
 		}
