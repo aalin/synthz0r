@@ -7,8 +7,7 @@
 namespace Devices {
 class OutputDevice : public BaseDevice {
 	public:
-		OutputDevice() : BaseDevice() {}
-		const char * name() const { return "OutputDevice"; }
+		OutputDevice() : BaseDevice("Output device") {}
 
 		void input(const Timer &, const float &value) {
 			_stereoSample.add(value);

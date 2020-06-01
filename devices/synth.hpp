@@ -36,14 +36,12 @@ class Synth : public BaseDevice {
 			};
 
 			Synth(Oscillator::Type oscillatorType)
-			: BaseDevice(),
+			: BaseDevice("Synth"),
 			  pitchBendRange(2.0),
 			  transpose(0),
 			  _oscillatorType(oscillatorType),
 			  _panning(0.0)
 			{}
-
-			const char * name() const { return "Synth"; }
 
 			void setPanning(float value) {
 				_panning = value;

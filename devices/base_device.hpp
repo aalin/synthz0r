@@ -12,11 +12,14 @@ typedef std::shared_ptr<BaseDevice> DevicePtr;
 
 class BaseDevice {
 	public:
-		BaseDevice() { }
+		BaseDevice() : _name("BaseDevice") { }
+		BaseDevice(std::string name) : _name(name) { }
 
 		virtual void update(const Timer &, float) { }
 		virtual void update(const Timer &) { }
-		virtual const char * name() const { return "BaseDevice"; }
+
+		std::string name() const { return _name; }
+		void setName(std::string name) { _name = name; }
 
 		void addOutput(DevicePtr output) {
 			_outputs.push_back(output);
@@ -55,6 +58,7 @@ class BaseDevice {
 
 	private:
 		std::list<DevicePtr> _outputs;
+		std::string _name;
 };
 };
 

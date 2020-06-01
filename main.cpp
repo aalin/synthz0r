@@ -23,6 +23,8 @@ int main(int, char *argv[]) {
 
 		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
 
+		synth1->setName("Synth 1");
+
 		synth1->amplitude = 0.7;
 		synth1->transpose = 0;
 		synth1->envelope
@@ -59,6 +61,8 @@ int main(int, char *argv[]) {
 			.setStep(14, NOTE(G,4));
 
 		auto synth2 = std::make_shared<Devices::Synth>(Oscillator::Type::SAW);
+
+		synth1->setName("Synth 2");
 
 		synth2->amplitude = 0.1;
 		synth2->transpose = -12 * 3;
