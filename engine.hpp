@@ -60,7 +60,7 @@ class Engine {
 				_buffer->set(i, sample);
 
 				_outputDevice->reset();
-				_timer.tick();
+				_timer.update();
 			}
 
 			_buffer->write(_pa);

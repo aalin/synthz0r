@@ -76,10 +76,6 @@ class Synth : public BaseDevice {
 					v += Utils::volume(value * voice.velocity * env * amplitude);
 				}
 
-				for (auto &effect : _effects) {
-					v = effect->apply(v);
-				}
-
 				StereoSample out = Utils::pan(v, _panning);
 				output(timer, out);
 			}

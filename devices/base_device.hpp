@@ -2,16 +2,19 @@
 #define DEVICE_HPP
 
 #include <memory>
+#include "base_device/t_outputs.hpp"
 #include "../timer.hpp"
 #include "../stereo_sample.hpp"
 
 namespace Devices {
-
 class BaseDevice;
+
 typedef std::shared_ptr<BaseDevice> DevicePtr;
 
 class BaseDevice {
 	public:
+		typedef TOutputs<DevicePtr> Outputs;
+
 		BaseDevice() : _name("BaseDevice") { }
 		BaseDevice(std::string name) : _name(name) { }
 
@@ -21,18 +24,16 @@ class BaseDevice {
 		std::string name() const { return _name; }
 		void setName(std::string name) { _name = name; }
 
+		Outputs & outputs() {
+			return _outputs;
+		}
+
 		void addOutput(DevicePtr output) {
-			_outputs.push_back(output);
+			_outputs.add(output);
 		}
 
 		void removeOutput(DevicePtr output) {
-			for (auto it = _outputs.begin(); it != _outputs.end();) {
-				if (output == *it) {
-					it = _outputs.erase(it);
-				} else {
-					++it;
-				}
-			}
+			_outputs.remove(output);
 		}
 
 		virtual void input(const Timer &, const float &) {
@@ -45,20 +46,16 @@ class BaseDevice {
 
 	protected:
 		void output(const Timer &timer, const float &value) {
-			for (auto output : _outputs) {
-				output->input(timer, value);
-			}
+			_outputs.output(timer, value);
 		}
 
 		void output(const Timer &timer, const StereoSample &value) {
-			for (auto output : _outputs) {
-				output->input(timer, value);
-			}
+			_outputs.output(timer, value);
 		}
 
 	private:
-		std::list<DevicePtr> _outputs;
 		std::string _name;
+		Outputs _outputs;
 };
 };
 

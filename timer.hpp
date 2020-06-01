@@ -22,7 +22,11 @@ class Timer {
 			_seconds = seconds;
 		}
 
-		void tick() {
+		size_t tick() const {
+			return _tick;
+		}
+
+		void update() {
 			_tick++;
 			_seconds = _tick / _sampleRate;
 		}
