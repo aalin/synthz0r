@@ -8,13 +8,15 @@
 namespace Devices {
 class Variable {
 	public:
-		Variable(std::string name, int minValue, int maxValue, int defaultValue)
+		Variable(std::string name, int minValue, int maxValue, int defaultValue, int &value)
 		: _name(name),
 		  _min(minValue),
 		  _max(maxValue),
 		  _defaultValue(defaultValue),
-		  _value(defaultValue)
-		{ }
+		  _value(value)
+		{
+			_value = defaultValue;
+		}
 
 		const std::string & name() const {
 			return _name;
@@ -46,7 +48,7 @@ class Variable {
 		const int _min;
 		const int _max;
 		const int _defaultValue;
-		int _value;
+		int &_value;
 };
 
 class VariableList {

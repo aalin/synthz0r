@@ -9,12 +9,12 @@ class Delay : public BaseDevice {
 	public:
 		static constexpr size_t BUFFER_SIZE = 1024 * 1024 * 4;
 
-		Delay(int time = 250, int decay = 64, int mix = 0)
+		Delay(int timeMs = 250, int decay = 64, int mix = 0)
 		: BaseDevice(
 			"Delay", {
-				Variable("time", 0, 10000, time),
-				Variable("decay", 0, 128, decay),
-				Variable("mix", -127, 127, mix)
+				Variable("timeMs", 0, 10000, timeMs, _timeMs),
+				Variable("decay", 0, 128, decay, _decay),
+				Variable("mix", -127, 127, mix, _mix)
 			}
 		  )
 		{
@@ -33,21 +33,26 @@ class Delay : public BaseDevice {
 
 	private:
 		StereoSample _buffer[BUFFER_SIZE];
+		int _timeMs;
+		int _decay;
+		int _mix;
 
-		float time() const {
-			return getValue("time") / 1000.0;
+		float timeSeconds() const {
+			return _timeMs / 1000.f;
+		}
+
+		float decay() const {
+			return _decay / 100.f;
 		}
 
 		float mix() const {
-			return getValue("mix") / 127.f;
+			return _mix / 127.f;
 		}
-
-		float decay() const { return getValue("decay") / 100.0; }
 
 		StereoSample apply(const Timer &timer, const StereoSample &sample) {
 			const size_t t = timer.tick() % BUFFER_SIZE;
 
-			const size_t delaySamples = static_cast<size_t>(time() * timer.sampleRate());
+			const size_t delaySamples = static_cast<size_t>(timeSeconds() * timer.sampleRate());
 			const size_t index = Utils::mod(t + delaySamples, BUFFER_SIZE);
 
 			StereoSample out(
