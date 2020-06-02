@@ -1,14 +1,15 @@
 #ifndef AUDIO_BUFFER_HPP
 #define AUDIO_BUFFER_HPP
 
-#include "pa_sample_format.hpp"
 #include "utils.hpp"
 #include "stereo_sample.hpp"
+#include "sample_format.hpp"
+#include "audio_output.hpp"
 
 class AudioBufferBase {
 	public:
-		virtual pa_sample_format_t pulseAudioSampleFormat() const = 0;
-		virtual void write(PulseAudio &pa) = 0;
+		virtual SampleFormat::Type sampleFormat() const = 0;
+		virtual void write(AudioOutputPtr) = 0;
 		virtual size_t size() const = 0;
 		virtual size_t numChannels() const = 0;
 		virtual void set(size_t index, size_t channel, float value) = 0;
@@ -29,12 +30,12 @@ class AudioBuffer : public AudioBufferBase {
 			delete[] _buffer;
 		}
 
-		pa_sample_format_t pulseAudioSampleFormat() const {
-			return PA::SampleFormat<BufferType>::format();
+		SampleFormat::Type sampleFormat() const {
+			return SampleFormat::fromType<BufferType>::type();
 		}
 
-		void write(PulseAudio &pa) {
-			pa.write(_buffer, sizeof(BufferType) * _size);
+		void write(AudioOutputPtr output) {
+			output->write(_buffer, sizeof(BufferType) * _size);
 		}
 
 		size_t size() const {

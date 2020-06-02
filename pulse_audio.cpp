@@ -1,9 +1,29 @@
 #include <iostream>
 #include "pulse_audio.hpp"
 
-PulseAudio::PulseAudio(pa_sample_format_t sampleFormat, const char *name, unsigned int rate, unsigned int channels) : _s(0) {
-	_ss.format = sampleFormat;
-	_ss.rate = rate;
+pa_sample_format getPASampleFormat(SampleFormat::Type sampleFormat) {
+	switch (sampleFormat) {
+		case SampleFormat::Type::UINT8:
+			return PA_SAMPLE_U8;
+		case SampleFormat::Type::INT16:
+			return PA_SAMPLE_S16NE;
+		case SampleFormat::Type::INT32:
+			return PA_SAMPLE_S32NE;
+		case SampleFormat::Type::FLOAT32:
+			return PA_SAMPLE_FLOAT32NE;
+		default:
+			return PA_SAMPLE_INVALID;
+	}
+}
+
+PulseAudio::PulseAudio(
+	SampleFormat::Type sampleFormat,
+	const char *name,
+	unsigned int sampleRate,
+	unsigned int channels
+) {
+	_ss.format = getPASampleFormat(sampleFormat);
+	_ss.rate = sampleRate;
 	_ss.channels = channels;
 
 	int error = 0;

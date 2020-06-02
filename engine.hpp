@@ -16,17 +16,17 @@
 
 class Engine {
 	public:
-		Engine(const char *appName, unsigned int sampleRate, AudioBufferPtr buffer)
+		Engine(unsigned int sampleRate, AudioBufferPtr buffer, AudioOutputPtr audioOutput)
 		: _running(false),
 		  _timer(sampleRate),
-		  _pa(buffer->pulseAudioSampleFormat(), appName, sampleRate, buffer->numChannels()),
+		  _audioOutput(audioOutput),
 		  _sampleRate(sampleRate),
 		  _outputDevice(std::make_shared<Devices::OutputDevice>()),
 		  _buffer(buffer)
 		{ }
 
 		~Engine() {
-			_pa.drain();
+			_audioOutput->drain();
 		}
 
 		const Timer & timer() const {
@@ -63,7 +63,7 @@ class Engine {
 				_timer.update();
 			}
 
-			_buffer->write(_pa);
+			_buffer->write(_audioOutput);
 
 			return _timer.seconds();
 		}
@@ -76,7 +76,7 @@ class Engine {
 		bool _running;
 		Timer _timer;
 
-		PulseAudio _pa;
+		AudioOutputPtr _audioOutput;
 
 		const unsigned int _sampleRate;
 

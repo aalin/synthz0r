@@ -17,7 +17,9 @@ constexpr unsigned int NUM_CHANNELS = 2;
 int main(int, char *argv[]) {
 	try {
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
-		Engine engine(argv[0], SAMPLE_RATE, buffer);
+		auto output = std::make_shared<PulseAudio>(buffer->sampleFormat(), argv[0], SAMPLE_RATE, NUM_CHANNELS);
+
+		Engine engine(SAMPLE_RATE, buffer, output);
 
 		engine.start();
 

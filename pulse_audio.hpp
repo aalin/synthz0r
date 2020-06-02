@@ -3,29 +3,40 @@
 
 #include <pulse/simple.h>
 #include <pulse/error.h>
-#include "pa_sample_format.hpp"
+#include "audio_output.hpp"
+#include "sample_format.hpp"
 
-class PulseAudio {
+class PulseAudio : public AudioOutput {
 	public:
-		PulseAudio(pa_sample_format_t sampleFormat, const char *name, unsigned int rate, unsigned int channels);
+		PulseAudio(
+			SampleFormat::Type sampleFormat,
+			const char *name,
+			unsigned int sampleRate,
+			unsigned int channels
+		);
 
 		~PulseAudio();
 
-		template<typename T>
-		void write(T buf[], unsigned int length) const {
-			int error;
-			pa_simple_write(_s, (void*)buf, length, &error);
-			handleError("pa_simple_write", error);
-		}
+		void write(uint8_t buf[], unsigned int length) const { write2(buf, length); }
+		void write(int16_t buf[], unsigned int length) const { write2(buf, length); }
+		void write(int32_t buf[], unsigned int length) const { write2(buf, length); }
+		void write(float buf[], unsigned int length) const { write2(buf, length); }
 
 		void drain();
 
 	private:
-		pa_simple *_s;
+		pa_simple *_s = 0;
 		pa_sample_spec _ss;
 		pa_usec_t _latency;
 
 		void handleError(const char *function, int error) const;
+
+		template<typename T>
+		void write2(T buf[], unsigned int length) const {
+			int error;
+			pa_simple_write(_s, (void*)buf, length, &error);
+			handleError("pa_simple_write", error);
+		}
 };
 
 #endif
