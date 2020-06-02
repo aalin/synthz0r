@@ -1,6 +1,6 @@
 FILES = $(basename $(wildcard *.cpp))
 OBJS = $(addsuffix .o, $(FILES))
-TARGET = pulsetest
+TARGET = synthz0r
 
 GREEN = "\\033[32m"
 YELLOW = "\\033[33m"
