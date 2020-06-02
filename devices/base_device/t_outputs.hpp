@@ -1,8 +1,10 @@
-#ifndef OUTPUTS_HPP
-#define OUTPUTS_HPP
+#ifndef DEVICES__BASE_DEVICE__OUTPUTS_HPP
+#define DEVICES__BASE_DEVICE__OUTPUTS_HPP
+
+#include "../../stereo_sample.hpp"
+#include "../../timer.hpp"
 
 namespace Devices {
-
 class BaseDevice;
 
 template<typename T>
@@ -12,12 +14,12 @@ class TOutputs {
 			return _outputs;
 		}
 
-		TOutputs<T> & add(T output) {
+		T add(T output) {
 			_outputs.push_back(output);
-			return *this;
+			return output;
 		}
 
-		TOutputs<T> & remove(T output) {
+		void remove(T output) {
 			for (auto it = _outputs.begin(); it != _outputs.end();) {
 				if (output == *it) {
 					it = _outputs.erase(it);
@@ -25,8 +27,6 @@ class TOutputs {
 					++it;
 				}
 			}
-
-			return *this;
 		}
 
 	private:

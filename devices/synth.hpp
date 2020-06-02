@@ -52,13 +52,13 @@ class Synth : public BaseDevice {
 			}
 
 			void noteOn(const Timer &timer, int note, float velocity = 2.0) {
-				_voices.push_back(Voice(_oscillatorType, note, velocity, timer.getSeconds()));
+				_voices.push_back(Voice(_oscillatorType, note, velocity, timer.seconds()));
 			}
 
 			void noteOff(const Timer &timer, int note) {
 				for (auto &v : _voices) {
 					if (v.note == note && v.noteOffTime < 0.0) {
-						v.noteOffTime = timer.getSeconds();
+						v.noteOffTime = timer.seconds();
 					}
 				}
 			}

@@ -65,7 +65,7 @@ class Engine {
 
 			_buffer->write(_pa);
 
-			return _timer.getSeconds();
+			return _timer.seconds();
 		}
 
 		void stop() {

@@ -18,7 +18,7 @@ class Oscillator {
 		  _phase(0) { }
 
 		float update(float frequency, const Timer &timer) {
-			float sampleRate = timer.getSampleRate();
+			float sampleRate = timer.sampleRate();
 
 			switch (_type) {
 				case SINE:

@@ -9,11 +9,11 @@ class Timer {
 		  _sampleRate(sampleRate)
 		{}
 
-		float getSampleRate() const {
+		float sampleRate() const {
 			return _sampleRate;
 		}
 
-		float getSeconds() const {
+		float seconds() const {
 			return _seconds;
 		}
 

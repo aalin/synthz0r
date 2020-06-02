@@ -41,7 +41,7 @@ class ADSR {
 		}
 
 		bool isNoteDone(const Timer &timer, float noteOffTime) {
-			const float seconds = timer.getSeconds();
+			const float seconds = timer.seconds();
 
 			if (noteOffTime >= 0.0 && seconds >= noteOffTime) {
 				return seconds > noteOffTime +_release;
@@ -51,7 +51,7 @@ class ADSR {
 		}
 
 		float update(const Timer &timer, float noteOnTime, float noteOffTime) {
-			const float time = timer.getSeconds();
+			const float time = timer.seconds();
 
 			if (noteOffTime >= 0.0 && time >= noteOffTime) {
 				const float dt = time - noteOffTime;

@@ -34,7 +34,7 @@ class Sequencer {
 
 		void update(const Timer &timer, std::shared_ptr<Devices::Synth> synth) {
 			const int length = _notes.size();
-			const int step = Utils::mod(static_cast<int>(timer.getSeconds() * _speed), length);
+			const int step = Utils::mod(static_cast<int>(timer.seconds() * _speed), length);
 
 			if (step != _currentStep) {
 				const int oldNote = _notes[Utils::mod(step - 1, length)];
