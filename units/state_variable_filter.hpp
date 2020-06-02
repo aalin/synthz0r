@@ -26,11 +26,12 @@ struct StateVariableFilter {
 
 	float update(const Timer &timer, float input) {
 		float cutoffHz = _cutoffHz / 100.0;
-		float resonance = _resonance / 1000.0;
-		float bandwidth = _bandwidth / 1000.0;
+		float resonance = _resonance / 10.0;
+		//float bandwidth = _bandwidth / 10.0;
 
 		float f = 2.0 * std::sin(M_PI * cutoffHz / timer.sampleRate());
-		float q = Utils::clamp(resonance / bandwidth, 0.0f, 1.0f);
+		//float q = Utils::clamp(resonance / bandwidth, 0.0f, 1.0f);
+		float q = std::sqrt(1.0f - std::atan(std::sqrt(resonance)) * 2.0 / M_PI);
 		float scale = std::sqrt(q);
 
 		state.low = state.low + f * state.band;

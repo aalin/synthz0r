@@ -75,6 +75,11 @@ namespace Utils {
 	float rsin(float v, float min = 0.0, float max = 1.0) {
 		return (std::sin(v) / 2.0 + 0.5) * (max - min) + min;
 	}
+
+	// Ranged cos, returns a cosine wave between min and max
+	float rcos(float v, float min = 0.0, float max = 1.0) {
+		return (std::cos(v) / 2.0 + 0.5) * (max - min) + min;
+	}
 };
 
 #endif

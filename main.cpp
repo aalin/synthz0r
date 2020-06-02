@@ -10,6 +10,9 @@
 #include "sequencer.hpp"
 #include "note.hpp"
 
+#include "pulse_audio.hpp"
+#include "file_output.hpp"
+
 constexpr unsigned int BUFFER_SIZE = 1024 * 1;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
@@ -17,11 +20,38 @@ constexpr unsigned int NUM_CHANNELS = 2;
 int main(int, char *argv[]) {
 	try {
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
-		auto output = std::make_shared<PulseAudio>(buffer->sampleFormat(), argv[0], SAMPLE_RATE, NUM_CHANNELS);
+
+		// auto output = std::make_shared<FileOutput>("out.wav", buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+		auto output = std::make_shared<PulseAudio>(argv[0], buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
 
 		Engine engine(SAMPLE_RATE, buffer, output);
 
 		engine.start();
+
+		auto snare = std::make_shared<Devices::Synth>(Oscillator::Type::NOISE);
+		snare->set("amplitude", 10);
+		snare->set("transpose", 0);
+		snare->set("envelope.attackMs", 50);
+		snare->set("envelope.decayMs", 100);
+		snare->set("envelope.sustain", 0);
+		snare->set("envelope.releaseMs", 50);
+		snare->set("filter.enabled", 0);
+		snare->set("filter.type", 1);
+		snare->set("filter.cutoffHz", 3000);
+		snare->set("filter.resonance", 300);
+
+		engine.addDevice(snare);
+
+		snare->outputs()
+			.add(std::make_shared<Devices::Delay>(150, 100, 50))->outputs()
+			.add(engine.getOutputDevice());
+
+		Sequencer snareSeq(4, 1.0, 1.0);
+
+		snareSeq
+			.setStep(0, NOTE(C,4))
+			.setStep(2, NOTE(C,4))
+			.setStep(3, NOTE(C,4));
 
 		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
 
@@ -31,20 +61,21 @@ int main(int, char *argv[]) {
 			std::cout << param << std::endl;
 		}
 
-		synth1->set("amplitude", 100);
+		synth1->set("amplitude", 50);
 		synth1->set("transpose", 0);
 		synth1->set("envelope.attackMs", 100);
 		synth1->set("envelope.decayMs", 100);
 		synth1->set("envelope.sustain", 0);
 		synth1->set("envelope.releaseMs", 50);
 
-		synth1->set("filter.cutoffHz", 4000);
-		synth1->set("filter.resonance", 1000);
-		synth1->set("filter.bandwidth", 500);
+		synth1->set("filter.enabled", 1);
 		synth1->set("filter.type", 1);
+		synth1->set("filter.cutoffHz", 5000);
+		synth1->set("filter.resonance", 400);
+		synth1->set("filter.bandwidth", 450);
 
 		synth1->outputs()
-			.add(std::make_shared<Devices::Overdrive>(64, 128))->outputs()
+			.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
 			.add(std::make_shared<Devices::Delay>(250, 100, 90))->outputs()
 			.add(engine.getOutputDevice());
 
@@ -80,10 +111,8 @@ int main(int, char *argv[]) {
 		synth2->set("envelope.sustain", 100);
 		synth2->set("envelope.releaseMs", 50);
 
-		synth1->set("filter.cutoffHz", 7000);
-		synth1->set("filter.resonance", 500);
-		synth1->set("filter.bandwidth", 500);
-		synth1->set("filter.type", 0);
+		synth2->set("filter.cutoffHz", 5000);
+		synth2->set("filter.resonance", 200);
 
 		synth2->outputs()
 			//.add(std::make_shared<Devices::Bitcrusher>(4, 20))->outputs()
@@ -133,18 +162,19 @@ int main(int, char *argv[]) {
 
 			synth1->set("panning", Utils::rsin(timer.seconds(), -127, 127));
 
-			synth2->set("filter.cutoffHz", Utils::rsin(timer.seconds() * 2.0, 2000, 10000));
-			synth2->set("filter.resonance", Utils::rsin(timer.seconds() / 2.0, 0, 1000));
-			synth2->set("filter.bandwidth", Utils::rsin(timer.seconds() / 4.0, 0, 1000));
-
+			snareSeq.setSpeed(8.0);
 			sequencer1.setSpeed(2.0);
 			sequencer2.setSpeed(4.0);
 
 			sequencer1.update(timer, synth1);
-
 			sequencer2.update(timer, synth2);
+			snareSeq.update(timer, snare);
 
 			engine.update();
+
+			if (timer.seconds() > 60) {
+				engine.stop();
+			}
 		}
 	} catch (const char *msg) {
 		std::cerr << "Error: " << msg << std::endl;

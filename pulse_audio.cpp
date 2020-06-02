@@ -17,8 +17,8 @@ pa_sample_format getPASampleFormat(SampleFormat::Type sampleFormat) {
 }
 
 PulseAudio::PulseAudio(
-	SampleFormat::Type sampleFormat,
 	const char *name,
+	SampleFormat::Type sampleFormat,
 	unsigned int sampleRate,
 	unsigned int channels
 ) {

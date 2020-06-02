@@ -19,16 +19,12 @@ struct fromType {
 
 template<>
 struct fromType<uint8_t> {
-	static SampleFormat::Type type() {
-		return Type::UINT8;
-	}
+	static SampleFormat::Type type() { return Type::UINT8; }
 };
 
 template<>
 struct fromType<int16_t> {
-	static SampleFormat::Type type() {
-		return Type::INT16;
-	}
+	static SampleFormat::Type type() { return Type::INT16; }
 };
 
 template<>
@@ -44,6 +40,25 @@ struct fromType<float> {
 		return Type::FLOAT32;
 	}
 };
+
+inline unsigned int bytesPerSample(SampleFormat::Type type) {
+	switch (type) {
+		case Type::UINT8:
+			return 1;
+		case Type::INT16:
+			return 2;
+		case Type::INT32:
+			return 4;
+		case Type::FLOAT32:
+			return 4;
+		default:
+			return 0;
+	}
+}
+
+inline unsigned int bitsPerSample(SampleFormat::Type type) {
+	return bytesPerSample(type) * 8;
+}
 };
 
 #endif

@@ -98,7 +98,7 @@ class Synth : public BaseDevice {
 		Oscillator::Type _oscillatorType;
 
 		float amplitude() {
-			return _amplitude / 128.0;
+			return _amplitude / 100.0;
 		}
 
 		float panning() {

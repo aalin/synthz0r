@@ -9,18 +9,18 @@
 class PulseAudio : public AudioOutput {
 	public:
 		PulseAudio(
-			SampleFormat::Type sampleFormat,
 			const char *name,
+			SampleFormat::Type sampleFormat,
 			unsigned int sampleRate,
 			unsigned int channels
 		);
 
 		~PulseAudio();
 
-		void write(uint8_t buf[], unsigned int length) const { write2(buf, length); }
-		void write(int16_t buf[], unsigned int length) const { write2(buf, length); }
-		void write(int32_t buf[], unsigned int length) const { write2(buf, length); }
-		void write(float buf[], unsigned int length) const { write2(buf, length); }
+		void write(uint8_t buf[], unsigned int length) { write2(buf, length); }
+		void write(int16_t buf[], unsigned int length) { write2(buf, length); }
+		void write(int32_t buf[], unsigned int length) { write2(buf, length); }
+		void write(float buf[], unsigned int length) { write2(buf, length); }
 
 		void drain();
 
