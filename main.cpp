@@ -5,7 +5,7 @@
 #include "devices/synth.hpp"
 #include "devices/delay.hpp"
 #include "devices/overdrive.hpp"
-#include "effects/bitcrusher.hpp"
+#include "devices/bitcrusher.hpp"
 #include "utils.hpp"
 #include "sequencer.hpp"
 #include "note.hpp"
@@ -33,13 +33,9 @@ int main(int, char *argv[]) {
 			.setSustain(0.0)
 			.setRelease(0.05);
 
-		//synth1->addEffect(std::make_shared<Effects::Delay>(250, 0.8, 0.8, SAMPLE_RATE));
-		//synth1->addEffect(std::make_shared<Effects::Delay>(125, 0.5, 0.5, SAMPLE_RATE));
-		//synth1->addEffect(std::make_shared<Effects::Bitcrusher>(4));
-
 		synth1->outputs()
-			.add(std::make_shared<Devices::Delay>(250, 0.8, 0.5))->outputs()
 			.add(std::make_shared<Devices::Overdrive>(8, 1.0))->outputs()
+			.add(std::make_shared<Devices::Delay>(250, 0.95, 0.8))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
@@ -75,10 +71,9 @@ int main(int, char *argv[]) {
 			.setSustain(0.1)
 			.setRelease(0.05);
 
-		// synth2->addEffect(std::make_shared<Effects::Overdrive>(32, 1.0));
-		synth2->addEffect(std::make_shared<Effects::Bitcrusher>(2, 0.02));
-		//synth1->addEffect(std::make_shared<Effects::Delay>(250, 0.9, 0.5, SAMPLE_RATE));
-		synth2->outputs().add(engine.getOutputDevice());
+		synth2->outputs()
+			.add(std::make_shared<Devices::Bitcrusher>(8, 0.5))->outputs()
+			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth2);
 

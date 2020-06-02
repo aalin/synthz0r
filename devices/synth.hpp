@@ -6,7 +6,6 @@
 #include "base_device.hpp"
 #include "../units/oscillator.hpp"
 #include "../units/adsr.hpp"
-#include "../effects/base_effect.hpp"
 #include "../stereo_sample.hpp"
 
 namespace Devices {
@@ -47,10 +46,6 @@ class Synth : public BaseDevice {
 				_panning = value;
 			}
 
-			void addEffect(std::shared_ptr<Effects::BaseEffect> effect) {
-				_effects.push_back(effect);
-			}
-
 			void noteOn(const Timer &timer, int note, float velocity = 2.0) {
 				_voices.push_back(Voice(_oscillatorType, note, velocity, timer.seconds()));
 			}
@@ -88,7 +83,6 @@ class Synth : public BaseDevice {
 	private:
 		Oscillator::Type _oscillatorType;
 		std::vector<Voice> _voices;
-		std::vector<std::shared_ptr<Effects::BaseEffect> > _effects;
 		float _panning;
 
 		void removeFinishedVoices(const Timer &timer) {
