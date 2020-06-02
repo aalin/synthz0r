@@ -4,6 +4,7 @@
 #include <vector>
 #include "base_device.hpp"
 #include "../units/oscillator.hpp"
+#include "../units/state_variable_filter.hpp"
 #include "../units/adsr.hpp"
 #include "../stereo_sample.hpp"
 
@@ -43,7 +44,12 @@ class Synth : public BaseDevice {
 			Parameter("envelope.attackMs", 0, 1000, 150, _envelope._attackMs),
 			Parameter("envelope.decayMs", 0, 1000, 0, _envelope._decayMs),
 			Parameter("envelope.sustain", 0, 127, 0, _envelope._sustain),
-			Parameter("envelope.releaseMs", 0, 1000, 0, _envelope._releaseMs)
+			Parameter("envelope.releaseMs", 0, 1000, 0, _envelope._releaseMs),
+			Parameter("filter.enabled", 0, 1, 1, _filterEnabled),
+			Parameter("filter.cutoffHz", 0, 10000, 8000, _filter._cutoffHz),
+			Parameter("filter.resonance", 0, 1000, 200, _filter._resonance),
+			Parameter("filter.bandwidth", 0, 1000, 500, _filter._bandwidth),
+			Parameter("filter.type", 0, 4, 0, reinterpret_cast<int&>(_filter._type)),
 		  })
 		{}
 
@@ -72,6 +78,10 @@ class Synth : public BaseDevice {
 				v += Utils::volume(value * voice.velocity * env * amplitude());
 			}
 
+			if (_filterEnabled) {
+				v = _filter.update(timer, v);
+			}
+
 			StereoSample out = Utils::pan(v, panning());
 			output(timer, out);
 		}
@@ -79,10 +89,12 @@ class Synth : public BaseDevice {
 
 	private:
 		ADSR _envelope;
+		StateVariableFilter _filter;
 		int _amplitude;
 		int _pitchBendRange;
 		int _transpose;
 		int _panning;
+		int _filterEnabled;
 		Oscillator::Type _oscillatorType;
 
 		float amplitude() {

@@ -40,6 +40,7 @@ class Parameter {
 
 		const Parameter & setValue(int newValue) {
 			_value = Utils::clamp(newValue, _min, _max);
+			std::cout << "Setting " << _name << " to " << _value << std::endl;
 			return *this;
 		}
 
@@ -91,7 +92,7 @@ class ParameterList {
 			auto var = _parameters.find(name);
 
 			if (var == _parameters.end()) {
-				std::cerr << "Tried to set parameter" << name << std::endl;
+				std::cerr << "Tried to get parameter" << name << std::endl;
 				throw "Unknown parameter name";
 			}
 
@@ -102,7 +103,7 @@ class ParameterList {
 			auto var = _parameters.find(name);
 
 			if (var == _parameters.end()) {
-				std::cerr << "Tried to set parameter" << name << std::endl;
+				std::cerr << "Tried to get parameter" << name << std::endl;
 				throw "Unknown parameter name";
 			}
 

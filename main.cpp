@@ -36,8 +36,13 @@ int main(int, char *argv[]) {
 		synth1->set("envelope.sustain", 0);
 		synth1->set("envelope.releaseMs", 50);
 
+		synth1->set("filter.cutoffHz", 4000);
+		synth1->set("filter.resonance", 1000);
+		synth1->set("filter.bandwidth", 500);
+		synth1->set("filter.type", 1);
+
 		synth1->outputs()
-			.add(std::make_shared<Devices::Overdrive>(16, 100))->outputs()
+			.add(std::make_shared<Devices::Overdrive>(64, 128))->outputs()
 			.add(std::make_shared<Devices::Delay>(250, 100, 90))->outputs()
 			.add(engine.getOutputDevice());
 
@@ -73,8 +78,13 @@ int main(int, char *argv[]) {
 		synth2->set("envelope.sustain", 100);
 		synth2->set("envelope.releaseMs", 50);
 
+		synth1->set("filter.cutoffHz", 7000);
+		synth1->set("filter.resonance", 500);
+		synth1->set("filter.bandwidth", 500);
+		synth1->set("filter.type", 0);
+
 		synth2->outputs()
-			.add(std::make_shared<Devices::Bitcrusher>(8, 20))->outputs()
+			//.add(std::make_shared<Devices::Bitcrusher>(4, 20))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth2);
@@ -119,9 +129,11 @@ int main(int, char *argv[]) {
 			const Timer &timer = engine.timer();
 			std::cout << "Time: " << timer.seconds() << std::endl;
 
-			float pan = std::sin(timer.seconds() / 1.0);
-			std::cout << "Pan " << pan << std::endl;
-			synth1->set("panning", pan);
+			synth1->set("panning", Utils::rsin(timer.seconds(), -127, 127));
+
+			synth2->set("filter.cutoffHz", Utils::rsin(timer.seconds() * 2.0, 2000, 10000));
+			synth2->set("filter.resonance", Utils::rsin(timer.seconds() / 2.0, 0, 1000));
+			synth2->set("filter.bandwidth", Utils::rsin(timer.seconds() / 4.0, 0, 1000));
 
 			sequencer1.setSpeed(2.0);
 			sequencer2.setSpeed(4.0);

@@ -60,8 +60,8 @@ namespace Utils {
 		const float s = std::cos(r);
 
 		StereoSample out(
-			value * x * (c + s),
-			value * x * (c - s)
+			value * x * (c - s),
+			value * x * (c + s)
 		);
 
 		return out;
@@ -69,6 +69,11 @@ namespace Utils {
 
 	float noteToFrequency(float note) {
 		return std::pow(2, (note - 69) / 12) * 440.0;
+	}
+
+	// Ranged sin, returns a sine wave between min and max
+	float rsin(float v, float min = 0.0, float max = 1.0) {
+		return (std::sin(v) / 2.0 + 0.5) * (max - min) + min;
 	}
 };
 
