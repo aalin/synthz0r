@@ -1,8 +1,7 @@
 #ifndef SYNTH_HPP
 #define SYNTH_HPP
 
-#include <map>
-#include <list>
+#include <vector>
 #include "base_device.hpp"
 #include "../units/oscillator.hpp"
 #include "../units/adsr.hpp"
@@ -36,15 +35,15 @@ class Synth : public BaseDevice {
 
 		Synth(Oscillator::Type oscillatorType)
 		: BaseDevice("Synth", {
-			Variable("pitchBendRange", 0, 24, 2, _pitchBendRange),
-			Variable("transpose", -24, 24, 2, _transpose),
-			Variable("oscillatorType", 0, 5, oscillatorType, reinterpret_cast<int&>(_oscillatorType)),
-			Variable("panning", -127, 127, 0, _panning),
-			Variable("amplitude", 0, 128, 0, _amplitude),
-			Variable("envelope.attackMs", 0, 1000, 150, _envelope._attackMs),
-			Variable("envelope.decayMs", 0, 1000, 0, _envelope._decayMs),
-			Variable("envelope.sustain", 0, 127, 0, _envelope._sustain),
-			Variable("envelope.releaseMs", 0, 1000, 0, _envelope._releaseMs)
+			Parameter("pitchBendRange", 0, 24, 2, _pitchBendRange),
+			Parameter("transpose", -24, 24, 2, _transpose),
+			Parameter("oscillatorType", 0, 5, oscillatorType, reinterpret_cast<int&>(_oscillatorType)),
+			Parameter("panning", -127, 127, 0, _panning),
+			Parameter("amplitude", 0, 128, 0, _amplitude),
+			Parameter("envelope.attackMs", 0, 1000, 150, _envelope._attackMs),
+			Parameter("envelope.decayMs", 0, 1000, 0, _envelope._decayMs),
+			Parameter("envelope.sustain", 0, 127, 0, _envelope._sustain),
+			Parameter("envelope.releaseMs", 0, 1000, 0, _envelope._releaseMs)
 		  })
 		{}
 

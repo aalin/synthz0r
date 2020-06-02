@@ -6,9 +6,9 @@
 #include "../../utils.hpp"
 
 namespace Devices {
-class Variable {
+class Parameter {
 	public:
-		Variable(std::string name, int minValue, int maxValue, int defaultValue, int &value)
+		Parameter(std::string name, int minValue, int maxValue, int defaultValue, int &value)
 		: _name(name),
 		  _min(minValue),
 		  _max(maxValue),
@@ -38,7 +38,7 @@ class Variable {
 			return _value;
 		}
 
-		const Variable & setValue(int newValue) {
+		const Parameter & setValue(int newValue) {
 			_value = Utils::clamp(newValue, _min, _max);
 			return *this;
 		}
@@ -51,39 +51,66 @@ class Variable {
 		int &_value;
 };
 
-class VariableList {
+std::ostream & operator<<(std::ostream &out, const Parameter &p) {
+	out <<
+		"Parameter(" << p.name() <<
+		" [" << p.min() << ".." << p.max() << "] " <<
+		" " << p.value() << ")";
+	return out;
+}
+
+class ParameterList {
+	typedef std::map<std::string, Parameter> ParameterMap;
+
+	struct value_iterator : public ParameterMap::const_iterator {
+		value_iterator(ParameterMap::const_iterator it)
+		: ParameterMap::const_iterator(std::move(it))
+		{}
+
+		const Parameter & operator*() const {
+			return ParameterMap::const_iterator::operator*().second;
+		}
+	};
+
 	public:
-		VariableList(std::initializer_list<Variable> vars) {
-			for (Variable var : vars) {
-				std::cout << "Inserting variable " << var.name() << std::endl;
-				_variables.insert({var.name(), var});
+		ParameterList(std::initializer_list<Parameter> vars) {
+			for (Parameter var : vars) {
+				_parameters.insert({var.name(), var});
 			}
 		}
 
-		const Variable & get(std::string name) const {
-			auto var = _variables.find(name);
+		value_iterator begin() const {
+			return value_iterator(_parameters.begin());
+		}
 
-			if (var == _variables.end()) {
-				std::cerr << "Tried to set variable" << name << std::endl;
-				throw "Unknown variable name";
+		value_iterator end() const {
+			return value_iterator(_parameters.end());
+		}
+
+		const Parameter & get(std::string name) const {
+			auto var = _parameters.find(name);
+
+			if (var == _parameters.end()) {
+				std::cerr << "Tried to set parameter" << name << std::endl;
+				throw "Unknown parameter name";
 			}
 
 			return var->second;
 		}
 
-		Variable & get(std::string name) {
-			auto var = _variables.find(name);
+		Parameter & get(std::string name) {
+			auto var = _parameters.find(name);
 
-			if (var == _variables.end()) {
-				std::cerr << "Tried to set variable" << name << std::endl;
-				throw "Unknown variable name";
+			if (var == _parameters.end()) {
+				std::cerr << "Tried to set parameter" << name << std::endl;
+				throw "Unknown parameter name";
 			}
 
 			return var->second;
 		}
 
 	private:
-		std::map<std::string, Variable> _variables;
+		ParameterMap _parameters;
 };
 };
 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include <vector>
+#include <list>
 #include "engine.hpp"
 #include "devices/synth.hpp"
 #include "devices/delay.hpp"
@@ -15,7 +15,7 @@ constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
 int main(int, char *argv[]) {
-	//try {
+	try {
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
 		Engine engine(argv[0], SAMPLE_RATE, buffer);
 
@@ -24,6 +24,10 @@ int main(int, char *argv[]) {
 		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
 
 		synth1->setName("Synth 1");
+
+		for (const auto &param : synth1->parameters()) {
+			std::cout << param << std::endl;
+		}
 
 		synth1->set("amplitude", 100);
 		synth1->set("transpose", 0);
@@ -128,10 +132,10 @@ int main(int, char *argv[]) {
 
 			engine.update();
 		}
-//	} catch (const char *msg) {
-//		std::cerr << "Error: " << msg << std::endl;
-//		return 1;
-//	}
+	} catch (const char *msg) {
+		std::cerr << "Error: " << msg << std::endl;
+		return 1;
+	}
 
 	return 0;
 }

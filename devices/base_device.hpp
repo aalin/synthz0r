@@ -16,9 +16,9 @@ class BaseDevice {
 	public:
 		typedef TOutputs<DevicePtr> Outputs;
 
-		BaseDevice(std::string name, std::initializer_list<Variable> vars = {})
+		BaseDevice(std::string name, std::initializer_list<Parameter> vars = {})
 		: _name(name),
-		  _variables(vars)
+		  _parameters(vars)
 		{ }
 
 		virtual void update(const Timer &, float) { }
@@ -39,16 +39,16 @@ class BaseDevice {
 			throw "BaseDevice received input";
 		}
 
-		const VariableList & variables() const {
-			return _variables;
+		const ParameterList & parameters() const {
+			return _parameters;
 		}
 
 		const int & get(const std::string &var) const {
-			return _variables.get(var).value();
+			return _parameters.get(var).value();
 		}
 
 		void set(const std::string &var, int value) {
-			_variables.get(var).setValue(value);
+			_parameters.get(var).setValue(value);
 		}
 
 	protected:
@@ -63,7 +63,7 @@ class BaseDevice {
 	private:
 		std::string _name;
 		Outputs _outputs;
-		VariableList _variables;
+		ParameterList _parameters;
 };
 };
 
