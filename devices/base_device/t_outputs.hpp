@@ -1,5 +1,5 @@
-#ifndef DEVICES__BASE_DEVICE__OUTPUTS_HPP
-#define DEVICES__BASE_DEVICE__OUTPUTS_HPP
+#ifndef DEVICES__BASE_DEVICE__T_OUTPUTS_HPP
+#define DEVICES__BASE_DEVICE__T_OUTPUTS_HPP
 
 #include "../../stereo_sample.hpp"
 #include "../../timer.hpp"

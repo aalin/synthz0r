@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "base_device/t_outputs.hpp"
+#include "base_device/variable_list.hpp"
 #include "../timer.hpp"
 #include "../stereo_sample.hpp"
 
@@ -15,8 +16,10 @@ class BaseDevice {
 	public:
 		typedef TOutputs<DevicePtr> Outputs;
 
-		BaseDevice() : _name("BaseDevice") { }
-		BaseDevice(std::string name) : _name(name) { }
+		BaseDevice(std::string name, std::initializer_list<Variable> vars = {})
+		: _name(name),
+		  _variables(vars)
+		{ }
 
 		virtual void update(const Timer &, float) { }
 		virtual void update(const Timer &) { }
@@ -36,6 +39,18 @@ class BaseDevice {
 			throw "BaseDevice received input";
 		}
 
+		const VariableList & variables() const {
+			return _variables;
+		}
+
+		const int & getValue(const std::string &var) const {
+			return _variables.get(var).value();
+		}
+
+		void setValue(const std::string &var, int &value) {
+			_variables.get(var).setValue(value);
+		}
+
 	protected:
 		void output(const Timer &timer, const float &value) {
 			_outputs.output(timer, value);
@@ -48,6 +63,7 @@ class BaseDevice {
 	private:
 		std::string _name;
 		Outputs _outputs;
+		VariableList _variables;
 };
 };
 

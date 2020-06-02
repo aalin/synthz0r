@@ -34,8 +34,8 @@ int main(int, char *argv[]) {
 			.setRelease(0.05);
 
 		synth1->outputs()
-			.add(std::make_shared<Devices::Overdrive>(8, 1.0))->outputs()
-			.add(std::make_shared<Devices::Delay>(250, 0.95, 0.8))->outputs()
+			.add(std::make_shared<Devices::Overdrive>(16, 0.8))->outputs()
+			.add(std::make_shared<Devices::Delay>(250, 100, 80))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
