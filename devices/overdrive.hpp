@@ -7,11 +7,12 @@
 namespace Devices {
 class Overdrive : public BaseDevice {
 	public:
-		Overdrive(float gain = 1.0, float volume = 1.0)
-		: BaseDevice("Overdrive"),
-		  _gain(gain),
-		  _volume(volume)
-		{ }
+		Overdrive(int gain = 50, int volume = 100)
+		: BaseDevice("Overdrive", {
+			Variable("gain", 0, 100, gain, _gain),
+			Variable("volume", 0, 128, volume, _volume),
+		  })
+		{}
 
 		void input(const Timer &timer, const float &value) {
 			output(timer, apply(value));
@@ -28,11 +29,19 @@ class Overdrive : public BaseDevice {
 		}
 
 	private:
-		float _gain;
-		float _volume;
+		int _gain;
+		int _volume;
+
+		float gain() {
+			return _gain / 10.f;
+		}
+
+		float volume() {
+			return _volume / 100.f;
+		}
 
 		float apply(const float &value) {
-			return Utils::clamp(value * _gain, -1.0f, 1.0f) * _volume;
+			return Utils::clamp(value * gain(), -1.0f, 1.0f) * volume();
 		}
 };
 };

@@ -7,11 +7,12 @@
 namespace Devices {
 class Bitcrusher : public BaseDevice {
 	public:
-		Bitcrusher(uint8_t bits = 2, float volume = 1.0)
-		: BaseDevice("Bitcrusher"),
-		  _bits(bits),
-		  _volume(volume)
-		{ }
+		Bitcrusher(int bits = 4, int volume = 100)
+		: BaseDevice("Bitcrusher", {
+			Variable("gain", 0, 100, bits, _bits),
+			Variable("volume", 0, 128, volume, _volume),
+		})
+		{}
 
 		void input(const Timer &timer, const float &value) {
 			output(timer, apply(value));
@@ -28,13 +29,17 @@ class Bitcrusher : public BaseDevice {
 		}
 
 	private:
-		uint8_t _bits;
-		float _volume;
+		int _bits;
+		int _volume;
+
+		float volume() const {
+			return _volume / 100.f;
+		}
 
 		float apply(const float &value) {
 			float max = pow(_bits, 2);
 			int clamped = Utils::clamp(value * max, -max, max);
-			return (clamped / max) * _volume;
+			return (clamped / max) * volume();
 		}
 };
 }

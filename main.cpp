@@ -27,14 +27,14 @@ int main(int, char *argv[]) {
 
 		synth1->set("amplitude", 100);
 		synth1->set("transpose", 0);
-		synth1->set("envelope.attackMs", 200);
+		synth1->set("envelope.attackMs", 100);
 		synth1->set("envelope.decayMs", 100);
 		synth1->set("envelope.sustain", 0);
 		synth1->set("envelope.releaseMs", 50);
 
 		synth1->outputs()
-			.add(std::make_shared<Devices::Overdrive>(16, 0.8))->outputs()
-			.add(std::make_shared<Devices::Delay>(250, 100, 80))->outputs()
+			.add(std::make_shared<Devices::Overdrive>(16, 100))->outputs()
+			.add(std::make_shared<Devices::Delay>(250, 100, 90))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
@@ -70,7 +70,7 @@ int main(int, char *argv[]) {
 		synth2->set("envelope.releaseMs", 50);
 
 		synth2->outputs()
-			.add(std::make_shared<Devices::Bitcrusher>(8, 0.5))->outputs()
+			.add(std::make_shared<Devices::Bitcrusher>(8, 20))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth2);
