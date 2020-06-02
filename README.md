@@ -1,6 +1,6 @@
 # synthz0r
 
-Simple synth engine
+Simple synth engine. The goal is to have something that is easily controlled via Websockets, so that UIs can be made for browsers, or whatever that supports it.
 
 ## Dependencies
 
@@ -13,7 +13,6 @@ Simple synth engine
 
 ## Todo
 
-* Make all devices use variables (see the constructor for Synth in devices/synth.hpp)
 * MIDI-messages
 * Websocket API for creating/connecting/controlling devices
 * Filters (hipass, lowpass, bandpass)
