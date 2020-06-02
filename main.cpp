@@ -63,7 +63,7 @@ int main(int, char *argv[]) {
 
 		synth1->setName("Synth 2");
 
-		synth2->amplitude = 0.1;
+		synth2->amplitude = 0.5;
 		synth2->transpose = -12 * 3;
 		synth2->envelope
 			.setAttack(0.15)

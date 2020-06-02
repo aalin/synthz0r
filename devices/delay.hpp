@@ -28,11 +28,11 @@ class Delay : public BaseDevice {
 		}
 
 		void input(const Timer &timer, const StereoSample &sample) {
-			output(timer, StereoSample(apply(timer, sample.mono())));
+			output(timer, apply(timer, sample));
 		}
 
 	private:
-		float _buffer[BUFFER_SIZE];
+		StereoSample _buffer[BUFFER_SIZE];
 
 		float time() const {
 			return getValue("time") / 1000.0;
@@ -44,17 +44,21 @@ class Delay : public BaseDevice {
 
 		float decay() const { return getValue("decay") / 100.0; }
 
-		float apply(const Timer &timer, const float &value) {
+		StereoSample apply(const Timer &timer, const StereoSample &sample) {
 			const size_t t = timer.tick() % BUFFER_SIZE;
 
 			const size_t delaySamples = static_cast<size_t>(time() * timer.sampleRate());
 			const size_t index = Utils::mod(t + delaySamples, BUFFER_SIZE);
 
-			const float v = Utils::lerp(value, _buffer[t], mix());
+			StereoSample out(
+				Utils::lerp(sample.left, _buffer[t].left, mix()),
+				Utils::lerp(sample.right, _buffer[t].right, mix())
+			);
 
-			_buffer[index] = v * decay();
+			_buffer[index].left = out.left * decay();
+			_buffer[index].right = out.right * decay();
 
-			return v;
+			return out;
 		}
 };
 };
