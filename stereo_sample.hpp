@@ -57,8 +57,13 @@ struct StereoSample {
 		return (left + right) / 2.0;
 	}
 
-	float left;
-	float right;
+	union {
+		float left, l;
+	};
+
+	union {
+		float right, r;
+	};
 };
 
 std::ostream & operator<<(std::ostream &out, const StereoSample &sample) {
