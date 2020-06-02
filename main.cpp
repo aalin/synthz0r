@@ -15,7 +15,7 @@ constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
 int main(int, char *argv[]) {
-	try {
+	//try {
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
 		Engine engine(argv[0], SAMPLE_RATE, buffer);
 
@@ -25,13 +25,12 @@ int main(int, char *argv[]) {
 
 		synth1->setName("Synth 1");
 
-		synth1->amplitude = 0.7;
-		synth1->transpose = 0;
-		synth1->envelope
-			.setAttack(0.2)
-			.setDecay(0.1)
-			.setSustain(0.0)
-			.setRelease(0.05);
+		synth1->set("amplitude", 100);
+		synth1->set("transpose", 0);
+		synth1->set("envelope.attackMs", 200);
+		synth1->set("envelope.decayMs", 100);
+		synth1->set("envelope.sustain", 0);
+		synth1->set("envelope.releaseMs", 50);
 
 		synth1->outputs()
 			.add(std::make_shared<Devices::Overdrive>(16, 0.8))->outputs()
@@ -63,13 +62,12 @@ int main(int, char *argv[]) {
 
 		synth1->setName("Synth 2");
 
-		synth2->amplitude = 0.5;
-		synth2->transpose = -12 * 3;
-		synth2->envelope
-			.setAttack(0.15)
-			.setDecay(0.25)
-			.setSustain(0.1)
-			.setRelease(0.05);
+		synth2->set("amplitude", 100);
+		synth2->set("transpose", -12 * 3);
+		synth2->set("envelope.attackMs", 150);
+		synth2->set("envelope.decayMs", 250);
+		synth2->set("envelope.sustain", 100);
+		synth2->set("envelope.releaseMs", 50);
 
 		synth2->outputs()
 			.add(std::make_shared<Devices::Bitcrusher>(8, 0.5))->outputs()
@@ -119,20 +117,21 @@ int main(int, char *argv[]) {
 
 			float pan = std::sin(timer.seconds() / 1.0);
 			std::cout << "Pan " << pan << std::endl;
-			synth1->setPanning(pan);
+			synth1->set("panning", pan);
 
 			sequencer1.setSpeed(2.0);
+			sequencer2.setSpeed(4.0);
+
 			sequencer1.update(timer, synth1);
 
-			sequencer2.setSpeed(4.0);
 			sequencer2.update(timer, synth2);
 
 			engine.update();
 		}
-	} catch (const char *msg) {
-		std::cerr << "Error: " << msg << std::endl;
-		return 1;
-	}
+//	} catch (const char *msg) {
+//		std::cerr << "Error: " << msg << std::endl;
+//		return 1;
+//	}
 
 	return 0;
 }

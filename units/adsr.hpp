@@ -6,45 +6,11 @@
 
 class ADSR {
 	public:
-		ADSR()
-		: _attack(0.1),
-		  _decay(0.1),
-		  _sustain(0.2),
-		  _release(0.2)
-		{}
-
-		ADSR(float attack, float decay, float sustain, float release)
-		: _attack(attack),
-		  _decay(decay),
-		  _sustain(sustain),
-		  _release(release)
-		{}
-
-		ADSR & setAttack(float attack) {
-			_attack = attack;
-			return *this;
-		}
-
-		ADSR & setDecay(float decay) {
-			_decay = decay;
-			return *this;
-		}
-
-		ADSR & setSustain(float sustain) {
-			_sustain = sustain;
-			return *this;
-		}
-
-		ADSR & setRelease(float release) {
-			_release = release;
-			return *this;
-		}
-
 		bool isNoteDone(const Timer &timer, float noteOffTime) {
 			const float seconds = timer.seconds();
 
 			if (noteOffTime >= 0.0 && seconds >= noteOffTime) {
-				return seconds > noteOffTime +_release;
+				return seconds > noteOffTime + release();
 			}
 
 			return false;
@@ -56,31 +22,32 @@ class ADSR {
 			if (noteOffTime >= 0.0 && time >= noteOffTime) {
 				const float dt = time - noteOffTime;
 
-				if (dt > _release) {
+				if (dt > release()) {
 					return 0.0;
 				}
 
-				return Utils::lerp(_sustain, 0.0f, dt / _release);
+				return Utils::lerp(sustain(), 0.0f, dt / release());
 			}
 
 			const float dt = time - noteOnTime;
 
-			if (dt < _attack) {
-				return Utils::lerp(0.0f, 1.0f, dt / _attack);
+			if (dt < attack()) {
+				return Utils::lerp(0.0f, 1.0f, dt / attack());
 			}
 
-			if (dt < _attack + _decay) {
-				return Utils::lerp(1.0f, _sustain, (dt - _attack) / _decay);
+			if (dt < attack() + decay()) {
+				return Utils::lerp(1.0f, sustain(), (dt - attack()) / decay());
 			}
 
-			return _sustain;
+			return sustain();
 		}
 
-	private:
-		float _attack;
-		float _decay;
-		float _sustain;
-		float _release;
+		int _attackMs, _decayMs, _releaseMs, _sustain;
+
+		float attack() { return _attackMs / 1000.0; }
+		float decay() { return _decayMs / 1000.0; }
+		float release() { return _releaseMs / 1000.0; }
+		float sustain() { return _sustain / 127.0; }
 };
 
 #endif

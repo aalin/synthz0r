@@ -64,6 +64,7 @@ class VariableList {
 			auto var = _variables.find(name);
 
 			if (var == _variables.end()) {
+				std::cerr << "Tried to set variable" << name << std::endl;
 				throw "Unknown variable name";
 			}
 
@@ -74,6 +75,7 @@ class VariableList {
 			auto var = _variables.find(name);
 
 			if (var == _variables.end()) {
+				std::cerr << "Tried to set variable" << name << std::endl;
 				throw "Unknown variable name";
 			}
 

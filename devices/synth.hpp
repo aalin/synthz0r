@@ -35,16 +35,18 @@ class Synth : public BaseDevice {
 		};
 
 		Synth(Oscillator::Type oscillatorType)
-		: BaseDevice("Synth"),
-		  pitchBendRange(2.0),
-		  transpose(0),
-		  _oscillatorType(oscillatorType),
-		  _panning(0.0)
+		: BaseDevice("Synth", {
+			Variable("pitchBendRange", 0, 24, 2, _pitchBendRange),
+			Variable("transpose", -24, 24, 2, _transpose),
+			Variable("oscillatorType", 0, 5, oscillatorType, reinterpret_cast<int&>(_oscillatorType)),
+			Variable("panning", -127, 127, 0, _panning),
+			Variable("amplitude", 0, 128, 0, _amplitude),
+			Variable("envelope.attackMs", 0, 1000, 150, _envelope._attackMs),
+			Variable("envelope.decayMs", 0, 1000, 0, _envelope._decayMs),
+			Variable("envelope.sustain", 0, 127, 0, _envelope._sustain),
+			Variable("envelope.releaseMs", 0, 1000, 0, _envelope._releaseMs)
+		  })
 		{}
-
-		void setPanning(float value) {
-			_panning = value;
-		}
 
 		void noteOn(const Timer &timer, int note, float velocity = 2.0) {
 			_voices.push_back(Voice(_oscillatorType, note, velocity, timer.seconds()));
@@ -64,32 +66,41 @@ class Synth : public BaseDevice {
 			float v = 0.0;
 
 			for (auto &voice : _voices) {
-				float freq = Utils::noteToFrequency(voice.note + transpose + pitchBendRange * pitchBend);
+				float freq = Utils::noteToFrequency(voice.note + _transpose + _pitchBendRange * pitchBend);
 				float value = voice.oscillator.update(freq, timer);
-				float env = envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
+				float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
-				v += Utils::volume(value * voice.velocity * env * amplitude);
+				v += Utils::volume(value * voice.velocity * env * amplitude());
 			}
 
-			StereoSample out = Utils::pan(v, _panning);
+			StereoSample out = Utils::pan(v, panning());
 			output(timer, out);
 		}
 
-		ADSR envelope;
-		float amplitude;
-		float pitchBendRange;
-		int transpose;
 
 	private:
+		ADSR _envelope;
+		int _amplitude;
+		int _pitchBendRange;
+		int _transpose;
+		int _panning;
 		Oscillator::Type _oscillatorType;
+
+		float amplitude() {
+			return _amplitude / 128.0;
+		}
+
+		float panning() {
+			return _panning / 127.0;
+		}
+
 		std::vector<Voice> _voices;
-		float _panning;
 
 		void removeFinishedVoices(const Timer &timer) {
 			for (auto it = _voices.begin(); it != _voices.end();) {
 				auto const &voice = *it;
 
-				if (envelope.isNoteDone(timer, voice.noteOffTime)) {
+				if (_envelope.isNoteDone(timer, voice.noteOffTime)) {
 					it = _voices.erase(it);
 				} else {
 					++it;

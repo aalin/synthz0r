@@ -10,13 +10,11 @@ class Delay : public BaseDevice {
 		static constexpr size_t BUFFER_SIZE = 1024 * 1024 * 4;
 
 		Delay(int timeMs = 250, int decay = 64, int mix = 0)
-		: BaseDevice(
-			"Delay", {
-				Variable("timeMs", 0, 10000, timeMs, _timeMs),
-				Variable("decay", 0, 128, decay, _decay),
-				Variable("mix", -127, 127, mix, _mix)
-			}
-		  )
+		: BaseDevice("Delay", {
+			Variable("timeMs", 0, 10000, timeMs, _timeMs),
+			Variable("decay", 0, 128, decay, _decay),
+			Variable("mix", -127, 127, mix, _mix)
+		  })
 		{
 			for (size_t i = 0; i < BUFFER_SIZE; i++) {
 				_buffer[i] = 0.0;
@@ -56,12 +54,12 @@ class Delay : public BaseDevice {
 			const size_t index = Utils::mod(t + delaySamples, BUFFER_SIZE);
 
 			StereoSample out(
-				Utils::lerp(sample.left, _buffer[t].left, mix()),
-				Utils::lerp(sample.right, _buffer[t].right, mix())
+				Utils::lerp(sample.l, _buffer[t].l, mix()),
+				Utils::lerp(sample.r, _buffer[t].r, mix())
 			);
 
-			_buffer[index].left = out.left * decay();
-			_buffer[index].right = out.right * decay();
+			_buffer[index].l = out.l * decay();
+			_buffer[index].r = out.r * decay();
 
 			return out;
 		}

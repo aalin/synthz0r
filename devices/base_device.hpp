@@ -43,11 +43,11 @@ class BaseDevice {
 			return _variables;
 		}
 
-		const int & getValue(const std::string &var) const {
+		const int & get(const std::string &var) const {
 			return _variables.get(var).value();
 		}
 
-		void setValue(const std::string &var, int &value) {
+		void set(const std::string &var, int value) {
 			_variables.get(var).setValue(value);
 		}
 
