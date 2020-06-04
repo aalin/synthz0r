@@ -11,9 +11,9 @@ class Delay : public BaseDevice {
 
 		Delay(int timeMs = 250, int decay = 64, int mix = 0)
 		: BaseDevice("Delay", {
-			Parameter("timeMs", 0, 10000, timeMs, _timeMs),
-			Parameter("decay", 0, 128, decay, _decay),
-			Parameter("mix", -127, 127, mix, _mix)
+			Parameter("timeMs",    0, 10000, timeMs, _timeMs),
+			Parameter("decay",     0,   128, decay,  _decay),
+			Parameter("mix",    -127,   127, mix,    _mix)
 		  })
 		{}
 

@@ -40,15 +40,15 @@ class WavetableSynth : public BaseDevice {
 
 		WavetableSynth()
 		: BaseDevice("Wavetable Synth", {
-			Parameter("pitchBendRange", 0, 24, 2, _pitchBendRange),
-			Parameter("transpose", -24, 100, 2, _transpose),
-			Parameter("panning", -127, 127, 0, _panning),
-			Parameter("amplitude", 0, 128, 0, _amplitude),
-			Parameter("envelope.attackMs", 0, 1000, 150, _envelope._attackMs),
-			Parameter("envelope.decayMs", 0, 1000, 0, _envelope._decayMs),
-			Parameter("envelope.sustain", 0, 127, 0, _envelope._sustain),
-			Parameter("envelope.releaseMs", 0, 1000, 0, _envelope._releaseMs),
-			Parameter("waveformIndex", 0, Waveform::WAVEFORMS.size(), 0, _waveformIndex)
+			Parameter("pitchBendRange",        0,                         24,   2, _pitchBendRange),
+			Parameter("transpose",           -24,                        100,   2, _transpose),
+			Parameter("panning",            -127,                        127,   0, _panning),
+			Parameter("amplitude",             0,                        128,   0, _amplitude),
+			Parameter("envelope.attackMs",     0,                       1000, 150, _envelope._attackMs),
+			Parameter("envelope.decayMs",      0,                       1000,   0, _envelope._decayMs),
+			Parameter("envelope.sustain",      0,                        127,   0, _envelope._sustain),
+			Parameter("envelope.releaseMs",    0,                       1000,   0, _envelope._releaseMs),
+			Parameter("waveformIndex",         0, Waveform::WAVEFORMS.size(),   0, _waveformIndex)
 		  })
 		{}
 

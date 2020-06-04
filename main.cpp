@@ -39,10 +39,11 @@ int main(int, char *argv[]) {
 		engine.start();
 		perf.log("Created output");
 
-		auto snare = std::make_shared<Devices::Synth>(Oscillator::Type::NOISE);
+		auto snare = std::make_shared<Devices::Synth>();
 
 		perf.log("Created snare");
 
+		snare->set("oscillatorType", Oscillator::Type::NOISE);
 		snare->set("amplitude", 10);
 		snare->set("transpose", 0);
 		snare->set("envelope.attackMs", 50);
@@ -91,7 +92,7 @@ int main(int, char *argv[]) {
 			.setStep(2, NOTE(C,4))
 			.setStep(3, NOTE(C,4));
 
-		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SAW);
+		auto synth1 = std::make_shared<Devices::Synth>();
 
 		synth1->setName("Synth 1");
 
@@ -99,6 +100,7 @@ int main(int, char *argv[]) {
 			std::cout << param << std::endl;
 		}
 
+		synth1->set("oscillatorType", Oscillator::Type::SAW);
 		synth1->set("panning", -127);
 		synth1->set("amplitude", 50);
 		synth1->set("transpose", 12);
@@ -139,10 +141,11 @@ int main(int, char *argv[]) {
 			.setStep(13, NOTE(A,4))
 			.setStep(14, NOTE(G,4));
 
-		auto synth2 = std::make_shared<Devices::Synth>(Oscillator::Type::SAW);
+		auto synth2 = std::make_shared<Devices::Synth>();
 
-		synth1->setName("Synth 2");
+		synth2->setName("Synth 2");
 
+		synth2->set("oscillatorType", Oscillator::Type::SAW);
 		synth2->set("amplitude", 100);
 		synth2->set("transpose", -12 * 3);
 		synth2->set("envelope.attackMs", 150);

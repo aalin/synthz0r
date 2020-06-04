@@ -9,7 +9,7 @@ class Overdrive : public BaseDevice {
 	public:
 		Overdrive(int gain = 50, int volume = 100)
 		: BaseDevice("Overdrive", {
-			Parameter("gain", 0, 100, gain, _gain),
+			Parameter("gain",   0, 100, gain,   _gain),
 			Parameter("volume", 0, 128, volume, _volume),
 		  })
 		{}
