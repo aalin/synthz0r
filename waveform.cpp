@@ -1,6 +1,6 @@
 #include "waveform.hpp"
 
-std::vector<Waveform> Waveform::WAVEFORMS = {{
+const std::vector<Waveform> Waveform::WAVEFORMS = {{
 	.name = "AKWF_vgsin_0010",
 	.sampleRate = 44100,
 	.data = {

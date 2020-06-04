@@ -7,7 +7,8 @@
 #include "utils.hpp"
 
 struct Waveform {
-	static std::vector<Waveform> WAVEFORMS;
+	static const std::vector<Waveform> WAVEFORMS;
+
 	const std::string name;
 	const unsigned int sampleRate;
 	const std::vector<int16_t> data;

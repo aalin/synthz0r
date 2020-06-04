@@ -3,7 +3,7 @@ files = Dir[File.join(File.dirname(__FILE__), "waveforms", "*.wav")]
 File.open("waveform.cpp", "w") do |f|
   f.puts '#include "waveform.hpp"'
   f.puts
-  f.print "std::vector<Waveform> Waveform::WAVEFORMS = {"
+  f.print "const std::vector<Waveform> Waveform::WAVEFORMS = {"
 
   f.print files.map { |filename|
     File.open(filename, encoding: "binary") do |f|
