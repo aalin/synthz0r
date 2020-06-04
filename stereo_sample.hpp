@@ -1,6 +1,8 @@
 #ifndef STEREO_SAMPLE_HPP
 #define STEREO_SAMPLE_HPP
 
+#include <iostream>
+
 struct StereoSample {
 	StereoSample(float mono = 0.0)
 	: left(mono),
@@ -66,9 +68,6 @@ struct StereoSample {
 	};
 };
 
-std::ostream & operator<<(std::ostream &out, const StereoSample &sample) {
-	out << "StereoSample(" << sample.left << ", " << sample.right << ")";
-	return out;
-}
+std::ostream & operator<<(std::ostream &out, const StereoSample &sample);
 
 #endif

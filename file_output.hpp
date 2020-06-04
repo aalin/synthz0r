@@ -40,9 +40,7 @@ class FileOutput : public AudioOutput {
 				return;
 			}
 
-			std::cout << "Updating sizes." << std::endl;
 			int32_t fileSize = sizeof(WavHeader) + _bytesWritten;
-			std::cout << "File size" << fileSize << std::endl;
 			_out.seekp(4, std::ios::beg);
 			_out.write(reinterpret_cast<const char*>(&fileSize), 4);
 			_out.seekp(40, std::ios::beg);

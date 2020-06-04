@@ -2,6 +2,8 @@
 #define UTILS_HPP
 
 #include <type_traits>
+#include <limits>
+#include "stereo_sample.hpp"
 
 namespace Utils {
 	template<typename T>
@@ -52,34 +54,15 @@ namespace Utils {
 		return (std::exp(value) - 1) / (2.718281828459045 - 1);
 	}
 
-	StereoSample pan(float value, float f) {
-		constexpr const float x = std::sqrt(2.0) / 2.0;
-		constexpr const float radians = M_PI / 180.0;
-		const float r = f * 45.0f * radians;
-		const float c = std::sin(r);
-		const float s = std::cos(r);
+	StereoSample pan(float value, float f);
 
-		StereoSample out(
-			value * x * (c - s),
-			value * x * (c + s)
-		);
-
-		return out;
-	}
-
-	float noteToFrequency(float note) {
-		return std::pow(2, (note - 69) / 12) * 440.0;
-	}
+	float noteToFrequency(float note);
 
 	// Ranged sin, returns a sine wave between min and max
-	float rsin(float v, float min = 0.0, float max = 1.0) {
-		return (std::sin(v) / 2.0 + 0.5) * (max - min) + min;
-	}
+	float rsin(float v, float min = 0.0, float max = 1.0);
 
 	// Ranged cos, returns a cosine wave between min and max
-	float rcos(float v, float min = 0.0, float max = 1.0) {
-		return (std::cos(v) / 2.0 + 0.5) * (max - min) + min;
-	}
+	float rcos(float v, float min = 0.0, float max = 1.0);
 };
 
 #endif
