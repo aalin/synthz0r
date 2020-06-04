@@ -20,13 +20,6 @@ class Synth : public BaseDevice {
 			  noteOffTime(-1.0)
 			{}
 
-			Voice(int note, float velocity, float noteOnTime = 0.0)
-			: note(note),
-			  velocity(velocity),
-			  noteOnTime(noteOnTime),
-			  noteOffTime(-1.0)
-			{}
-
 			int note;
 			float velocity;
 			Oscillator oscillator;
@@ -97,11 +90,11 @@ class Synth : public BaseDevice {
 		int _filterEnabled;
 		Oscillator::Type _oscillatorType;
 
-		float amplitude() {
+		float amplitude() const {
 			return _amplitude / 100.0;
 		}
 
-		float panning() {
+		float panning() const {
 			return _panning / 127.0;
 		}
 

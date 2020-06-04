@@ -15,11 +15,7 @@ class Delay : public BaseDevice {
 			Parameter("decay", 0, 128, decay, _decay),
 			Parameter("mix", -127, 127, mix, _mix)
 		  })
-		{
-			for (size_t i = 0; i < BUFFER_SIZE; i++) {
-				_buffer[i] = 0.0;
-			}
-		}
+		{}
 
 		void input(const Timer &timer, const float &value) {
 			output(timer, apply(timer, value));

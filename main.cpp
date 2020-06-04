@@ -3,12 +3,14 @@
 #include <list>
 #include "engine.hpp"
 #include "devices/synth.hpp"
+#include "devices/wavetable_synth.hpp"
 #include "devices/delay.hpp"
 #include "devices/overdrive.hpp"
 #include "devices/bitcrusher.hpp"
 #include "utils.hpp"
 #include "sequencer.hpp"
 #include "note.hpp"
+#include "performance_log.hpp"
 
 #include "pulse_audio.hpp"
 #include "file_output.hpp"
@@ -19,16 +21,28 @@ constexpr unsigned int NUM_CHANNELS = 2;
 
 int main(int, char *argv[]) {
 	try {
+		PerformanceLog perf;
+
 		auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
 
-		// auto output = std::make_shared<FileOutput>("out.wav", buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+		perf.log("Created audio buffer");
+
+		//auto output = std::make_shared<FileOutput>("out.wav", buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
 		auto output = std::make_shared<PulseAudio>(argv[0], buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+
+		perf.log("Created output");
 
 		Engine engine(SAMPLE_RATE, buffer, output);
 
+		perf.log("Created engine");
+
 		engine.start();
+		perf.log("Created output");
 
 		auto snare = std::make_shared<Devices::Synth>(Oscillator::Type::NOISE);
+
+		perf.log("Created snare");
+
 		snare->set("amplitude", 10);
 		snare->set("transpose", 0);
 		snare->set("envelope.attackMs", 50);
@@ -40,11 +54,35 @@ int main(int, char *argv[]) {
 		snare->set("filter.cutoffHz", 3000);
 		snare->set("filter.resonance", 300);
 
+		perf.log("Set snare params");
+
 		engine.addDevice(snare);
 
+		perf.log("Adding snare to engine");
+
+		auto snareDelay = std::make_shared<Devices::Delay>(150, 100, 50);
+
+		perf.log("Created snare delay effect");
+
 		snare->outputs()
-			.add(std::make_shared<Devices::Delay>(150, 100, 50))->outputs()
+			.add(snareDelay)->outputs()
 			.add(engine.getOutputDevice());
+
+		perf.log("Route snare outputs");
+
+		auto wavetableSynth = std::make_shared<Devices::WavetableSynth>();
+		wavetableSynth->set("amplitude", 10);
+		wavetableSynth->set("transpose", 0);
+		wavetableSynth->set("panning", 127);
+		wavetableSynth->set("envelope.attackMs", 50);
+		wavetableSynth->set("envelope.decayMs", 100);
+		wavetableSynth->set("envelope.sustain", 100);
+		wavetableSynth->set("envelope.releaseMs", 50);
+
+		wavetableSynth->outputs()
+			.add(engine.getOutputDevice());
+
+		engine.addDevice(wavetableSynth);
 
 		Sequencer snareSeq(4, 1.0, 1.0);
 
@@ -53,7 +91,7 @@ int main(int, char *argv[]) {
 			.setStep(2, NOTE(C,4))
 			.setStep(3, NOTE(C,4));
 
-		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SINE);
+		auto synth1 = std::make_shared<Devices::Synth>(Oscillator::Type::SAW);
 
 		synth1->setName("Synth 1");
 
@@ -61,8 +99,9 @@ int main(int, char *argv[]) {
 			std::cout << param << std::endl;
 		}
 
+		synth1->set("panning", -127);
 		synth1->set("amplitude", 50);
-		synth1->set("transpose", 0);
+		synth1->set("transpose", 12);
 		synth1->set("envelope.attackMs", 100);
 		synth1->set("envelope.decayMs", 100);
 		synth1->set("envelope.sustain", 0);
@@ -75,8 +114,8 @@ int main(int, char *argv[]) {
 		synth1->set("filter.bandwidth", 450);
 
 		synth1->outputs()
-			.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
-			.add(std::make_shared<Devices::Delay>(250, 100, 90))->outputs()
+		//	.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
+			.add(std::make_shared<Devices::Delay>(250, 100, 50))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
@@ -156,10 +195,27 @@ int main(int, char *argv[]) {
 			.setStep(30, NOTE(G,3))
 			.setStep(31, NOTE(G,4));
 
+		int prev = -1;
+
 		while (engine.running()) {
 			const Timer &timer = engine.timer();
 			std::cout << "Time: " << timer.seconds() << std::endl;
 
+			const int curr = timer.seconds() / 2;
+
+			if (curr != prev) {
+				wavetableSynth->set("waveformIndex", (int)timer.seconds() % 19);
+				std::cout << "Using waveform " << wavetableSynth->getWaveformName() << std::endl;
+
+				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));
+				wavetableSynth->noteOn(timer, 60 + Utils::mod(curr, 12));
+
+				synth1->noteOff(timer, 60 - 12);
+				synth1->noteOn(timer, 60 - 12);
+				prev = curr;
+			}
+
+/*
 			synth1->set("panning", Utils::rsin(timer.seconds(), -127, 127));
 
 			snareSeq.setSpeed(8.0);
@@ -170,6 +226,7 @@ int main(int, char *argv[]) {
 			sequencer2.update(timer, synth2);
 			snareSeq.update(timer, snare);
 
+			*/
 			engine.update();
 
 			if (timer.seconds() > 60) {

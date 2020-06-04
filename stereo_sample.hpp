@@ -4,7 +4,9 @@
 #include <iostream>
 
 struct StereoSample {
-	StereoSample(float mono = 0.0)
+	StereoSample() {}
+
+	StereoSample(float mono)
 	: left(mono),
 	  right(mono)
 	{}
@@ -60,11 +62,11 @@ struct StereoSample {
 	}
 
 	union {
-		float left, l;
+		float left, l = 0.0;
 	};
 
 	union {
-		float right, r;
+		float right, r = 0.0;
 	};
 };
 

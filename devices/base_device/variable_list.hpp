@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include "../../utils.hpp"
+#include "../../performance_log.hpp"
 
 namespace Devices {
 class Parameter {
@@ -75,9 +76,13 @@ class ParameterList {
 
 	public:
 		ParameterList(std::initializer_list<Parameter> vars) {
+			PerformanceLog perf;
+
 			for (Parameter var : vars) {
 				_parameters.insert({var.name(), var});
 			}
+
+			perf.log("Creating parameters");
 		}
 
 		value_iterator begin() const {
