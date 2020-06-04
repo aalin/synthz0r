@@ -78,6 +78,8 @@ class WavetableSynth : public BaseDevice {
 					std::cout << "Removing voice" << std::endl;
 					it = _voices.erase(it);
 					continue;
+				} else {
+					++it;
 				}
 
 				constexpr int waveTranspose = 22 + 24 + 12;
@@ -86,12 +88,10 @@ class WavetableSynth : public BaseDevice {
 				float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
 				v += Utils::volume(value * voice.velocity * env * amplitude());
-
-				++it;
 			}
 
 			StereoSample out = Utils::pan(v, panning());
-			// std::cout << out<<std::endl;
+
 			output(timer, out);
 		}
 

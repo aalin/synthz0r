@@ -103,7 +103,7 @@ int main(int, char *argv[]) {
 		synth1->set("amplitude", 50);
 		synth1->set("transpose", 12);
 		synth1->set("envelope.attackMs", 100);
-		synth1->set("envelope.decayMs", 100);
+		synth1->set("envelope.decayMs", 300);
 		synth1->set("envelope.sustain", 0);
 		synth1->set("envelope.releaseMs", 50);
 
