@@ -12,15 +12,19 @@ struct Waveform {
 	const unsigned int sampleRate;
 	const std::vector<int16_t> data;
 
-	float getValue(float index) {
-		int16_t i = index;
-		float f = index - i;
+	size_t size() const {
+		return data.size();
+	}
+
+	float getValue(float index) const {
+		const int i = static_cast<int>(index);
+		const float f = index - i;
 
 		return Utils::lerp(
-			static_cast<float>(data[i]),
+			static_cast<float>(data[(i + 0) % data.size()]),
 			static_cast<float>(data[(i + 1) % data.size()]),
 			f
-		) / 0x7fff;
+		) / 32767.0;
 	}
 };
 
