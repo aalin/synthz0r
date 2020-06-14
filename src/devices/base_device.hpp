@@ -1,9 +1,9 @@
-#ifndef DEVICE_HPP
-#define DEVICE_HPP
+#ifndef DEVICES__BASE_DEVICE_HPP
+#define DEVICES__BASE_DEVICE_HPP
 
 #include <memory>
 #include "base_device/t_outputs.hpp"
-#include "base_device/variable_list.hpp"
+#include "base_device/parameter_list.hpp"
 #include "../timer.hpp"
 #include "../stereo_sample.hpp"
 

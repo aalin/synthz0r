@@ -1,9 +1,9 @@
 #ifndef DEVICES__BASE_DEVICE__T_OUTPUTS_HPP
 #define DEVICES__BASE_DEVICE__T_OUTPUTS_HPP
 
+#include <list>
 #include "../../stereo_sample.hpp"
 #include "../../timer.hpp"
-#include <list>
 
 namespace Devices {
 class BaseDevice;
