@@ -3,6 +3,7 @@
 
 #include "../../stereo_sample.hpp"
 #include "../../timer.hpp"
+#include <list>
 
 namespace Devices {
 class BaseDevice;

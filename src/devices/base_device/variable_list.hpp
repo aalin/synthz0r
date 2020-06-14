@@ -53,14 +53,6 @@ class Parameter {
 		int &_value;
 };
 
-std::ostream & operator<<(std::ostream &out, const Parameter &p) {
-	out <<
-		"Parameter(" << p.name() <<
-		" [" << p.min() << ".." << p.max() << "] " <<
-		" " << p.value() << ")";
-	return out;
-}
-
 class ParameterList {
 	typedef std::map<std::string, Parameter> ParameterMap;
 
@@ -118,6 +110,8 @@ class ParameterList {
 	private:
 		ParameterMap _parameters;
 };
+
+std::ostream & operator<<(std::ostream &out, const Devices::Parameter &p);
 };
 
 #endif

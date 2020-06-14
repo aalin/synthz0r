@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <limits>
+#include <cmath>
 #include "stereo_sample.hpp"
 
 namespace Utils {
