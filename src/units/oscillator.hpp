@@ -77,6 +77,6 @@ class Oscillator {
 		Type _type;
 		Phase _phase;
 };
-};
+}
 
 #endif

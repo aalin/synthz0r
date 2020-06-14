@@ -85,6 +85,6 @@ class WavetableSynth : public BaseDevice {
 			return _panning / 127.0;
 		}
 };
-};
+}
 
 #endif

@@ -9,7 +9,7 @@ RED = "\\033[31m"
 RESET = "\\033[0m"
 
 CC=g++
-CFLAGS=-Wall -Wextra -ggdb -std=c++17
+CFLAGS=-Wall -Wextra -pedantic -ggdb -std=c++2a
 LFLAGS=-lpulse-simple -lpulse -lm
 
 %.o: %.cpp %.hpp

@@ -59,6 +59,6 @@ inline unsigned int bytesPerSample(SampleFormat::Type type) {
 inline unsigned int bitsPerSample(SampleFormat::Type type) {
 	return bytesPerSample(type) * 8;
 }
-};
+}
 
 #endif

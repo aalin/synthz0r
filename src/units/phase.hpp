@@ -25,6 +25,6 @@ class Phase {
 	private:
 		float _phase = 0.0;
 };
-};
+}
 
 #endif

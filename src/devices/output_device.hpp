@@ -28,6 +28,6 @@ class OutputDevice : public BaseDevice {
 	private:
 		StereoSample _stereoSample;
 };
-};
+}
 
 #endif

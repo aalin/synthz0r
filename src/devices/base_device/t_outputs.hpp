@@ -47,6 +47,6 @@ class TOutputs {
 
 		friend class BaseDevice;
 };
-};
+}
 
 #endif

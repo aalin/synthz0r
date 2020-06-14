@@ -60,6 +60,6 @@ class Delay : public BaseDevice {
 			return out;
 		}
 };
-};
+}
 
 #endif

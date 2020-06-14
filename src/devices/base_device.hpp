@@ -65,6 +65,6 @@ class BaseDevice {
 		Outputs _outputs;
 		ParameterList _parameters;
 };
-};
+}
 
 #endif

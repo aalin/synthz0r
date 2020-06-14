@@ -49,5 +49,6 @@ class Parameter {
 		const int _defaultValue;
 		int &_value;
 };
-};
+}
+
 #endif

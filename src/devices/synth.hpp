@@ -108,6 +108,6 @@ class Synth : public BaseDevice {
 
 		std::list<Voice> _voices;
 };
-};
+}
 
 #endif

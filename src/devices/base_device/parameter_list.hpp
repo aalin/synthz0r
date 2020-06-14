@@ -68,6 +68,6 @@ class ParameterList {
 };
 
 std::ostream & operator<<(std::ostream &out, const Devices::Parameter &p);
-};
+}
 
 #endif

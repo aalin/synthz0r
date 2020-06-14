@@ -64,6 +64,6 @@ namespace Utils {
 
 	// Ranged cos, returns a cosine wave between min and max
 	float rcos(float v, float min = 0.0, float max = 1.0);
-};
+}
 
 #endif

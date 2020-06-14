@@ -44,6 +44,6 @@ class Overdrive : public BaseDevice {
 			return Utils::clamp(value * gain(), -1.0f, 1.0f) * volume();
 		}
 };
-};
+}
 
 #endif
