@@ -24,10 +24,10 @@ class WavetableSynth : public BaseDevice {
 			float noteOffTime;
 
 			float update(float freq, const Timer &timer) {
-				_index += M_PI * 2.0 * freq / timer.sampleRate();
+				_index += freq / timer.sampleRate();
 
-				if (_index >= 600) {
-					_index = 0.0;
+				while (_index >= 1.0) {
+					_index -= 1.0;
 				}
 
 				return waveform.getValue(_index);
@@ -82,7 +82,7 @@ class WavetableSynth : public BaseDevice {
 					++it;
 				}
 
-				constexpr int waveTranspose = 22 + 24 + 12;
+				constexpr int waveTranspose = 3;
 				float freq = Utils::noteToFrequency(voice.note + waveTranspose + _transpose + _pitchBendRange * pitchBend);
 				float value = voice.update(freq, timer);
 				float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);

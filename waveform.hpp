@@ -18,8 +18,9 @@ struct Waveform {
 	}
 
 	float getValue(float index) const {
-		const int i = static_cast<int>(index);
-		const float f = index - i;
+		float index2 = index * size();
+		const int i = static_cast<int>(index2);
+		const float f = index2 - i;
 
 		return Utils::lerp(
 			static_cast<float>(data[(i + 0) % data.size()]),
