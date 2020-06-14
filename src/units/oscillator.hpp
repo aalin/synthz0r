@@ -69,7 +69,9 @@ class Oscillator {
 		}
 
 		float updatePhase(float frequency, float sampleRate) {
-			return _phase.update(frequency, sampleRate);
+			constexpr float TWO_PI = M_PI * 2.0;
+
+			return _phase.update(frequency, sampleRate) * TWO_PI;
 		}
 
 		Type _type;

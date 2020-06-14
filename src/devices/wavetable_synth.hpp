@@ -3,6 +3,7 @@
 
 #include "base_device.hpp"
 #include "../units/adsr.hpp"
+#include "../units/phase.hpp"
 #include "../waveform.hpp"
 #include "../utils.hpp"
 
@@ -15,8 +16,7 @@ class WavetableSynth : public BaseDevice {
 			  note(note),
 			  velocity(velocity),
 			  noteOnTime(noteOnTime),
-			  noteOffTime(-1),
-			  _index(0.0)
+			  noteOffTime(-1)
 			{}
 
 			const Waveform &waveform;
@@ -26,18 +26,13 @@ class WavetableSynth : public BaseDevice {
 			float noteOffTime;
 
 			float update(float freq, const Timer &timer) {
-				_index += freq / timer.sampleRate();
-
-				while (_index >= 1.0) {
-					_index -= 1.0;
-				}
-
-				return waveform.getValue(_index);
+				return waveform.getValue(
+					_phase.update(freq, timer.sampleRate())
+				);
 			}
 
 			private:
-
-			float _index = 0.0;
+			Units::Phase _phase;
 		};
 
 		WavetableSynth()

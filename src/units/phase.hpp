@@ -7,18 +7,16 @@ class Phase {
 		Phase() : _phase(0.0) { }
 
 		float update(float frequency, float sampleRate) {
-			constexpr float TWO_PI = M_PI * 2.0;
-
 			float oldPhase = _phase;
 
-			_phase += TWO_PI * frequency / sampleRate;
+			_phase += frequency / sampleRate;
 
-			while(_phase >= TWO_PI) {
-				_phase -= TWO_PI;
+			while(_phase >= 1.0) {
+				_phase -= 1.0;
 			}
 
 			while(_phase < 0.0) {
-				_phase += TWO_PI;
+				_phase += 1.0;
 			}
 
 			return oldPhase;
