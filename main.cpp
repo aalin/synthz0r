@@ -43,7 +43,7 @@ int main(int, char *argv[]) {
 
 		perf.log("Created snare");
 
-		snare->set("oscillatorType", Oscillator::Type::NOISE);
+		snare->set("oscillatorType", Units::Oscillator::Type::NOISE);
 		snare->set("amplitude", 10);
 		snare->set("transpose", 0);
 		snare->set("envelope.attackMs", 50);
@@ -100,7 +100,7 @@ int main(int, char *argv[]) {
 			std::cout << param << std::endl;
 		}
 
-		synth1->set("oscillatorType", Oscillator::Type::SAW);
+		synth1->set("oscillatorType", Units::Oscillator::Type::SAW);
 		synth1->set("panning", -127);
 		synth1->set("amplitude", 50);
 		synth1->set("transpose", 12);
@@ -145,7 +145,7 @@ int main(int, char *argv[]) {
 
 		synth2->setName("Synth 2");
 
-		synth2->set("oscillatorType", Oscillator::Type::SAW);
+		synth2->set("oscillatorType", Units::Oscillator::Type::SAW);
 		synth2->set("amplitude", 100);
 		synth2->set("transpose", -12 * 3);
 		synth2->set("envelope.attackMs", 150);

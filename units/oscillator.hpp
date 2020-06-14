@@ -1,8 +1,10 @@
-#ifndef OSCILLATOR_HPP
-#define OSCILLATOR_HPP
+#ifndef UNITS_OSCILLATOR_HPP
+#define UNITS_OSCILLATOR_HPP
 
 #include <cmath>
+#include "./phase.hpp"
 
+namespace Units {
 class Oscillator {
 	public:
 		enum Type {
@@ -14,8 +16,8 @@ class Oscillator {
 		};
 
 		Oscillator(Type type = Type::SQUARE)
-		: _type(type),
-		  _phase(0) { }
+		: _type(type)
+		{}
 
 		float update(float frequency, const Timer &timer) {
 			float sampleRate = timer.sampleRate();
@@ -67,25 +69,12 @@ class Oscillator {
 		}
 
 		float updatePhase(float frequency, float sampleRate) {
-			constexpr float TWO_PI = M_PI * 2.0;
-
-			float oldPhase = _phase;
-
-			_phase += TWO_PI * frequency / sampleRate;
-
-			while(_phase >= TWO_PI) {
-				_phase -= TWO_PI;
-			}
-
-			while(_phase < 0.0) {
-				_phase += TWO_PI;
-			}
-
-			return oldPhase;
+			return _phase.update(frequency, sampleRate);
 		}
 
 		Type _type;
-		float _phase;
+		Phase _phase;
+};
 };
 
 #endif

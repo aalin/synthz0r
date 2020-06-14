@@ -12,19 +12,19 @@ namespace Devices {
 class Synth : public BaseDevice {
 	public:
 		struct Voice {
-			Voice(Oscillator::Type oscillatorType, int note, float velocity, float noteOnTime = 0.0)
+			Voice(Units::Oscillator::Type oscillatorType, int note, float velocity, float noteOnTime = 0.0)
 			: note(note),
 			  velocity(velocity),
-			  oscillator(oscillatorType),
 			  noteOnTime(noteOnTime),
-			  noteOffTime(-1.0)
+			  noteOffTime(-1.0),
+			  oscillator(oscillatorType)
 			{}
 
 			int note;
 			float velocity;
-			Oscillator oscillator;
 			float noteOnTime;
 			float noteOffTime;
+			Units::Oscillator oscillator;
 		};
 
 		Synth()
@@ -96,7 +96,7 @@ class Synth : public BaseDevice {
 		int _transpose;
 		int _panning;
 		int _filterEnabled;
-		Oscillator::Type _oscillatorType;
+		Units::Oscillator::Type _oscillatorType;
 
 		float amplitude() const {
 			return _amplitude / 100.0;
