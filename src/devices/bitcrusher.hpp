@@ -9,7 +9,7 @@ class Bitcrusher : public BaseDevice {
 	public:
 		Bitcrusher(int bits = 4, int volume = 100)
 		: BaseDevice("Bitcrusher", {
-			Parameter("gain",   0, 100, bits,   _bits),
+			Parameter("bits",   0, 100, bits,   _bits),
 			Parameter("volume", 0, 128, volume, _volume),
 		})
 		{}
