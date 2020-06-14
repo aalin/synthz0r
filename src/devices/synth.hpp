@@ -76,27 +76,32 @@ class Synth : public BaseDevice {
 				float value = voice.oscillator.update(freq, timer);
 				float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
-				v += Utils::volume(value * voice.velocity * env * amplitude());
+				v += value * voice.velocity * env;
 			}
 
 			if (_filterEnabled) {
 				v = _filter.update(timer, v);
 			}
 
-			StereoSample out = Utils::pan(v, panning());
+			StereoSample out = Utils::pan(
+				Utils::volume(v * amplitude()),
+				panning()
+			);
+
 			output(timer, out);
 		}
 
 
 	private:
-		ADSR _envelope;
-		StateVariableFilter _filter;
+		Units::ADSR _envelope;
+		Units::StateVariableFilter _filter;
+		Units::Oscillator::Type _oscillatorType;
+
 		int _amplitude;
 		int _pitchBendRange;
 		int _transpose;
 		int _panning;
 		int _filterEnabled;
-		Units::Oscillator::Type _oscillatorType;
 
 		float amplitude() const {
 			return _amplitude / 100.0;

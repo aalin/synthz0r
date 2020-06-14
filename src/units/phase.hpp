@@ -1,5 +1,5 @@
-#ifndef PHASE_HPP
-#define PHASE_HPP
+#ifndef UNITS__PHASE_HPP
+#define UNITS__PHASE_HPP
 
 namespace Units {
 class Phase {

@@ -72,10 +72,10 @@ int main(int, char *argv[]) {
 		perf.log("Route snare outputs");
 
 		auto wavetableSynth = std::make_shared<Devices::WavetableSynth>();
-		wavetableSynth->setParam("amplitude", 10);
+		wavetableSynth->setParam("amplitude", 20);
 		wavetableSynth->setParam("transpose", 0);
 		wavetableSynth->setParam("panning", 127);
-		wavetableSynth->setParam("envelope.attackMs", 50);
+		wavetableSynth->setParam("envelope.attackMs", 500);
 		wavetableSynth->setParam("envelope.decayMs", 100);
 		wavetableSynth->setParam("envelope.sustain", 100);
 		wavetableSynth->setParam("envelope.releaseMs", 50);
@@ -102,7 +102,7 @@ int main(int, char *argv[]) {
 
 		synth1->setParam("oscillatorType", Units::Oscillator::Type::SAW);
 		synth1->setParam("panning", -127);
-		synth1->setParam("amplitude", 50);
+		synth1->setParam("amplitude", 20);
 		synth1->setParam("transpose", 12);
 		synth1->setParam("envelope.attackMs", 100);
 		synth1->setParam("envelope.decayMs", 300);
@@ -207,7 +207,7 @@ int main(int, char *argv[]) {
 			const int curr = timer.seconds() / 2;
 
 			if (curr != prev) {
-				wavetableSynth->setParam("waveformIndex", (int)timer.seconds() % 19);
+				wavetableSynth->setParam("waveformIndex", curr % 19);
 				std::cout << "Using waveform " << wavetableSynth->getWaveformName() << std::endl;
 
 				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));

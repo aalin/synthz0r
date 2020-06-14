@@ -68,7 +68,7 @@ class WavetableSynth : public BaseDevice {
 		void update(const Timer &timer, float pitchBend = 0.0);
 
 	private:
-		ADSR _envelope;
+		Units::ADSR _envelope;
 		int _amplitude;
 		int _pitchBendRange;
 		int _transpose;

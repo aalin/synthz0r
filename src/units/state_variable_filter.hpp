@@ -1,8 +1,9 @@
-#ifndef STATE_VARIABLE_FILTER_HPP
-#define STATE_VARIABLE_FILTER_HPP
+#ifndef UNITS__STATE_VARIABLE_FILTER_HPP
+#define UNITS__STATE_VARIABLE_FILTER_HPP
 
 // https://musicdsp.org/en/latest/Filters/23-state-variable.html
 
+namespace Units {
 struct StateVariableFilter {
 	enum Type {
 		LOWPASS = 0,
@@ -53,5 +54,6 @@ struct StateVariableFilter {
 		}
 	}
 };
+}
 
 #endif

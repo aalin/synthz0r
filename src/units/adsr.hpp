@@ -1,9 +1,10 @@
-#ifndef ADSR_HPP
-#define ADSR_HPP
+#ifndef UNITS__ADSR_HPP
+#define UNITS__ADSR_HPP
 
 #include "../utils.hpp"
 #include "../timer.hpp"
 
+namespace Units {
 class ADSR {
 	public:
 		bool isNoteDone(const Timer &timer, float noteOffTime) {
@@ -49,5 +50,6 @@ class ADSR {
 		float release() { return _releaseMs / 1000.0; }
 		float sustain() { return _sustain / 127.0; }
 };
+}
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef UNITS_OSCILLATOR_HPP
-#define UNITS_OSCILLATOR_HPP
+#ifndef UNITS__OSCILLATOR_HPP
+#define UNITS__OSCILLATOR_HPP
 
 #include <cmath>
 #include "./phase.hpp"
@@ -42,7 +42,8 @@ class Oscillator {
 	private:
 		float noise(float frequency, float sampleRate) {
 			updatePhase(frequency, sampleRate);
-			return (rand() / static_cast<float>(RAND_MAX)) * 2.0 - 1.0;
+			constexpr float randMax = RAND_MAX;
+			return (rand() / randMax) * 2.0 - 1.0;
 		}
 
 		float sine(float frequency, float sampleRate) {
@@ -56,7 +57,6 @@ class Oscillator {
 
 		float triangle(float frequency, float sampleRate) {
 			constexpr float HALF_PI = M_PI / 2.0;
-
 			return std::asin(std::cos(updatePhase(frequency, sampleRate))) / HALF_PI;
 		}
 
