@@ -15,11 +15,40 @@
 #include "pulse_audio.hpp"
 #include "file_output.hpp"
 
+#include "argument_parser.hpp"
+
 constexpr unsigned int BUFFER_SIZE = 1024 * 8;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
-int main(int, char *argv[]) {
+std::shared_ptr<AudioOutput> getOutput(const ArgumentParser &args, AudioBufferPtr buffer) {
+	const auto filename = args.get("-f");
+
+	if (filename.found) {
+		return std::make_shared<FileOutput>(filename.value, buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+	}
+
+	return std::make_shared<PulseAudio>(args.get(0).c_str(), buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+}
+
+bool printHelp(const ArgumentParser &args) {
+	if (args.has("-h")) {
+		std::cout << args.get(0) << " -h                  Print help" << std::endl;
+		std::cout << args.get(0) << " -f filename.wav     Export to file" << std::endl;
+		std::cout << args.get(0) << "                     Play with PulseAudio" << std::endl;
+		return true;
+	}
+
+	return false;
+}
+
+int main(int argc, char *argv[]) {
+	ArgumentParser args(argc, argv);
+
+	if (printHelp(args)) {
+		return 0;
+	}
+
 	try {
 		PerformanceLog perf;
 
@@ -27,8 +56,7 @@ int main(int, char *argv[]) {
 
 		perf.log("Created audio buffer");
 
-		//auto output = std::make_shared<FileOutput>("out.wav", buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
-		auto output = std::make_shared<PulseAudio>(argv[0], buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+		auto output = getOutput(args, buffer);
 
 		perf.log("Created output");
 
