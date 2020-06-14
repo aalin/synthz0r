@@ -1,4 +1,5 @@
-FILES = $(basename $(wildcard *.cpp))
+#FILES = $(basename $(wildcard *.cpp) $(wildcard **/*.cpp))
+FILES = $(basename $(shell find . -name "*.cpp"))
 OBJS = $(addsuffix .o, $(FILES))
 TARGET = ../synthz0r
 
@@ -27,6 +28,8 @@ info:
 	@echo "CC: $(CC)"
 	@echo "LFLAGS: $(LFLAGS)"
 	@echo "CFLAGS: $(CFLAGS)"
+	@echo "FILES: $(FILES)"
+	@echo "OBJS: $(OBJS)"
 	@echo
 
 waveform.cpp: $(shell find waveforms/)
@@ -43,6 +46,6 @@ $(TARGET): waveform.cpp $(OBJS)
 	@$(CC) $(SUBDIR_OBJS) $(OBJS) $(LFLAGS) -o $(TARGET)
 
 clean:
-	rm -f *.o $(TARGET)
+	rm -f $(OBJS) $(TARGET)
 
 .PHONY: info all demo clean
