@@ -43,17 +43,17 @@ int main(int, char *argv[]) {
 
 		perf.log("Created snare");
 
-		snare->set("oscillatorType", Units::Oscillator::Type::NOISE);
-		snare->set("amplitude", 10);
-		snare->set("transpose", 0);
-		snare->set("envelope.attackMs", 50);
-		snare->set("envelope.decayMs", 100);
-		snare->set("envelope.sustain", 0);
-		snare->set("envelope.releaseMs", 50);
-		snare->set("filter.enabled", 0);
-		snare->set("filter.type", 1);
-		snare->set("filter.cutoffHz", 3000);
-		snare->set("filter.resonance", 300);
+		snare->setParam("oscillatorType", Units::Oscillator::Type::NOISE);
+		snare->setParam("amplitude", 10);
+		snare->setParam("transpose", 0);
+		snare->setParam("envelope.attackMs", 50);
+		snare->setParam("envelope.decayMs", 100);
+		snare->setParam("envelope.sustain", 0);
+		snare->setParam("envelope.releaseMs", 50);
+		snare->setParam("filter.enabled", 0);
+		snare->setParam("filter.type", 1);
+		snare->setParam("filter.cutoffHz", 3000);
+		snare->setParam("filter.resonance", 300);
 
 		perf.log("Set snare params");
 
@@ -72,13 +72,13 @@ int main(int, char *argv[]) {
 		perf.log("Route snare outputs");
 
 		auto wavetableSynth = std::make_shared<Devices::WavetableSynth>();
-		wavetableSynth->set("amplitude", 10);
-		wavetableSynth->set("transpose", 0);
-		wavetableSynth->set("panning", 127);
-		wavetableSynth->set("envelope.attackMs", 50);
-		wavetableSynth->set("envelope.decayMs", 100);
-		wavetableSynth->set("envelope.sustain", 100);
-		wavetableSynth->set("envelope.releaseMs", 50);
+		wavetableSynth->setParam("amplitude", 10);
+		wavetableSynth->setParam("transpose", 0);
+		wavetableSynth->setParam("panning", 127);
+		wavetableSynth->setParam("envelope.attackMs", 50);
+		wavetableSynth->setParam("envelope.decayMs", 100);
+		wavetableSynth->setParam("envelope.sustain", 100);
+		wavetableSynth->setParam("envelope.releaseMs", 50);
 
 		wavetableSynth->outputs()
 			.add(engine.getOutputDevice());
@@ -100,20 +100,20 @@ int main(int, char *argv[]) {
 			std::cout << param << std::endl;
 		}
 
-		synth1->set("oscillatorType", Units::Oscillator::Type::SAW);
-		synth1->set("panning", -127);
-		synth1->set("amplitude", 50);
-		synth1->set("transpose", 12);
-		synth1->set("envelope.attackMs", 100);
-		synth1->set("envelope.decayMs", 300);
-		synth1->set("envelope.sustain", 0);
-		synth1->set("envelope.releaseMs", 50);
+		synth1->setParam("oscillatorType", Units::Oscillator::Type::SAW);
+		synth1->setParam("panning", -127);
+		synth1->setParam("amplitude", 50);
+		synth1->setParam("transpose", 12);
+		synth1->setParam("envelope.attackMs", 100);
+		synth1->setParam("envelope.decayMs", 300);
+		synth1->setParam("envelope.sustain", 0);
+		synth1->setParam("envelope.releaseMs", 50);
 
-		synth1->set("filter.enabled", 1);
-		synth1->set("filter.type", 1);
-		synth1->set("filter.cutoffHz", 5000);
-		synth1->set("filter.resonance", 400);
-		synth1->set("filter.bandwidth", 450);
+		synth1->setParam("filter.enabled", 1);
+		synth1->setParam("filter.type", 1);
+		synth1->setParam("filter.cutoffHz", 5000);
+		synth1->setParam("filter.resonance", 400);
+		synth1->setParam("filter.bandwidth", 450);
 
 		synth1->outputs()
 		//	.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
@@ -145,16 +145,16 @@ int main(int, char *argv[]) {
 
 		synth2->setName("Synth 2");
 
-		synth2->set("oscillatorType", Units::Oscillator::Type::SAW);
-		synth2->set("amplitude", 100);
-		synth2->set("transpose", -12 * 3);
-		synth2->set("envelope.attackMs", 150);
-		synth2->set("envelope.decayMs", 250);
-		synth2->set("envelope.sustain", 100);
-		synth2->set("envelope.releaseMs", 50);
+		synth2->setParam("oscillatorType", Units::Oscillator::Type::SAW);
+		synth2->setParam("amplitude", 100);
+		synth2->setParam("transpose", -12 * 3);
+		synth2->setParam("envelope.attackMs", 150);
+		synth2->setParam("envelope.decayMs", 250);
+		synth2->setParam("envelope.sustain", 100);
+		synth2->setParam("envelope.releaseMs", 50);
 
-		synth2->set("filter.cutoffHz", 5000);
-		synth2->set("filter.resonance", 200);
+		synth2->setParam("filter.cutoffHz", 5000);
+		synth2->setParam("filter.resonance", 200);
 
 		synth2->outputs()
 			//.add(std::make_shared<Devices::Bitcrusher>(4, 20))->outputs()
@@ -207,7 +207,7 @@ int main(int, char *argv[]) {
 			const int curr = timer.seconds() / 2;
 
 			if (curr != prev) {
-				wavetableSynth->set("waveformIndex", (int)timer.seconds() % 19);
+				wavetableSynth->setParam("waveformIndex", (int)timer.seconds() % 19);
 				std::cout << "Using waveform " << wavetableSynth->getWaveformName() << std::endl;
 
 				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));
@@ -219,7 +219,7 @@ int main(int, char *argv[]) {
 			}
 
 /*
-			synth1->set("panning", Utils::rsin(timer.seconds(), -127, 127));
+			synth1->setParam("panning", Utils::rsin(timer.seconds(), -127, 127));
 
 			snareSeq.setSpeed(8.0);
 			sequencer1.setSpeed(2.0);
