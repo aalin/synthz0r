@@ -10,7 +10,7 @@ RESET = "\\033[0m"
 
 CC=g++
 CFLAGS=-Wall -Wextra -pedantic -ggdb -std=c++2a
-LFLAGS=-lpulse-simple -lpulse -lm
+LFLAGS=-lpulse-simple -lpulse -lm -lpthread
 
 %.o: %.cpp %.hpp
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"

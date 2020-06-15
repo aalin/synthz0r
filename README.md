@@ -6,6 +6,8 @@ Simple synth engine. The goal is to have something that is easily controlled via
 
 * gcc 9.3.0 (but older versions may work too)
 * PulseAudio
+* websocketpp
+  * (depends on boost)
 
 ## Building
 
