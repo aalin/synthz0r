@@ -1,9 +1,10 @@
 #include "wavetable_synth.hpp"
 
+constexpr float sampleTranspose = 0.0f;
+
 void Devices::WavetableSynth::update(const Timer &timer, float pitchBend) {
 	float v = 0.0;
 
-	constexpr float sampleTranspose = 3.f;
 	float transpose = sampleTranspose + _transpose + _pitchBendRange * pitchBend;
 
 	for (auto it = _voices.begin(); it != _voices.end();) {
@@ -25,7 +26,7 @@ void Devices::WavetableSynth::update(const Timer &timer, float pitchBend) {
 	}
 
 	StereoSample out = Utils::pan(
-		Utils::volume(v * amplitude()),
+		v * amplitude(),
 		panning()
 	);
 

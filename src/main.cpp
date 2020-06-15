@@ -7,6 +7,7 @@
 #include "devices/delay.hpp"
 #include "devices/overdrive.hpp"
 #include "devices/bitcrusher.hpp"
+#include "devices/kickdrum.hpp"
 #include "utils.hpp"
 #include "sequencer.hpp"
 #include "note.hpp"
@@ -17,7 +18,7 @@
 
 #include "argument_parser.hpp"
 
-constexpr unsigned int BUFFER_SIZE = 1024 * 8;
+constexpr unsigned int BUFFER_SIZE = 1024 * 1;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
 
@@ -67,6 +68,22 @@ int main(int argc, char *argv[]) {
 		engine.start();
 		perf.log("Created output");
 
+		auto kick = std::make_shared<Devices::Kickdrum>();
+		kick->setParam("amplitude", 30);
+		engine.addDevice(kick);
+
+		kick->outputs()
+			.add(engine.getOutputDevice());
+		perf.log("Created kick");
+
+		Sequencer kickSeq(4, 1.0, 1.0);
+
+		kickSeq
+			.setStep(0, NOTE(C,4))
+			.setStep(1, NOTE_OFF)
+			.setStep(1, NOTE_OFF)
+			.setStep(1, NOTE_OFF);
+
 		auto snare = std::make_shared<Devices::Synth>();
 
 		perf.log("Created snare");
@@ -89,19 +106,27 @@ int main(int argc, char *argv[]) {
 
 		perf.log("Adding snare to engine");
 
-		auto snareDelay = std::make_shared<Devices::Delay>(150, 100, 50);
-
 		perf.log("Created snare delay effect");
 
 		snare->outputs()
-			.add(snareDelay)->outputs()
+			.add(std::make_shared<Devices::Delay>(150, 100, 50))->outputs()
 			.add(engine.getOutputDevice());
 
 		perf.log("Route snare outputs");
 
+		Sequencer snareSeq(4, 1.0, 1.0);
+
+		snareSeq
+			.setStep(0, NOTE(C,4))
+			.setStep(1, NOTE_OFF)
+			.setStep(2, NOTE(C,4))
+			.setStep(3, NOTE(C,4));
+
+		perf.log("Create snare sequencer");
+
 		auto wavetableSynth = std::make_shared<Devices::WavetableSynth>();
 		wavetableSynth->setParam("amplitude", 20);
-		wavetableSynth->setParam("transpose", 0);
+		wavetableSynth->setParam("transpose", -12 * 2);
 		wavetableSynth->setParam("panning", 127);
 		wavetableSynth->setParam("envelope.attackMs", 500);
 		wavetableSynth->setParam("envelope.decayMs", 100);
@@ -112,13 +137,6 @@ int main(int argc, char *argv[]) {
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(wavetableSynth);
-
-		Sequencer snareSeq(4, 1.0, 1.0);
-
-		snareSeq
-			.setStep(0, NOTE(C,4))
-			.setStep(2, NOTE(C,4))
-			.setStep(3, NOTE(C,4));
 
 		auto synth1 = std::make_shared<Devices::Synth>();
 
@@ -145,7 +163,7 @@ int main(int argc, char *argv[]) {
 
 		synth1->outputs()
 		//	.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
-			.add(std::make_shared<Devices::Delay>(250, 100, 50))->outputs()
+	//		.add(std::make_shared<Devices::Delay>(250, 100, 50))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
@@ -169,26 +187,46 @@ int main(int argc, char *argv[]) {
 			.setStep(13, NOTE(A,4))
 			.setStep(14, NOTE(G,4));
 
-		auto synth2 = std::make_shared<Devices::Synth>();
+		Sequencer sequencer11(16, 1.0, 1.0);
 
-		synth2->setName("Synth 2");
+		sequencer11
+			.setStep(0, NOTE(G,4))
+			.setStep(1, NOTE(G,4))
+			.setStep(2, NOTE(D,5))
+			.setStep(3, NOTE(D,5))
+			.setStep(4, NOTE(E,5))
+			.setStep(5, NOTE(E,5))
+			.setStep(6, NOTE(D,5))
+			.setStep(7, NOTE_OFF)
+			.setStep(8, NOTE(C,5))
+			.setStep(9, NOTE(C,5))
+			.setStep(10, NOTE(B,4))
+			.setStep(11, NOTE(B,4))
+			.setStep(12, NOTE(A,4))
+			.setStep(13, NOTE(A,4))
+			.setStep(14, NOTE(G,4));
 
-		synth2->setParam("oscillatorType", Units::Oscillator::Type::SAW);
-		synth2->setParam("amplitude", 100);
-		synth2->setParam("transpose", -12 * 3);
-		synth2->setParam("envelope.attackMs", 150);
-		synth2->setParam("envelope.decayMs", 250);
-		synth2->setParam("envelope.sustain", 100);
-		synth2->setParam("envelope.releaseMs", 50);
+		auto bass = std::make_shared<Devices::Synth>();
 
-		synth2->setParam("filter.cutoffHz", 5000);
-		synth2->setParam("filter.resonance", 200);
+		bass->setName("Synth 2");
 
-		synth2->outputs()
+		bass->setParam("oscillatorType", Units::Oscillator::Type::SQUARE);
+		bass->setParam("amplitude", 5);
+		bass->setParam("transpose", -12 * 2);
+		bass->setParam("envelope.attackMs", 150);
+		bass->setParam("envelope.decayMs", 250);
+		bass->setParam("envelope.sustain", 100);
+		bass->setParam("envelope.releaseMs", 50);
+
+		bass->setParam("filter.enabled", 0);
+		bass->setParam("filter.cutoffHz", 4000);
+		bass->setParam("filter.resonance", 200);
+
+		bass->outputs()
 			//.add(std::make_shared<Devices::Bitcrusher>(4, 20))->outputs()
 			.add(engine.getOutputDevice());
 
-		engine.addDevice(synth2);
+		engine.addDevice(bass);
 
 		Sequencer sequencer2(32, 1.0, 1.0);
 
@@ -230,34 +268,35 @@ int main(int argc, char *argv[]) {
 
 		while (engine.running()) {
 			const Timer &timer = engine.timer();
-			std::cout << "Time: " << timer.seconds() << std::endl;
-
 			const int curr = timer.seconds() / 2;
 
 			if (curr != prev) {
+				std::cout << "Time: " << timer.seconds() << std::endl;
 				wavetableSynth->setParam("waveformIndex", curr % 19);
 				std::cout << "Using waveform " << wavetableSynth->getWaveformName() << std::endl;
 
-				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));
-				wavetableSynth->noteOn(timer, 60 + Utils::mod(curr, 12));
+//				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));
+//				wavetableSynth->noteOn(timer, 60 + Utils::mod(curr, 12));
 
-				synth1->noteOff(timer, 60 - 12);
-				synth1->noteOn(timer, 60 - 12);
+//				synth1->noteOff(timer, 60 - 12);
+//				synth1->noteOn(timer, 60 - 12);
 				prev = curr;
 			}
 
-/*
 			synth1->setParam("panning", Utils::rsin(timer.seconds(), -127, 127));
 
-			snareSeq.setSpeed(8.0);
+			kickSeq.setSpeed(8.0);
+			snareSeq.setSpeed(4.0);
 			sequencer1.setSpeed(2.0);
+			sequencer11.setSpeed(2.0);
 			sequencer2.setSpeed(4.0);
 
-			sequencer1.update(timer, synth1);
-			sequencer2.update(timer, synth2);
-			snareSeq.update(timer, snare);
+			sequencer1.tick(timer, synth1);
+			sequencer11.tick(timer, wavetableSynth);
+			sequencer2.tick(timer, bass);
+			snareSeq.tick(timer, snare);
+			kickSeq.tick(timer, kick);
 
-			*/
 			engine.update();
 
 			if (timer.seconds() > 60) {

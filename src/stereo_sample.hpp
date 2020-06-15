@@ -51,6 +51,12 @@ struct StereoSample {
 		return *this;
 	}
 
+	StereoSample & mul(const float &value) {
+		left *= value;
+		right *= value;
+		return *this;
+	}
+
 	constexpr StereoSample& operator=(const StereoSample &other) {
 		left = other.left;
 		right = other.right;

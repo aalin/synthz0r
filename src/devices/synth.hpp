@@ -84,7 +84,7 @@ class Synth : public BaseDevice {
 			}
 
 			StereoSample out = Utils::pan(
-				Utils::volume(v * amplitude()),
+				v * amplitude(),
 				panning()
 			);
 

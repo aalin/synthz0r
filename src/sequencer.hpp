@@ -1,7 +1,7 @@
 #ifndef SEQUENCER_HPP
 #define SEQUENCER_HPP
 
-#include "devices/synth.hpp"
+#include "devices/base_device.hpp"
 
 class Sequencer {
 	public:
@@ -32,7 +32,7 @@ class Sequencer {
 			return *this;
 		}
 
-		void update(const Timer &timer, std::shared_ptr<Devices::Synth> synth) {
+		void tick(const Timer &timer, Devices::DevicePtr synth) {
 			const int length = _notes.size();
 			const int step = Utils::mod(static_cast<int>(timer.seconds() * _speed), length);
 

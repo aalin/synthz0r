@@ -21,6 +21,9 @@ class BaseDevice {
 		  _parameters(vars)
 		{ }
 
+		virtual void noteOn(const Timer &, int, float) { }
+		virtual void noteOff(const Timer &, int) { }
+
 		virtual void update(const Timer &, float) { }
 		virtual void update(const Timer &) { }
 
@@ -32,10 +35,12 @@ class BaseDevice {
 		}
 
 		virtual void input(const Timer &, const float &) {
+			std::cerr << name() << " should implement input(const Timer &, const float &)" << std::endl;
 			throw "BaseDevice received input";
 		}
 
 		virtual void input(const Timer &, const StereoSample &) {
+			std::cerr << name() << " should implement input(const Timer &, const StereoSample &)" << std::endl;
 			throw "BaseDevice received input";
 		}
 
