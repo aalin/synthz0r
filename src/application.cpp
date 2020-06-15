@@ -36,8 +36,9 @@ Engine setupEngine(const ArgumentParser &args) {
 	return Engine(SAMPLE_RATE, buffer, output);
 }
 
-Application::Application(const ArgumentParser &args)
-: _engine(setupEngine(args))
+Application::Application(const ArgumentParser &args, Websocket::MessageQueue &mq)
+: _engine(setupEngine(args)),
+  _mq(mq)
 {}
 
 void Application::start() {
