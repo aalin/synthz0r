@@ -1,3 +1,6 @@
+#ifndef ARGUMENT_PARSER_HPP
+#define ARGUMENT_PARSER_HPP
+
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -46,3 +49,5 @@ class ArgumentParser {
 	private:
 		std::vector<std::string> _args;
 };
+
+#endif
