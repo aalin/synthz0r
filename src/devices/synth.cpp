@@ -1,11 +1,7 @@
-#include "wavetable_synth.hpp"
+#include "synth.hpp"
 
-constexpr float sampleTranspose = 0.0f;
-
-void Devices::WavetableSynth::update(const Timer &timer, float pitchBend) {
+void Devices::Synth::update(const Timer &timer, float pitchBend) {
 	float v = 0.0;
-
-	float transpose = sampleTranspose + _transpose + _pitchBendRange * pitchBend;
 
 	for (auto it = _voices.begin(); it != _voices.end();) {
 		auto &voice = *it;
@@ -17,11 +13,15 @@ void Devices::WavetableSynth::update(const Timer &timer, float pitchBend) {
 			++it;
 		}
 
-		float freq = Utils::noteToFrequency(voice.note + transpose);
-		float value = voice.update(freq, timer);
+		float freq = Utils::noteToFrequency(voice.note + _transpose + _pitchBendRange * pitchBend);
+		float value = voice.oscillator.update(freq, timer);
 		float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
 		v += value * voice.velocity * env;
+	}
+
+	if (_filterEnabled) {
+		v = _filter.update(timer, v);
 	}
 
 	StereoSample out = Utils::pan(

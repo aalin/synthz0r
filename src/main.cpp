@@ -69,10 +69,11 @@ int main(int argc, char *argv[]) {
 		perf.log("Created output");
 
 		auto kick = std::make_shared<Devices::Kickdrum>();
-		kick->setParam("amplitude", 30);
+		kick->setParam("amplitude", 100);
 		engine.addDevice(kick);
 
 		kick->outputs()
+			//.add(std::make_shared<Devices::Overdrive>(52, 100))->outputs()
 			.add(engine.getOutputDevice());
 		perf.log("Created kick");
 
@@ -89,7 +90,7 @@ int main(int argc, char *argv[]) {
 		perf.log("Created snare");
 
 		snare->setParam("oscillatorType", Units::Oscillator::Type::NOISE);
-		snare->setParam("amplitude", 10);
+		snare->setParam("amplitude", 30);
 		snare->setParam("transpose", 0);
 		snare->setParam("envelope.attackMs", 50);
 		snare->setParam("envelope.decayMs", 100);
@@ -162,8 +163,8 @@ int main(int argc, char *argv[]) {
 		synth1->setParam("filter.bandwidth", 450);
 
 		synth1->outputs()
-		//	.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
-	//		.add(std::make_shared<Devices::Delay>(250, 100, 50))->outputs()
+			.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
+			.add(std::make_shared<Devices::Delay>(250, 100, 50))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
@@ -268,11 +269,11 @@ int main(int argc, char *argv[]) {
 
 		while (engine.running()) {
 			const Timer &timer = engine.timer();
-			const int curr = timer.seconds() / 2;
+			const int curr = timer.seconds();
 
 			if (curr != prev) {
 				std::cout << "Time: " << timer.seconds() << std::endl;
-				wavetableSynth->setParam("waveformIndex", curr % 19);
+				wavetableSynth->setParam("waveformIndex", (curr / 2) % Waveform::WAVEFORMS.size());
 				std::cout << "Using waveform " << wavetableSynth->getWaveformName() << std::endl;
 
 //				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));

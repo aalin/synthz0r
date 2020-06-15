@@ -38,7 +38,7 @@ class Parameter {
 
 		const Parameter & setValue(int newValue) {
 			_value = Utils::clamp(newValue, _min, _max);
-			std::cout << "Setting " << _name << " to " << _value << std::endl;
+			// std::cout << "Setting " << _name << " to " << _value << std::endl;
 			return *this;
 		}
 

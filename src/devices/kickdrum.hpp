@@ -4,6 +4,7 @@
 #include "base_device.hpp"
 #include "../units/oscillator.hpp"
 #include "../units/adsr.hpp"
+#include "../units/state_variable_filter.hpp"
 #include "../stereo_sample.hpp"
 
 namespace Devices {
@@ -21,7 +22,8 @@ namespace Devices {
 		private:
 			Units::Oscillator _oscillator;
 			Units::ADSR _envelope;
-			Units::ADSR _freqEnvelope;
+			Units::ADSR _pitchEnvelope;
+			Units::StateVariableFilter _filter;
 			int _panning;
 			int _amplitude;
 			float _noteOnTime;

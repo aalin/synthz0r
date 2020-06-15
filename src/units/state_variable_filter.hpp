@@ -26,7 +26,7 @@ struct StateVariableFilter {
 	} state;
 
 	float update(const Timer &timer, float input) {
-		float cutoffHz = _cutoffHz / 100.0;
+		float cutoffHz = _cutoffHz / 10.0;
 		float resonance = _resonance / 10.0;
 		//float bandwidth = _bandwidth / 10.0;
 
