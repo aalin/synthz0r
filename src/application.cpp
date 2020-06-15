@@ -260,24 +260,13 @@ void Application::run() {
 			.setStep(30, NOTE(G,3))
 			.setStep(31, NOTE(G,4));
 
-		int prev = -1;
-
 		while (engine.running()) {
 			const Timer &timer = engine.timer();
-			const int curr = timer.seconds();
 
-			if (curr != prev) {
-				std::cout << "Time: " << timer.seconds() << std::endl;
-				wavetableSynth->setParam("waveformIndex", (curr / 2) % Waveform::WAVEFORMS.size());
-				std::cout << "Using waveform " << wavetableSynth->getWaveformName() << std::endl;
-
-//				wavetableSynth->noteOff(timer, 60 + Utils::mod(prev, 12));
-//				wavetableSynth->noteOn(timer, 60 + Utils::mod(curr, 12));
-
-//				synth1->noteOff(timer, 60 - 12);
-//				synth1->noteOn(timer, 60 - 12);
-				prev = curr;
-			}
+			_mq.process([&] (auto message) {
+				std::cout << "Got message: " << message->payload << std::endl;
+				message->reply(message->payload);
+			});
 
 			synth1->setParam("panning", Utils::rsin(timer.seconds(), -127, 127));
 
