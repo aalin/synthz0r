@@ -8,10 +8,11 @@ constexpr int DEFAULT_PORT = 9000;
 
 bool printHelp(const ArgumentParser &args) {
 	if (args.has("-h")) {
-		std::cout
-			<< args.get(0) << " -h                  Print help" << std::endl
-			<< args.get(0) << " -f filename.wav     Export to file" << std::endl
-			<< args.get(0) << "                     Play with PulseAudio" << std::endl;
+		std::cout <<
+			"Usage: " << args.get(0) << " [OPTION]..." << std::endl << std::endl <<
+			"  -h                  Print help" << std::endl <<
+			"  -f filename.wav     Export .wav to file" << std::endl <<
+			"  -p 1234             Listen to port 1234" << std::endl;
 		return true;
 	}
 
