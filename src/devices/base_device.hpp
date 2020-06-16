@@ -22,9 +22,6 @@ class BaseDevice {
 		  _parameters(vars)
 		{ }
 
-		virtual void noteOn(const Timer &, int, float) { }
-		virtual void noteOff(const Timer &, int) { }
-
 		virtual void update(const Timer &, float) { }
 		virtual void update(const Timer &) { }
 
