@@ -5,8 +5,11 @@ void Devices::Sequencer::update(const Timer &timer, float) {
 		 _notes.resize(_steps, -1);
 	 }
 
-	 const float speed = 60.0 / _bpm;
-	 const int step = Utils::mod(static_cast<size_t>(timer.seconds() / speed), _notes.size());
+	 const double beatsPerSecond = (_bpm * _rate) / 60.0;
+	 const double speed = beatsPerSecond / timer.sampleRate();
+	 const int step = Utils::mod(static_cast<size_t>(_time), _notes.size());
+
+	 _time += speed;
 
 	 if (step != _lastStep) {
 		 std::cout << "Sequencer update: " << step << std::endl;

@@ -10,7 +10,6 @@
 #include "devices/kickdrum.hpp"
 #include "devices/sequencer.hpp"
 #include "utils.hpp"
-#include "sequencer.hpp"
 #include "note.hpp"
 #include "performance_log.hpp"
 
@@ -84,6 +83,7 @@ void Application::run() {
 		perf.log("Created output");
 
 		auto kick = std::make_shared<Devices::Kickdrum>();
+		kick->setName("Kickdrum");
 		kick->setParam("amplitude", 100);
 		engine.addDevice(kick);
 
@@ -92,15 +92,19 @@ void Application::run() {
 			.add(engine.getOutputDevice());
 		perf.log("Created kick");
 
-		Sequencer kickSeq(4, 1.0, 1.0);
+		auto kickSeq = std::make_shared<Devices::Sequencer>();
+		engine.addDevice(kickSeq);
 
-		kickSeq
-			.setStep(0, NOTE(C,4))
-			.setStep(1, NOTE_OFF)
-			.setStep(1, NOTE_OFF)
-			.setStep(1, NOTE_OFF);
+		kickSeq->outputs().add(kick);
+		kickSeq->setSteps({
+			NOTE(C,4),
+			NOTE_OFF,
+			NOTE_OFF,
+			NOTE_OFF,
+		});
 
 		auto snare = std::make_shared<Devices::Synth>();
+		kick->setName("Snare");
 
 		perf.log("Created snare");
 
@@ -130,19 +134,24 @@ void Application::run() {
 
 		perf.log("Route snare outputs");
 
-		Sequencer snareSeq(4, 1.0, 1.0);
 
-		snareSeq
-			.setStep(0, NOTE(C,4))
-			.setStep(1, NOTE_OFF)
-			.setStep(2, NOTE(C,4))
-			.setStep(3, NOTE(C,4));
+		auto snareSeq = std::make_shared<Devices::Sequencer>();
+		engine.addDevice(snareSeq);
+
+		snareSeq->outputs().add(snare);
+		snareSeq->setSteps({
+			NOTE(C,4),
+			NOTE_OFF,
+			NOTE(C,4),
+			NOTE(C,4)
+		});
 
 		perf.log("Create snare sequencer");
 
 		auto wavetableSynth = std::make_shared<Devices::WavetableSynth>();
-		wavetableSynth->setParam("amplitude", 20);
-		wavetableSynth->setParam("transpose", -12 * 2);
+		wavetableSynth->setName("Wavetable synth");
+		wavetableSynth->setParam("amplitude", 100);
+		wavetableSynth->setParam("transpose", -12 * 1);
 		wavetableSynth->setParam("panning", 127);
 		wavetableSynth->setParam("envelope.attackMs", 500);
 		wavetableSynth->setParam("envelope.decayMs", 100);
@@ -185,46 +194,17 @@ void Application::run() {
 		engine.addDevice(synth1);
 
 		auto sequencer1 = std::make_shared<Devices::Sequencer>(16, 200, 100);
-
-		sequencer1
-			->setStep(0, NOTE(G,4))
-			->setStep(1, NOTE(G,4))
-			->setStep(2, NOTE(D,5))
-			->setStep(3, NOTE(D,5))
-			->setStep(4, NOTE(E,5))
-			->setStep(5, NOTE(E,5))
-			->setStep(6, NOTE(D,5))
-			->setStep(7, NOTE_OFF)
-			->setStep(8, NOTE(C,5))
-			->setStep(9, NOTE(C,5))
-			->setStep(10, NOTE(B,4))
-			->setStep(11, NOTE(B,4))
-			->setStep(12, NOTE(A,4))
-			->setStep(13, NOTE(A,4))
-			->setStep(14, NOTE(G,4));
-
-		sequencer1->outputs().add(synth1);
-
 		engine.addDevice(sequencer1);
 
-		Sequencer sequencer11(16, 1.0, 1.0);
+		sequencer1->outputs().add(synth1);
+		sequencer1->outputs().add(wavetableSynth);
 
-		sequencer11
-			.setStep(0, NOTE(G,4))
-			.setStep(1, NOTE(G,4))
-			.setStep(2, NOTE(D,5))
-			.setStep(3, NOTE(D,5))
-			.setStep(4, NOTE(E,5))
-			.setStep(5, NOTE(E,5))
-			.setStep(6, NOTE(D,5))
-			.setStep(7, NOTE_OFF)
-			.setStep(8, NOTE(C,5))
-			.setStep(9, NOTE(C,5))
-			.setStep(10, NOTE(B,4))
-			.setStep(11, NOTE(B,4))
-			.setStep(12, NOTE(A,4))
-			.setStep(13, NOTE(A,4))
-			.setStep(14, NOTE(G,4));
+		sequencer1->setSteps({
+			NOTE(G,4), NOTE(G,4), NOTE(D,5), NOTE(D,5),
+			NOTE(E,5), NOTE(E,5), NOTE(D,5), NOTE_OFF,
+			NOTE(C,5), NOTE(C,5), NOTE(B,4), NOTE(B,4),
+			NOTE(A,4), NOTE(A,4), NOTE(G,4), NOTE_OFF
+		});
 
 		auto bass = std::make_shared<Devices::Synth>();
 
@@ -232,7 +212,7 @@ void Application::run() {
 
 		bass->setParam("oscillatorType", Units::Oscillator::Type::SQUARE);
 		bass->setParam("amplitude", 5);
-		bass->setParam("transpose", -12 * 2);
+		bass->setParam("transpose", -12 * 1);
 		bass->setParam("envelope.attackMs", 150);
 		bass->setParam("envelope.decayMs", 250);
 		bass->setParam("envelope.sustain", 100);
@@ -248,61 +228,38 @@ void Application::run() {
 
 		engine.addDevice(bass);
 
-		Sequencer sequencer2(32, 1.0, 1.0);
+		auto sequencer2 = std::make_shared<Devices::Sequencer>(32, 200, 100);
+		engine.addDevice(sequencer2);
 
-		sequencer2
-			.setStep(0, NOTE(G,4))
-			.setStep(1, NOTE(G,5))
-			.setStep(2, NOTE(G,4))
-			.setStep(3, NOTE(G,5))
-			.setStep(4, NOTE(D,4))
-			.setStep(5, NOTE(D,5))
-			.setStep(6, NOTE(D,4))
-			.setStep(7, NOTE(D,5))
-			.setStep(8, NOTE(E,4))
-			.setStep(9, NOTE(E,5))
-			.setStep(10, NOTE(E,4))
-			.setStep(11, NOTE(E,5))
-			.setStep(12, NOTE(D,4))
-			.setStep(13, NOTE(D,3))
-			.setStep(14, NOTE(D,4))
-			.setStep(15, NOTE(D,5))
-			.setStep(16, NOTE(C,4))
-			.setStep(17, NOTE(C,5))
-			.setStep(18, NOTE(C,4))
-			.setStep(19, NOTE(C,5))
-			.setStep(20, NOTE(B,3))
-			.setStep(21, NOTE(B,4))
-			.setStep(22, NOTE(B,3))
-			.setStep(23, NOTE(B,4))
-			.setStep(24, NOTE(A,3))
-			.setStep(25, NOTE(A,4))
-			.setStep(26, NOTE(A,3))
-			.setStep(27, NOTE(A,4))
-			.setStep(28, NOTE(G,3))
-			.setStep(29, NOTE(G,2))
-			.setStep(30, NOTE(G,3))
-			.setStep(31, NOTE(G,4));
+		sequencer2->outputs().add(bass);
+		sequencer2->setSteps({
+			NOTE(G,4), NOTE(G,5), NOTE(G,4), NOTE(G,5),
+			NOTE(D,4), NOTE(D,5), NOTE(D,4), NOTE(D,5),
+			NOTE(E,4), NOTE(E,5), NOTE(E,4), NOTE(E,5),
+			NOTE(D,4), NOTE(D,3), NOTE(D,4), NOTE(D,5),
+			NOTE(C,4), NOTE(C,5), NOTE(C,4), NOTE(C,5),
+			NOTE(B,3), NOTE(B,4), NOTE(B,3), NOTE(B,4),
+			NOTE(A,3), NOTE(A,4), NOTE(A,3), NOTE(A,4),
+			NOTE(G,3), NOTE(G,2), NOTE(G,3), NOTE(G,4)
+		});
 
 		while (_running) {
 			const Timer &timer = engine.timer();
 
 			processMessageQueue(_server.update());
 
-			synth1->setParam("panning", Utils::rsin(timer.seconds(), -127, 127));
+			synth1->setParam("panning", -127);
+			wavetableSynth->setParam("panning", 127);
 
-			kickSeq.setSpeed(8.0);
-			snareSeq.setSpeed(4.0);
+			const int bpm = Utils::rsin(timer.seconds() / 2.0, 90, 120);
 
-			sequencer1->setParam("bpm", 120);
-
-			sequencer11.setSpeed(2.0);
-			sequencer2.setSpeed(4.0);
-
-			sequencer11.tick(timer, wavetableSynth);
-			sequencer2.tick(timer, bass);
-			snareSeq.tick(timer, snare);
-			kickSeq.tick(timer, kick);
+			sequencer1->setParam("bpm", bpm);
+			sequencer2->setParam("bpm", bpm);
+			sequencer2->setParam("rate", 2);
+			snareSeq->setParam("bpm", bpm);
+			snareSeq->setParam("rate", 4);
+			kickSeq->setParam("bpm", bpm);
+			kickSeq->setParam("rate", 4);
 
 			engine.update();
 

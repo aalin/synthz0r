@@ -6,11 +6,23 @@
 #include "../units/adsr.hpp"
 #include "../units/state_variable_filter.hpp"
 #include "../stereo_sample.hpp"
+#include "../note_event.hpp"
 
 namespace Devices {
 	class Kickdrum : public BaseDevice {
 		public:
 			Kickdrum();
+
+			void input(const Timer &timer, const NoteEvent &event) {
+				switch (event.type) {
+					case NoteEvent::Type::NOTE_ON:
+						std::cout << name() << " received a NoteOn_" << (int)event.note << std::endl;
+						noteOn(timer, event.note, event.velocity / 100.0);
+						break;
+					default:
+						break;
+				}
+			}
 
 			void noteOn(const Timer &timer, int, float) {
 				std::cout << "Trigger kick" << std::endl;

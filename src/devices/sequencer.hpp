@@ -11,12 +11,18 @@ namespace Devices {
 			: BaseDevice("Sequencer", {
 				Parameter("steps",    0,  32,    steps,    _steps),
 				Parameter("velocity", 0, 127, velocity, _velocity),
-				Parameter("bpm",      0, 400,      bpm,      _bpm)
+				Parameter("bpm",      0, 400,      bpm,      _bpm),
+				Parameter("rate",     0,   8,        1,     _rate)
 			  }),
 			  _notes(steps, -1)
 			{}
 
 			void update(const Timer &, float);
+
+			void setSteps(std::initializer_list<int8_t> values) {
+				_notes.assign(values);
+				_steps = _notes.size();
+			}
 
 			Sequencer * setStep(size_t step, int8_t value) {
 				std::cout << name() << ": attempting to set step " << step << " but size is " << _notes.size() << std::endl;
@@ -38,9 +44,11 @@ namespace Devices {
 			int _steps;
 			int _velocity;
 			int _bpm;
+			int _rate;
 
 			int8_t _lastStep = -1;
 			int8_t _lastNote = -1;
+			double _time = 0.0;
 
 			std::vector<int8_t> _notes;
 	};

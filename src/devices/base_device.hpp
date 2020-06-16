@@ -37,17 +37,17 @@ class BaseDevice {
 
 		virtual void input(const Timer &, const float &) {
 			std::cerr << name() << " should implement input(const Timer &, const float &)" << std::endl;
-			throw "BaseDevice received input";
+			// throw "BaseDevice received input";
 		}
 
 		virtual void input(const Timer &, const StereoSample &) {
 			std::cerr << name() << " should implement input(const Timer &, const StereoSample &)" << std::endl;
-			throw "BaseDevice received input";
+			// throw "BaseDevice received input";
 		}
 
 		virtual void input(const Timer &, const NoteEvent &) {
 			std::cerr << name() << " should implement input(const Timer &, const NoteEvent &)" << std::endl;
-			throw "BaseDevice received input";
+			// throw "BaseDevice received input";
 		}
 
 		const ParameterList & parameters() const {
