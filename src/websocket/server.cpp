@@ -1,7 +1,6 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <set>
-#include "message_queue.hpp"
 #include "server.hpp"
 #include "server/server_message.hpp"
 
@@ -14,7 +13,7 @@ typedef server::message_ptr message_ptr;
 
 class WSServer : public Websocket::ServerPimpl {
 	public:
-		WSServer(Websocket::MessageQueue &mq) : _mq(mq) {
+		WSServer() {
 			_server.init_asio();
 
 			_server.set_open_handler(bind(&WSServer::onOpen, this, ::_1));
@@ -25,7 +24,6 @@ class WSServer : public Websocket::ServerPimpl {
 		void start(uint16_t port) {
 			_server.listen(port);
 			_server.start_accept();
-			_server.run();
 		}
 
 		void stop() {
@@ -33,8 +31,12 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		void broadcast(const std::string &message) {
-			for (auto it : _connections) {
-				_server.send(it, message, websocketpp::frame::opcode::text);
+			for (auto connection : _connections) {
+				_server.send(
+					connection,
+					message,
+					websocketpp::frame::opcode::text
+				);
 			}
 		}
 
@@ -47,7 +49,21 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		void onMessage(connection_hdl hdl, message_ptr msg) {
-			_mq.push(std::make_unique<Websocket::ServerMessage>(msg->get_payload(), &_server, hdl));
+			_mq.push(
+				std::make_unique<Websocket::ServerMessage>(
+					msg->get_payload(),
+					&_server,
+					hdl
+				)
+			);
+		}
+
+		Websocket::MessageQueue update() {
+			_server.poll();
+
+			Websocket::MessageQueue messages;
+			_mq.swap(messages);
+			return messages;
 		}
 
 	private:
@@ -55,9 +71,9 @@ class WSServer : public Websocket::ServerPimpl {
 
 		server _server;
 		ConnectionList _connections;
-		Websocket::MessageQueue &_mq;
+		Websocket::MessageQueue _mq;
 };
 
-Websocket::Server::Server(Websocket::MessageQueue &mq)
-: _serverPimpl(std::make_unique<WSServer>(mq))
+Websocket::Server::Server()
+: _serverPimpl(std::make_unique<WSServer>())
 {}

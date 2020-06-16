@@ -2,7 +2,7 @@
 #define WEBSOCKET__SERVER_HPP
 
 #include <string>
-#include "message_queue.hpp"
+#include "message.hpp"
 
 namespace Websocket {
 	class ServerPimpl {
@@ -10,11 +10,12 @@ namespace Websocket {
 			virtual void start(uint16_t) = 0;
 			virtual void stop() = 0;
 			virtual void broadcast(const std::string &message) = 0;
+			virtual Websocket::MessageQueue update() = 0;
 	};
 
 	class Server {
 		public:
-			Server(MessageQueue &mq);
+			Server();
 
 			void start(uint16_t port) {
 				_serverPimpl->start(port);
@@ -26,6 +27,10 @@ namespace Websocket {
 
 			void broadcast(const std::string &message) {
 				_serverPimpl->broadcast(message);
+			}
+
+			Websocket::MessageQueue update() {
+				return _serverPimpl->update();
 			}
 
 		private:

@@ -3,11 +3,11 @@
 
 #include "engine.hpp"
 #include "argument_parser.hpp"
-#include "websocket/message_queue.hpp"
+#include "websocket/server.hpp"
 
 class Application {
 	public:
-		Application(const ArgumentParser &, Websocket::MessageQueue &);
+		Application(const ArgumentParser &);
 
 		void start();
 		void stop();
@@ -21,8 +21,12 @@ class Application {
 
 		bool _running = false;
 
+		uint16_t _serverPort = 9000;
 		Engine _engine;
-		Websocket::MessageQueue &_mq;
+		Websocket::Server _server;
+
+		void processMessageQueue(Websocket::MessageQueue);
+		void processMessage(Websocket::MessagePtr);
 };
 
 #endif

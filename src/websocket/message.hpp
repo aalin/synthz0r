@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <queue>
 
 namespace Websocket {
 	struct Message {
@@ -14,6 +15,7 @@ namespace Websocket {
 	};
 
 	typedef std::unique_ptr<Message> MessagePtr;
+	typedef std::queue<MessagePtr> MessageQueue;
 }
 
 #endif

@@ -18,6 +18,21 @@
 constexpr unsigned int BUFFER_SIZE = 1024 * 1;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
+constexpr int DEFAULT_PORT = 9000;
+
+uint16_t getPort(const ArgumentParser &args) {
+	auto option = args.get("-p");
+
+	if (option.found) {
+		const uint16_t port = atoi(option.value.c_str());
+
+		if (port != 0) {
+			return port;
+		}
+	}
+
+	return DEFAULT_PORT;
+}
 
 std::shared_ptr<AudioOutput> getOutput(const ArgumentParser &args, AudioBufferPtr buffer) {
 	const auto filename = args.get("-f");
@@ -36,15 +51,21 @@ Engine setupEngine(const ArgumentParser &args) {
 	return Engine(SAMPLE_RATE, buffer, output);
 }
 
-Application::Application(const ArgumentParser &args, Websocket::MessageQueue &mq)
+Application::Application(const ArgumentParser &args)
 : _engine(setupEngine(args)),
-  _mq(mq)
-{}
+  _server(Websocket::Server())
+{
+	_serverPort = getPort(args);
+}
 
 void Application::start() {
 	if (_engine.running()) {
 		return;
 	}
+
+	std::cout << "Port: " << _serverPort << std::endl;
+
+	_server.start(_serverPort);
 
 	_engine.start();
 
@@ -53,6 +74,7 @@ void Application::start() {
 
 void Application::stop() {
 	_engine.stop();
+	_server.stop();
 }
 
 void Application::run() {
@@ -263,10 +285,7 @@ void Application::run() {
 		while (engine.running()) {
 			const Timer &timer = engine.timer();
 
-			_mq.process([&] (auto message) {
-				std::cout << "Got message: " << message->payload << std::endl;
-				message->reply(message->payload);
-			});
+			processMessageQueue(_server.update());
 
 			synth1->setParam("panning", Utils::rsin(timer.seconds(), -127, 127));
 
@@ -285,10 +304,22 @@ void Application::run() {
 			engine.update();
 
 			if (timer.seconds() > 60) {
-				engine.stop();
+				stop();
 			}
 		}
 	} catch (const char *msg) {
 		std::cerr << "Error: " << msg << std::endl;
 	}
+}
+
+void Application::processMessageQueue(Websocket::MessageQueue messages) {
+	while (!messages.empty()) {
+		processMessage(std::move(messages.front()));
+		messages.pop();
+	}
+}
+
+void Application::processMessage(Websocket::MessagePtr message) {
+	std::cout << "Got message: " << message->payload << std::endl;
+	message->reply(message->payload);
 }
