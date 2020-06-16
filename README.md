@@ -8,6 +8,7 @@ Simple synth engine. The goal is to have something that is easily controlled via
 * PulseAudio
 * websocketpp
   * (depends on boost)
+* protobuf
 
 ## Building
 

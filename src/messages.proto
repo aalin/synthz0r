@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package synthz0r.messages;
+
+message Envelope {
+  uint32 id = 1;
+  string type = 2;
+  bytes data = 3;
+}
+
+message TextRequest {
+  string payload = 1;
+}
+
+message TextResponse {
+  string payload = 1;
+}
+
+message DeviceParameter {
+  string name = 1;
+  int32 minValue = 2;
+  int32 maxValue = 3;
+  int32 defaultValue = 4;
+  int32 value = 5;
+  float scale = 6;
+  string unit = 7;
+}
+
+message Device {
+  int64 id = 1;
+  string name = 2;
+  repeated DeviceParameter parameters = 3;
+}
+
+message ListDevicesResponse {
+  repeated Device devices = 1;
+}
+
+message UpdateDeviceParameterRequest {
+  int64 id = 1;
+  string name = 2;
+  int32 value = 3;
+}
+
+message UpdateDeviceParameterResponse {
+  DeviceParameter parameters = 1;
+}
+
+message CreateDeviceRequest {
+  string name = 1;
+}
+
+message CreateDeviceResponse {
+  Device device = 1;
+}
+
+message DeviceConnection {
+  int64 sourceId = 1;
+  repeated int64 targetIds = 2;
+}
+
+message ConnectDeviceRequest {
+  int64 sourceId = 1;
+  int64 targetId = 2;
+}
+
+message ConnectDeviceResponse {
+  DeviceConnection connection = 1;
+}
+
+message DisconnectDeviceRequest {
+  int64 sourceId = 1;
+  int64 targetId = 2;
+}
+
+message DisconnectDeviceResponse {
+  DeviceConnection connection = 1;
+}

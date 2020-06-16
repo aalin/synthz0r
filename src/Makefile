@@ -10,7 +10,7 @@ RESET = "\\033[0m"
 
 CC=g++
 CFLAGS=-Wall -Wextra -pedantic -ggdb -std=c++2a
-LFLAGS=-lpulse-simple -lpulse -lm -lpthread
+LFLAGS=-lpulse-simple -lpulse -lm -lpthread -lprotobuf
 
 %.o: %.cpp %.hpp
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
@@ -23,6 +23,12 @@ run: $(TARGET)
 
 test: $(TARGET)
 	$(TARGET) test
+
+protobuf: protobuf/messages.pb.h
+
+protobuf/messages.pb.h: messages.proto
+	@echo -e "$(YELLOW)Generating protocol buffers $< => $@$(RESET)"
+	protoc --cpp_out=protobuf/ messages.proto
 
 info:
 	@echo "CC: $(CC)"
@@ -47,5 +53,8 @@ $(TARGET): waveform.cpp $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
+	rm -f protobuf/*.cc protobuf/*.h
 
 .PHONY: info all demo clean
+
+FORCE:
