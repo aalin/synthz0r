@@ -8,6 +8,7 @@
 #include "devices/overdrive.hpp"
 #include "devices/bitcrusher.hpp"
 #include "devices/kickdrum.hpp"
+#include "devices/sequencer.hpp"
 #include "utils.hpp"
 #include "sequencer.hpp"
 #include "note.hpp"
@@ -183,24 +184,28 @@ void Application::run() {
 
 		engine.addDevice(synth1);
 
-		Sequencer sequencer1(16, 1.0, 1.0);
+		auto sequencer1 = std::make_shared<Devices::Sequencer>(16, 200, 100);
 
 		sequencer1
-			.setStep(0, NOTE(G,4))
-			.setStep(1, NOTE(G,4))
-			.setStep(2, NOTE(D,5))
-			.setStep(3, NOTE(D,5))
-			.setStep(4, NOTE(E,5))
-			.setStep(5, NOTE(E,5))
-			.setStep(6, NOTE(D,5))
-			.setStep(7, NOTE_OFF)
-			.setStep(8, NOTE(C,5))
-			.setStep(9, NOTE(C,5))
-			.setStep(10, NOTE(B,4))
-			.setStep(11, NOTE(B,4))
-			.setStep(12, NOTE(A,4))
-			.setStep(13, NOTE(A,4))
-			.setStep(14, NOTE(G,4));
+			->setStep(0, NOTE(G,4))
+			->setStep(1, NOTE(G,4))
+			->setStep(2, NOTE(D,5))
+			->setStep(3, NOTE(D,5))
+			->setStep(4, NOTE(E,5))
+			->setStep(5, NOTE(E,5))
+			->setStep(6, NOTE(D,5))
+			->setStep(7, NOTE_OFF)
+			->setStep(8, NOTE(C,5))
+			->setStep(9, NOTE(C,5))
+			->setStep(10, NOTE(B,4))
+			->setStep(11, NOTE(B,4))
+			->setStep(12, NOTE(A,4))
+			->setStep(13, NOTE(A,4))
+			->setStep(14, NOTE(G,4));
+
+		sequencer1->outputs().add(synth1);
+
+		engine.addDevice(sequencer1);
 
 		Sequencer sequencer11(16, 1.0, 1.0);
 
@@ -288,11 +293,12 @@ void Application::run() {
 
 			kickSeq.setSpeed(8.0);
 			snareSeq.setSpeed(4.0);
-			sequencer1.setSpeed(2.0);
+
+			sequencer1->setParam("bpm", 120);
+
 			sequencer11.setSpeed(2.0);
 			sequencer2.setSpeed(4.0);
 
-			sequencer1.tick(timer, synth1);
 			sequencer11.tick(timer, wavetableSynth);
 			sequencer2.tick(timer, bass);
 			snareSeq.tick(timer, snare);

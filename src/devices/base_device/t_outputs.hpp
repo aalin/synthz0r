@@ -4,6 +4,7 @@
 #include <list>
 #include "../../stereo_sample.hpp"
 #include "../../timer.hpp"
+#include "../../note_event.hpp"
 
 namespace Devices {
 class BaseDevice;
@@ -40,6 +41,12 @@ class TOutputs {
 		}
 
 		void output(const Timer &timer, const StereoSample &value) {
+			for (auto output : _outputs) {
+				output->input(timer, value);
+			}
+		}
+
+		void output(const Timer &timer, const NoteEvent &value) {
 			for (auto output : _outputs) {
 				output->input(timer, value);
 			}

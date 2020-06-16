@@ -6,6 +6,7 @@
 #include "base_device/parameter_list.hpp"
 #include "../timer.hpp"
 #include "../stereo_sample.hpp"
+#include "../note_event.hpp"
 
 namespace Devices {
 class BaseDevice;
@@ -44,6 +45,11 @@ class BaseDevice {
 			throw "BaseDevice received input";
 		}
 
+		virtual void input(const Timer &, const NoteEvent &) {
+			std::cerr << name() << " should implement input(const Timer &, const NoteEvent &)" << std::endl;
+			throw "BaseDevice received input";
+		}
+
 		const ParameterList & parameters() const {
 			return _parameters;
 		}
@@ -62,6 +68,10 @@ class BaseDevice {
 		}
 
 		void output(const Timer &timer, const StereoSample &value) {
+			_outputs.output(timer, value);
+		}
+
+		void output(const Timer &timer, const NoteEvent &value) {
 			_outputs.output(timer, value);
 		}
 

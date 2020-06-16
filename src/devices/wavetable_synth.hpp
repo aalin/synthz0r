@@ -49,7 +49,20 @@ class WavetableSynth : public BaseDevice {
 		  })
 		{}
 
-		void noteOn(const Timer &timer, int note, float velocity = 2.0) {
+		void input(const Timer &timer, const NoteEvent &event) {
+			switch (event.type) {
+				case NoteEvent::Type::NOTE_ON:
+					noteOn(timer, event.note, event.velocity / 255.0);
+					break;
+				case NoteEvent::Type::NOTE_OFF:
+					noteOff(timer, event.note);
+					break;
+				default:
+					break;
+			}
+		}
+
+		void noteOn(const Timer &timer, int note, float velocity = 1.0) {
 			_voices.push_back(Voice(_waveformIndex, note, velocity, timer.seconds()));
 		}
 

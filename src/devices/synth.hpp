@@ -46,7 +46,22 @@ class Synth : public BaseDevice {
 		  })
 		{}
 
-		void noteOn(const Timer &timer, int note, float velocity = 2.0) {
+		void input(const Timer &timer, const NoteEvent &event) {
+			switch (event.type) {
+				case NoteEvent::Type::NOTE_ON:
+					std::cout << name() << " received a NoteOn_" << (int)event.note << std::endl;
+					noteOn(timer, event.note, event.velocity / 100.0);
+					break;
+				case NoteEvent::Type::NOTE_OFF:
+					std::cout << name() << " received a NoteOff_" << (int)event.note << std::endl;
+					noteOff(timer, event.note);
+					break;
+				default:
+					break;
+			}
+		}
+
+		void noteOn(const Timer &timer, int note, float velocity = 1.0) {
 			_voices.push_back(Voice(_oscillatorType, note, velocity, timer.seconds()));
 		}
 
