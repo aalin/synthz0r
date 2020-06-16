@@ -59,21 +59,18 @@ Application::Application(const ArgumentParser &args)
 }
 
 void Application::start() {
-	if (_engine.running()) {
+	if (_running) {
 		return;
 	}
 
-	std::cout << "Port: " << _serverPort << std::endl;
+	_running = true;
 
 	_server.start(_serverPort);
-
-	_engine.start();
-
 	run();
 }
 
 void Application::stop() {
-	_engine.stop();
+	_running = false;
 	_server.stop();
 }
 
@@ -282,7 +279,7 @@ void Application::run() {
 			.setStep(30, NOTE(G,3))
 			.setStep(31, NOTE(G,4));
 
-		while (engine.running()) {
+		while (_running) {
 			const Timer &timer = engine.timer();
 
 			processMessageQueue(_server.update());

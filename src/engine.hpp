@@ -17,8 +17,7 @@
 class Engine {
 	public:
 		Engine(unsigned int sampleRate, AudioBufferPtr buffer, AudioOutputPtr audioOutput)
-		: _running(false),
-		  _timer(sampleRate),
+		: _timer(sampleRate),
 		  _audioOutput(audioOutput),
 		  _sampleRate(sampleRate),
 		  _outputDevice(std::make_shared<Devices::OutputDevice>()),
@@ -31,14 +30,6 @@ class Engine {
 
 		const Timer & timer() const {
 			return _timer;
-		}
-
-		bool running() const {
-			return _running;
-		}
-
-		void start() {
-			_running = true;
 		}
 
 		Devices::DevicePtr addDevice(Devices::DevicePtr device) {
@@ -68,12 +59,7 @@ class Engine {
 			return _timer.seconds();
 		}
 
-		void stop() {
-			_running = false;
-		}
-
 	private:
-		bool _running;
 		Timer _timer;
 
 		AudioOutputPtr _audioOutput;

@@ -22,6 +22,7 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		void start(uint16_t port) {
+			std::cout << "Server listening to port " << port << std::endl;
 			_server.listen(port);
 			_server.start_accept();
 		}
