@@ -6,13 +6,13 @@ namespace messages = synthz0r::messages;
 
 using MessageHandlerNS::Request;
 
-bool createTextResponse(Request &request, std::string message) {
+bool setTextResponse(Request &request, std::string message) {
 	messages::TextResponse textResponse;
 	textResponse.set_message(message);
 	return request.setResponse("TextResponse", textResponse);
 }
 
-bool createErrorResponse(Request &request, std::string message) {
+bool setErrorResponse(Request &request, std::string message) {
 	messages::ErrorResponse errorResponse;
 	errorResponse.set_message(message);
 	return request.setResponse("ErrorResponse", errorResponse);
@@ -22,10 +22,10 @@ bool handleRequest(messages::TextRequest &msg, Request &request, Engine &) {
 	std::cout << "textRequest.message() = " << msg.message() << std::endl;
 
 	if (msg.message() == "hello") {
-		return createTextResponse(request, "hello world");
+		return setTextResponse(request, "hello world");
 	}
 
-	return createErrorResponse(request, "Could not understand whatever you sent");
+	return setErrorResponse(request, "Could not understand whatever you sent");
 }
 
 template<typename T>
@@ -69,7 +69,7 @@ bool handleRequest(messages::UpdateDeviceParameterRequest &message, Request &req
 		}
 	}
 
-	return createErrorResponse(request, "Device not found");
+	return setErrorResponse(request, "Device not found");
 }
 
 
@@ -104,14 +104,22 @@ void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message
 
 	Request request(envelope.id(), envelope.payload());
 
-	const auto handler = Handlers.find(envelope.type());
+	try {
+		const auto handler = Handlers.find(envelope.type());
 
-	if (handler == Handlers.end()) {
-		createTextResponse(request, "Unhandled message type: " + envelope.type());
-	} else {
-		if (!handler->second(request, engine)) {
-			std::cerr << "Could not write response??" << std::endl;
+		if (handler == Handlers.end()) {
+			setErrorResponse(request, "Unhandled message type: " + envelope.type());
+		} else {
+			if (!handler->second(request, engine)) {
+				std::cerr << "Could not write response" << std::endl;
+				setErrorResponse(request, "Could not write response");
+			}
 		}
+	} catch (std::exception &e) {
+		std::cerr << e.what() << std::endl;
+		setErrorResponse(request, "std::exception occurred");
+	} catch (...) {
+		setErrorResponse(request, "Unknown exception occurred");
 	}
 
 	message->reply(request.encodedResponse());
