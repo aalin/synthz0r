@@ -14,6 +14,17 @@ Simple synth engine. The goal is to have something that is easily controlled via
 
     make
 
+## Usage
+
+Start the server
+
+    ./synthz0r -p 5555
+
+Start the client
+
+    cd client
+    node index.js 5555
+
 ## Todo
 
 * MIDI-messages
