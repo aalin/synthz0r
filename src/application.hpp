@@ -4,6 +4,7 @@
 #include "engine.hpp"
 #include "argument_parser.hpp"
 #include "websocket/server.hpp"
+#include "message_handler.hpp"
 
 class Application {
 	public:
@@ -27,6 +28,8 @@ class Application {
 
 		void processMessageQueue(Websocket::MessageQueue);
 		void processMessage(Websocket::MessagePtr);
+
+		MessageHandler _messageHandler;
 };
 
 #endif

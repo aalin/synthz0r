@@ -281,5 +281,5 @@ void Application::processMessageQueue(Websocket::MessageQueue messages) {
 
 void Application::processMessage(Websocket::MessagePtr message) {
 	std::cout << "Got message: " << message->payload << std::endl;
-	message->reply(message->payload);
+	_messageHandler.handleMessage(_engine, std::move(message));
 }

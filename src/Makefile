@@ -24,11 +24,15 @@ run: $(TARGET)
 test: $(TARGET)
 	$(TARGET) test
 
-protobuf: protobuf/messages.pb.h
+protobuf: protobuf/messages.pb.cc
 
-protobuf/messages.pb.h: messages.proto
+protobuf/messages.pb.cc: messages.proto
 	@echo -e "$(YELLOW)Generating protocol buffers $< => $@$(RESET)"
 	protoc --cpp_out=protobuf/ messages.proto
+
+protobuf/messages.pb.o: protobuf/messages.pb.cc
+	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
+	@$(CC) -c $(CFLAGS) $< -o $@
 
 info:
 	@echo "CC: $(CC)"
@@ -46,10 +50,10 @@ else
 	@ruby make_waveform_source.rb
 endif
 
-$(TARGET): waveform.cpp $(OBJS)
+$(TARGET): waveform.cpp protobuf/messages.pb.o $(OBJS)
 	@echo
-	@echo -e "$(GREEN)Linking $(SUBDIR_OBJS) $(OBJS) => $(TARGET)$(RESET)"
-	@$(CC) $(SUBDIR_OBJS) $(OBJS) $(LFLAGS) -o $(TARGET)
+	@echo -e "$(GREEN)Linking $(OBJS) => $(TARGET)$(RESET)"
+	@$(CC) $(OBJS) protobuf/messages.pb.o $(LFLAGS) -o $(TARGET)
 
 clean:
 	rm -f $(OBJS) $(TARGET)

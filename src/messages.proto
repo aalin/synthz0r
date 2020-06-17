@@ -5,15 +5,15 @@ package synthz0r.messages;
 message Envelope {
   uint32 id = 1;
   string type = 2;
-  bytes data = 3;
+  bytes payload = 3;
 }
 
 message TextRequest {
-  string payload = 1;
+  string message = 1;
 }
 
 message TextResponse {
-  string payload = 1;
+  string message = 1;
 }
 
 message DeviceParameter {
