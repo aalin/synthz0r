@@ -13,7 +13,7 @@ namespace Websocket {
 
 		void reply(std::string text) {
 			try {
-				s->send(hdl, text, websocketpp::frame::opcode::text);
+				s->send(hdl, text, websocketpp::frame::opcode::binary);
 			} catch (websocketpp::exception const & e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 			}
