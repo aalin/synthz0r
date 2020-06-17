@@ -27,8 +27,8 @@ test: $(TARGET)
 protobuf: protobuf/messages.pb.cc
 
 protobuf/messages.pb.cc: messages.proto
-	@echo -e "$(YELLOW)Generating protocol buffers $< => $@$(RESET)"
-	protoc --cpp_out=protobuf/ messages.proto
+	@echo -e "$(YELLOW)Generating $< => $@$(RESET)"
+	@protoc --cpp_out=protobuf/ messages.proto
 
 protobuf/messages.pb.o: protobuf/messages.pb.cc
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
