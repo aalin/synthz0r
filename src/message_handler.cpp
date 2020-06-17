@@ -1,47 +1,10 @@
 #include "message_handler.hpp"
 #include "protobuf/messages.pb.h"
+#include "message_handler/request.hpp"
 
-using namespace synthz0r;
+namespace messages = synthz0r::messages;
 
-class Request {
-	public:
-		Request(uint32_t id, std::string encodedRequest)
-		: _id(id),
-		  _encodedRequest(encodedRequest)
-		{}
-
-		template<typename T>
-		bool setResponse(const std::string type, const T &message) {
-			messages::Envelope envelope;
-			envelope.set_id(_id);
-			envelope.set_type(type);
-
-			if (!message.SerializeToString(envelope.mutable_payload())) {
-				std::cerr << "Could not serialize message" << std::endl;
-				return false;
-			}
-
-			if (!envelope.SerializeToString(&_encodedResponse)) {
-				std::cerr << "Could not serialize envelope" << std::endl;
-				return false;
-			}
-
-			return true;
-		}
-
-		const std::string & encodedResponse() {
-			return _encodedResponse;
-		}
-
-		const std::string & encodedRequest() const {
-			return _encodedRequest;
-		}
-
-	private:
-		const uint32_t _id;
-		const std::string _encodedRequest;
-		std::string _encodedResponse;
-};
+using MessageHandlerNS::Request;
 
 bool createTextResponse(Request &request, std::string payload) {
 	messages::TextResponse textResponse;
@@ -63,14 +26,14 @@ bool handleRequest(messages::TextRequest &msg, Request &request, Engine &engine)
 
 template<typename T>
 bool parseAndHandle(Request &request, Engine &engine) {
-	T parsed;
+	T message;
 
-	if (!parsed.ParseFromString(request.encodedRequest())) {
-		std::cerr << "Could not parse data" << std::endl;
+	if (!message.ParseFromString(request.encodedRequest())) {
+		std::cerr << "Could not parse message" << std::endl;
 		return false;
 	}
 
-	return handleRequest(parsed, request, engine);
+	return handleRequest(message, request, engine);
 }
 
 static const std::map<std::string, std::function<bool(Request &request, Engine &engine)> > Handlers = {
