@@ -12,6 +12,12 @@ bool createTextResponse(Request &request, std::string message) {
 	return request.setResponse("TextResponse", textResponse);
 }
 
+bool createErrorResponse(Request &request, std::string message) {
+	messages::ErrorResponse errorResponse;
+	errorResponse.set_message(message);
+	return request.setResponse("ErrorResponse", errorResponse);
+}
+
 bool handleRequest(messages::TextRequest &msg, Request &request, Engine &) {
 	std::cout << "textRequest.message() = " << msg.message() << std::endl;
 
@@ -19,7 +25,19 @@ bool handleRequest(messages::TextRequest &msg, Request &request, Engine &) {
 		return createTextResponse(request, "hello world");
 	}
 
-	return createTextResponse(request, "Could not understand whatever you sent");
+	return createErrorResponse(request, "Could not understand whatever you sent");
+}
+
+template<typename T>
+void setParameters(Devices::DevicePtr device, T *parent) {
+	for (const auto &param : device->parameters()) {
+		messages::DeviceParameter *p = parent->add_parameters();
+		p->set_name(param.name());
+		p->set_defaultvalue(param.defaultValue());
+		p->set_min(param.min());
+		p->set_max(param.max());
+		p->set_value(param.value());
+	}
 }
 
 bool handleRequest(messages::ListDevicesRequest &, Request &request, Engine &engine) {
@@ -32,20 +50,29 @@ bool handleRequest(messages::ListDevicesRequest &, Request &request, Engine &eng
 		d->set_id(device->id());
 		d->set_name(device->name());
 
-		for (const auto &param : device->parameters()) {
-			messages::DeviceParameter *p = d->add_parameters();
-			p->set_name(param.name());
-			p->set_defaultvalue(param.defaultValue());
-			p->set_min(param.min());
-			p->set_max(param.max());
-			p->set_value(param.value());
-			p->set_scale(1.0);
-			p->set_unit("");
-		}
+		setParameters(device, d);
 	}
 
 	return request.setResponse("ListDevicesResponse", response);
 }
+
+bool handleRequest(messages::UpdateDeviceParameterRequest &message, Request &request, Engine &engine) {
+	std::cout << "Updating device parameter" << std::endl;
+
+	for (Devices::DevicePtr device : engine.devices()) {
+		if (device->id() == message.id()) {
+			device->setParam(message.name(), message.value());
+
+			messages::UpdateDeviceParameterResponse response;
+			setParameters(device, &response);
+			return request.setResponse("UpdateDeviceParameterResponse", response);
+		}
+	}
+
+	return createErrorResponse(request, "Device not found");
+}
+
+
 
 template<typename T>
 bool parseAndHandle(Request &request, Engine &engine) {
@@ -64,6 +91,7 @@ bool parseAndHandle(Request &request, Engine &engine) {
 static const std::map<std::string, std::function<bool(Request &request, Engine &engine)> > Handlers = {
 	HANDLER(TextRequest),
 	HANDLER(ListDevicesRequest),
+	HANDLER(UpdateDeviceParameterRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

@@ -16,6 +16,10 @@ message TextResponse {
   string message = 1;
 }
 
+message ErrorResponse {
+  string message = 1;
+}
+
 message DeviceParameter {
   string name = 1;
   int32 min = 2;
@@ -27,7 +31,7 @@ message DeviceParameter {
 }
 
 message Device {
-  int64 id = 1;
+  uint64 id = 1;
   string name = 2;
   repeated DeviceParameter parameters = 3;
 }
@@ -40,13 +44,13 @@ message ListDevicesResponse {
 }
 
 message UpdateDeviceParameterRequest {
-  int64 id = 1;
+  uint64 id = 1;
   string name = 2;
   int32 value = 3;
 }
 
 message UpdateDeviceParameterResponse {
-  DeviceParameter parameters = 1;
+  repeated DeviceParameter parameters = 1;
 }
 
 message CreateDeviceRequest {
@@ -58,13 +62,21 @@ message CreateDeviceResponse {
 }
 
 message DeviceConnection {
-  int64 sourceId = 1;
-  repeated int64 targetIds = 2;
+  uint64 sourceId = 1;
+  repeated uint64 targetIds = 2;
+}
+
+message GetDeviceConnectionsReqest {
+  uint64 deviceId = 1;
+}
+
+message GetDeviceConnectionsResponse {
+  DeviceConnection connection = 1;
 }
 
 message ConnectDeviceRequest {
-  int64 sourceId = 1;
-  int64 targetId = 2;
+  uint64 sourceId = 1;
+  uint64 targetId = 2;
 }
 
 message ConnectDeviceResponse {
@@ -72,8 +84,8 @@ message ConnectDeviceResponse {
 }
 
 message DisconnectDeviceRequest {
-  int64 sourceId = 1;
-  int64 targetId = 2;
+  uint64 sourceId = 1;
+  uint64 targetId = 2;
 }
 
 message DisconnectDeviceResponse {
