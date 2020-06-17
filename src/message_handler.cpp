@@ -29,7 +29,7 @@ bool handleRequest(messages::ListDevicesRequest &, Request &request, Engine &eng
 
 	for (Devices::DevicePtr device : engine.devices()) {
 		messages::Device *d = response.add_devices();
-		d->set_id(0); // TODO: Implement some sort of device id
+		d->set_id(device->id());
 		d->set_name(device->name());
 
 		for (const auto &param : device->parameters()) {

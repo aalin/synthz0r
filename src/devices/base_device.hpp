@@ -22,6 +22,10 @@ class BaseDevice {
 		  _parameters(vars)
 		{ }
 
+		uintptr_t id() {
+			return reinterpret_cast<uintptr_t>(this);
+		}
+
 		virtual void update(const Timer &, float) { }
 		virtual void update(const Timer &) { }
 
