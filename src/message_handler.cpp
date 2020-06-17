@@ -6,15 +6,13 @@ namespace messages = synthz0r::messages;
 
 using MessageHandlerNS::Request;
 
-bool createTextResponse(Request &request, std::string payload) {
+bool createTextResponse(Request &request, std::string message) {
 	messages::TextResponse textResponse;
-
-	textResponse.set_message(payload);
-
+	textResponse.set_message(message);
 	return request.setResponse("TextResponse", textResponse);
 }
 
-bool handleRequest(messages::TextRequest &msg, Request &request, Engine &engine) {
+bool handleRequest(messages::TextRequest &msg, Request &request, Engine &) {
 	std::cout << "textRequest.message() = " << msg.message() << std::endl;
 
 	if (msg.message() == "hello") {
