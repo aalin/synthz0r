@@ -21,6 +21,10 @@ class WSServer : public Websocket::ServerPimpl {
 			_server.set_message_handler(bind(&WSServer::onMessage, this, ::_1, ::_2));
 		}
 
+		~WSServer() {
+			_server.stop();
+		}
+
 		void start(uint16_t port) {
 			std::cout << "Server listening to port " << port << std::endl;
 			_server.listen(port);
@@ -36,7 +40,7 @@ class WSServer : public Websocket::ServerPimpl {
 				_server.send(
 					connection,
 					message,
-					websocketpp::frame::opcode::text
+					websocketpp::frame::opcode::binary
 				);
 			}
 		}
