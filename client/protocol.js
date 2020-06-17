@@ -28,7 +28,7 @@ class Protocol {
     const Envelope = this._lookupType('Envelope');
     const envelope = Envelope.decode(buffer);
 
-    const Type = this._lookupType(envelope.type);
+    const Type = this._root.lookupType(envelope.type);
 
     return {
       id: envelope.id,
