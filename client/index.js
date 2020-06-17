@@ -22,4 +22,4 @@ async function main({ port }) {
   });
 }
 
-main({ port: Number(process.argv[3]) || 5555 });
+main({ port: Number(process.argv[2]) || 5555 });
