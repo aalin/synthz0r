@@ -4,6 +4,7 @@
 #include <memory>
 #include "base_device/t_outputs.hpp"
 #include "base_device/parameter_list.hpp"
+#include "base_device/table_list.hpp"
 #include "../timer.hpp"
 #include "../stereo_sample.hpp"
 #include "../note_event.hpp"
@@ -17,9 +18,15 @@ class BaseDevice {
 	public:
 		typedef TOutputs<DevicePtr> Outputs;
 
-		BaseDevice(std::string name, std::initializer_list<Parameter> vars = {})
+		BaseDevice(
+			std::string name,
+			std::initializer_list<Parameter> params = {},
+			std::initializer_list<Table> tables = {}
+		)
 		: _name(name),
-		  _parameters(vars)
+		  _parameters(params),
+		  _tables(tables),
+		  _respondingToParameterChange(false)
 		{ }
 
 		uintptr_t id() {
@@ -55,12 +62,27 @@ class BaseDevice {
 			return _parameters;
 		}
 
-		const int & getParam(const std::string &var) const {
-			return _parameters.get(var).value();
+		const int & getParam(const std::string &name) const {
+			return _parameters.get(name).value();
 		}
 
-		void setParam(const std::string &var, int value) {
-			_parameters.get(var).setValue(value);
+		void setParam(const std::string &name, int value) {
+			if (_respondingToParameterChange) {
+				std::cerr << "Error: Can not set parameters from respondToParameterChange" << std::endl;
+				return;
+			}
+
+			Parameter &param = _parameters.get(name);
+			param.setValue(value);
+
+			_respondingToParameterChange = true;
+			respondToParameterChange(param);
+			_respondingToParameterChange = false;
+		}
+
+		void setTable(const std::string &name, std::vector<int> data) {
+			Table &table = _tables.get(name);
+			table.setData(data);
 		}
 
 	protected:
@@ -76,10 +98,17 @@ class BaseDevice {
 			_outputs.output(timer, value);
 		}
 
+		virtual void respondToParameterChange(const Parameter &) {
+			// Implement me to handle parameter updates
+		}
+
 	private:
 		std::string _name;
 		Outputs _outputs;
 		ParameterList _parameters;
+		TableList _tables;
+
+		bool _respondingToParameterChange;
 };
 }
 

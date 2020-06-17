@@ -44,3 +44,23 @@ Devices::DevicePtr DeviceFactory::create(std::string name) {
 
 	return handler->second();
 }
+
+Devices::DevicePtr DeviceFactory::create(std::string name, ParameterInitializerList params) {
+	Devices::DevicePtr device = create(name);
+
+	for (const auto param : params) {
+		device->setParam(param.first, param.second);
+	}
+
+	return device;
+}
+
+Devices::DevicePtr DeviceFactory::create(std::string name, ParameterInitializerList params, TableInitializerList tables) {
+	Devices::DevicePtr device = create(name, params);
+
+	for (const auto table : tables) {
+		device->setTable(table.first, table.second);
+	}
+
+	return device;
+}

@@ -2,13 +2,10 @@
 #include <memory>
 #include "application.hpp"
 
-#include "devices/synth.hpp"
-#include "devices/wavetable_synth.hpp"
-#include "devices/delay.hpp"
-#include "devices/overdrive.hpp"
-#include "devices/bitcrusher.hpp"
-#include "devices/kickdrum.hpp"
-#include "devices/sequencer.hpp"
+#include "device_factory.hpp"
+
+#include "units/oscillator.hpp"
+
 #include "utils.hpp"
 #include "note.hpp"
 #include "performance_log.hpp"
@@ -82,28 +79,29 @@ void Application::run() {
 
 		perf.log("Created output");
 
-		auto kick = std::make_shared<Devices::Kickdrum>();
+		auto kick = DeviceFactory::create("Kickdrum");
 		kick->setName("Kickdrum");
 		kick->setParam("amplitude", 100);
 		engine.addDevice(kick);
 
 		kick->outputs()
-			//.add(std::make_shared<Devices::Overdrive>(52, 100))->outputs()
+			//.add(DeviceFactory::create("Overdrive", 52, 100))->outputs()
 			.add(engine.getOutputDevice());
 		perf.log("Created kick");
 
-		auto kickSeq = std::make_shared<Devices::Sequencer>();
+		auto kickSeq = DeviceFactory::create("Sequencer");
 		engine.addDevice(kickSeq);
 
 		kickSeq->outputs().add(kick);
-		kickSeq->setSteps({
+
+		kickSeq->setTable("notes", {
 			NOTE(C,4),
 			NOTE_OFF,
 			NOTE_OFF,
 			NOTE_OFF,
 		});
 
-		auto snare = std::make_shared<Devices::Synth>();
+		auto snare = DeviceFactory::create("Synth");
 		kick->setName("Snare");
 
 		perf.log("Created snare");
@@ -129,17 +127,23 @@ void Application::run() {
 		perf.log("Created snare delay effect");
 
 		snare->outputs()
-			.add(std::make_shared<Devices::Delay>(150, 100, 50))->outputs()
+			.add(
+				DeviceFactory::create("Delay", {
+					{"timeMs", 150},
+					{"decay", 100},
+					{"mix", 50},
+				})
+			)->outputs()
 			.add(engine.getOutputDevice());
 
 		perf.log("Route snare outputs");
 
 
-		auto snareSeq = std::make_shared<Devices::Sequencer>();
+		auto snareSeq = DeviceFactory::create("Sequencer");
 		engine.addDevice(snareSeq);
 
 		snareSeq->outputs().add(snare);
-		snareSeq->setSteps({
+		snareSeq->setTable("notes", {
 			NOTE(C,4),
 			NOTE_OFF,
 			NOTE(C,4),
@@ -148,7 +152,7 @@ void Application::run() {
 
 		perf.log("Create snare sequencer");
 
-		auto wavetableSynth = std::make_shared<Devices::WavetableSynth>();
+		auto wavetableSynth = DeviceFactory::create("WavetableSynth");
 		wavetableSynth->setName("Wavetable synth");
 		wavetableSynth->setParam("amplitude", 100);
 		wavetableSynth->setParam("transpose", -12 * 1);
@@ -163,7 +167,7 @@ void Application::run() {
 
 		engine.addDevice(wavetableSynth);
 
-		auto synth1 = std::make_shared<Devices::Synth>();
+		auto synth1 = DeviceFactory::create("Synth");
 
 		synth1->setName("Synth 1");
 
@@ -187,26 +191,26 @@ void Application::run() {
 		synth1->setParam("filter.bandwidth", 450);
 
 		synth1->outputs()
-			.add(std::make_shared<Devices::Overdrive>(32, 100))->outputs()
-			.add(std::make_shared<Devices::Delay>(250, 100, 50))->outputs()
+			.add(DeviceFactory::create("Overdrive", {{"gain", 50}, {"volume", 100}}))->outputs()
+			.add(DeviceFactory::create("Delay", {{"timeMs", 250}, {"decay", 64}, {"mix", 50}}))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(synth1);
 
-		auto sequencer1 = std::make_shared<Devices::Sequencer>(16, 200, 100);
+		auto sequencer1 = DeviceFactory::create("Sequencer");
 		engine.addDevice(sequencer1);
 
 		sequencer1->outputs().add(synth1);
 		sequencer1->outputs().add(wavetableSynth);
 
-		sequencer1->setSteps({
+		sequencer1->setTable("notes", {
 			NOTE(G,4), NOTE(G,4), NOTE(D,5), NOTE(D,5),
 			NOTE(E,5), NOTE(E,5), NOTE(D,5), NOTE_OFF,
 			NOTE(C,5), NOTE(C,5), NOTE(B,4), NOTE(B,4),
 			NOTE(A,4), NOTE(A,4), NOTE(G,4), NOTE_OFF
 		});
 
-		auto bass = std::make_shared<Devices::Synth>();
+		auto bass = DeviceFactory::create("Synth");
 
 		bass->setName("Synth 2");
 
@@ -223,16 +227,14 @@ void Application::run() {
 		bass->setParam("filter.resonance", 200);
 
 		bass->outputs()
-			//.add(std::make_shared<Devices::Bitcrusher>(4, 20))->outputs()
+			//.add(DeviceFactory::create("Bitcrusher", 4, 20))->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(bass);
 
-		auto sequencer2 = std::make_shared<Devices::Sequencer>(32, 200, 100);
-		engine.addDevice(sequencer2);
+		auto sequencer2 = DeviceFactory::create("Sequencer");
 
-		sequencer2->outputs().add(bass);
-		sequencer2->setSteps({
+		sequencer2->setTable("notes", {
 			NOTE(G,4), NOTE(G,5), NOTE(G,4), NOTE(G,5),
 			NOTE(D,4), NOTE(D,5), NOTE(D,4), NOTE(D,5),
 			NOTE(E,4), NOTE(E,5), NOTE(E,4), NOTE(E,5),
@@ -242,6 +244,10 @@ void Application::run() {
 			NOTE(A,3), NOTE(A,4), NOTE(A,3), NOTE(A,4),
 			NOTE(G,3), NOTE(G,2), NOTE(G,3), NOTE(G,4)
 		});
+
+		sequencer2->outputs().add(bass);
+
+		engine.addDevice(sequencer2);
 
 		while (_running) {
 			const Timer &timer = engine.timer();
@@ -255,6 +261,7 @@ void Application::run() {
 
 			sequencer1->setParam("bpm", bpm);
 			sequencer2->setParam("bpm", bpm);
+			sequencer1->setParam("rate", 1);
 			sequencer2->setParam("rate", 2);
 			snareSeq->setParam("bpm", bpm);
 			snareSeq->setParam("rate", 4);
