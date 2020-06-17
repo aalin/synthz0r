@@ -1,6 +1,7 @@
 #include "message_handler.hpp"
 #include "protobuf/messages.pb.h"
 #include "message_handler/request.hpp"
+#include "device_factory.hpp"
 
 namespace messages = synthz0r::messages;
 
@@ -40,17 +41,20 @@ void setParameters(Devices::DevicePtr device, T *parent) {
 	}
 }
 
+void setDevice(Devices::DevicePtr device, messages::Device *ptr) {
+	ptr->set_id(device->id());
+	ptr->set_name(device->name());
+
+	setParameters(device, ptr);
+}
+
 bool handleRequest(messages::ListDevicesRequest &, Request &request, Engine &engine) {
 	std::cout << "Listing devices" << std::endl;
 
 	messages::ListDevicesResponse response;
 
 	for (Devices::DevicePtr device : engine.devices()) {
-		messages::Device *d = response.add_devices();
-		d->set_id(device->id());
-		d->set_name(device->name());
-
-		setParameters(device, d);
+		setDevice(device, response.add_devices());
 	}
 
 	return request.setResponse("ListDevicesResponse", response);
@@ -72,7 +76,17 @@ bool handleRequest(messages::UpdateDeviceParameterRequest &message, Request &req
 	return setErrorResponse(request, "Device not found");
 }
 
+bool handleRequest(messages::CreateDeviceRequest &message, Request &request, Engine &) {
+	auto device = DeviceFactory::create(message.name());
 
+	if (device == nullptr) {
+		return setErrorResponse(request, "Invalid device name");
+	}
+
+	messages::CreateDeviceResponse response;
+	setDevice(device, response.mutable_device());
+	return request.setResponse("CreateDeviceResponse", response);
+}
 
 template<typename T>
 bool parseAndHandle(Request &request, Engine &engine) {
