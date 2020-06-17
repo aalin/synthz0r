@@ -41,7 +41,7 @@ PulseAudio::PulseAudio(
 	);
 
 	if (_s == 0) {
-		throw "Could not initialize PulseAudio";
+		throw std::runtime_error("Could not initialize PulseAudio");
 	}
 
 	handleError("pa_simple_new", error);
@@ -73,5 +73,5 @@ void PulseAudio::handleError(const char *function, int error) const {
 	}
 
 	std::cerr << function << " failed: " << pa_strerror(error) << std::endl;
-	throw;
+	throw std::runtime_error("PulseAudio failed");
 }

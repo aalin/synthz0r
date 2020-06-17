@@ -274,8 +274,10 @@ void Application::run() {
 				stop();
 			}
 		}
+	} catch (std::exception &e) {
+		std::cerr << "Caught error: " << e.what() << std::endl;
 	} catch (const char *msg) {
-		std::cerr << "Error: " << msg << std::endl;
+		std::cerr << "Caught error: " << msg << std::endl;
 	}
 }
 

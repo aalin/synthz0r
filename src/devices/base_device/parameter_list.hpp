@@ -46,7 +46,7 @@ class ParameterList {
 
 			if (param == _parameters.end()) {
 				std::cerr << "Tried to get parameter" << name << std::endl;
-				throw "Unknown parameter name";
+				throw std::runtime_error("Unknown parameter name");
 			}
 
 			return param->second;
@@ -57,7 +57,7 @@ class ParameterList {
 
 			if (param == _parameters.end()) {
 				std::cerr << "Tried to get parameter" << name << std::endl;
-				throw "Unknown parameter name";
+				throw std::runtime_error("Unknown parameter name");
 			}
 
 			return param->second;
