@@ -13,7 +13,7 @@ class Client extends EventEmitter {
 
     this._ws.on('open', () => this.emit('open'));
     this._ws.on('close', () => this.emit('close'));
-    this._ws.on('message', (message) => this._handleMessage(Buffer.from(message, 'utf8')));
+    this._ws.on('message', (message) => this._handleMessage(message));
 
     this._callbacks = new Map();
   }

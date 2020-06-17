@@ -1,9 +1,10 @@
 const Protocol = require('./protocol');
 const Client = require('./client');
 
-async function main() {
+async function main({ port }) {
   const protocol = await Protocol.initialize('messages.proto', 'synthz0r.messages');
-  const client = new Client(protocol, 'ws://localhost:5556/');
+  const uri = `ws://localhost:${port}/`;
+  const client = new Client(protocol, uri);
 
   client.on('open', () => {
     console.log('connected');
@@ -21,4 +22,4 @@ async function main() {
   });
 }
 
-main();
+main({ port: Number(process.argv[3]) || 5555 });
