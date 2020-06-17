@@ -1,5 +1,5 @@
 #include <iostream>
-#include "parameter_list.hpp"
+#include "parameter.hpp"
 
 std::ostream & Devices::operator<<(std::ostream &out, const Devices::Parameter &p) {
 	out <<

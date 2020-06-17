@@ -23,11 +23,11 @@ class ParameterList {
 	};
 
 	public:
-		ParameterList(std::initializer_list<Parameter> vars) {
+		ParameterList(std::initializer_list<Parameter> params) {
 			PerformanceLog perf;
 
-			for (Parameter var : vars) {
-				_parameters.insert({var.name(), var});
+			for (Parameter param : params) {
+				_parameters.insert({param.name(), param});
 			}
 
 			perf.log("Creating parameters");
@@ -42,25 +42,25 @@ class ParameterList {
 		}
 
 		const Parameter & get(std::string name) const {
-			auto var = _parameters.find(name);
+			auto param = _parameters.find(name);
 
-			if (var == _parameters.end()) {
+			if (param == _parameters.end()) {
 				std::cerr << "Tried to get parameter" << name << std::endl;
 				throw "Unknown parameter name";
 			}
 
-			return var->second;
+			return param->second;
 		}
 
 		Parameter & get(std::string name) {
-			auto var = _parameters.find(name);
+			auto param = _parameters.find(name);
 
-			if (var == _parameters.end()) {
+			if (param == _parameters.end()) {
 				std::cerr << "Tried to get parameter" << name << std::endl;
 				throw "Unknown parameter name";
 			}
 
-			return var->second;
+			return param->second;
 		}
 
 	private:
