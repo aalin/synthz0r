@@ -15,6 +15,7 @@ LFLAGS=-lpulse-simple -lpulse -lm -lpthread -lprotobuf
 %.o: %.cpp %.hpp
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
 	@$(CC) -c $(CFLAGS) $< -o $@
+	@echo -e "$(GREEN)Compiled $< => $@$(RESET)"
 
 all: $(TARGET)
 
@@ -33,6 +34,7 @@ protobuf/messages.pb.cc: messages.proto
 protobuf/messages.pb.o: protobuf/messages.pb.cc
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
 	@$(CC) -c $(CFLAGS) $< -o $@
+	@echo -e "$(GREEN)Compiled $< => $@$(RESET)"
 
 info:
 	@echo "CC: $(CC)"
@@ -52,8 +54,9 @@ endif
 
 $(TARGET): waveform.cpp protobuf/messages.pb.o $(OBJS)
 	@echo
-	@echo -e "$(GREEN)Linking $(OBJS) => $(TARGET)$(RESET)"
+	@echo -e "$(YELLOW)Linking $(OBJS) => $(TARGET)$(RESET)"
 	@$(CC) $(OBJS) protobuf/messages.pb.o $(LFLAGS) -o $(TARGET)
+	@echo -e "$(GREEN)Built $(TARGET)$(RESET)"
 
 clean:
 	rm -f $(OBJS) $(TARGET)
