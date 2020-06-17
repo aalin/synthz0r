@@ -7,26 +7,28 @@ namespace messages = synthz0r::messages;
 
 using MessageHandlerNS::Request;
 
-bool setTextResponse(Request &request, std::string message) {
-	messages::TextResponse textResponse;
-	textResponse.set_message(message);
-	return request.setResponse("TextResponse", textResponse);
+typedef std::unique_ptr<google::protobuf::Message> ProtobufMessagePtr;
+
+ProtobufMessagePtr createTextResponse(const std::string &message) {
+	auto response = std::make_unique<messages::TextResponse>();
+	response->set_message(message);
+	return response;
 }
 
-bool setErrorResponse(Request &request, std::string message) {
-	messages::ErrorResponse errorResponse;
-	errorResponse.set_message(message);
-	return request.setResponse("ErrorResponse", errorResponse);
+ProtobufMessagePtr createErrorResponse(const std::string &message) {
+	auto response = std::make_unique<messages::ErrorResponse>();
+	response->set_message(message);
+	return response;
 }
 
-bool handleRequest(messages::TextRequest &msg, Request &request, Engine &) {
-	std::cout << "textRequest.message() = " << msg.message() << std::endl;
+ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &) {
+	std::cout << msg.GetTypeName() << ".message() = " << msg.message() << std::endl;
 
 	if (msg.message() == "hello") {
-		return setTextResponse(request, "hello world");
+		return createTextResponse("hello world");
 	}
 
-	return setErrorResponse(request, "Could not understand whatever you sent");
+	return createErrorResponse("Could not understand whatever you sent");
 }
 
 template<typename T>
@@ -48,61 +50,61 @@ void setDevice(Devices::DevicePtr device, messages::Device *ptr) {
 	setParameters(device, ptr);
 }
 
-bool handleRequest(messages::ListDevicesRequest &, Request &request, Engine &engine) {
+ProtobufMessagePtr handleRequest(messages::ListDevicesRequest &, Engine &engine) {
 	std::cout << "Listing devices" << std::endl;
 
-	messages::ListDevicesResponse response;
+	auto response = std::make_unique<messages::ListDevicesResponse>();
 
 	for (Devices::DevicePtr device : engine.devices()) {
-		setDevice(device, response.add_devices());
+		setDevice(device, response->add_devices());
 	}
 
-	return request.setResponse("ListDevicesResponse", response);
+	return response;
 }
 
-bool handleRequest(messages::UpdateDeviceParameterRequest &message, Request &request, Engine &engine) {
+ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message, Engine &engine) {
 	std::cout << "Updating device parameter" << std::endl;
 
 	for (Devices::DevicePtr device : engine.devices()) {
 		if (device->id() == message.id()) {
 			device->setParam(message.name(), message.value());
 
-			messages::UpdateDeviceParameterResponse response;
-			setParameters(device, &response);
-			return request.setResponse("UpdateDeviceParameterResponse", response);
+			auto response = std::make_unique<messages::UpdateDeviceParameterResponse>();
+			setParameters(device, response.get());
+			return response;
 		}
 	}
 
-	return setErrorResponse(request, "Device not found");
+	return createErrorResponse("Device not found");
 }
 
-bool handleRequest(messages::CreateDeviceRequest &message, Request &request, Engine &) {
+ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine &) {
 	auto device = DeviceFactory::create(message.name());
 
 	if (device == nullptr) {
-		return setErrorResponse(request, "Invalid device name");
+		return createErrorResponse("Invalid device name");
 	}
 
-	messages::CreateDeviceResponse response;
-	setDevice(device, response.mutable_device());
-	return request.setResponse("CreateDeviceResponse", response);
+	auto response = std::make_unique<messages::CreateDeviceResponse>();
+	setDevice(device, response->mutable_device());
+	return response;
 }
 
 template<typename T>
-bool parseAndHandle(Request &request, Engine &engine) {
+ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 	T message;
 
 	if (!message.ParseFromString(request.encodedRequest())) {
 		std::cerr << "Could not parse message" << std::endl;
-		return false;
+		return createErrorResponse("Could not parse message");
 	}
 
-	return handleRequest(message, request, engine);
+	return handleRequest(message, engine);
 }
 
 #define HANDLER(NAME) {#NAME, parseAndHandle<messages::NAME>}
 
-static const std::map<std::string, std::function<bool(Request &request, Engine &engine)> > Handlers = {
+static const std::map<std::string, std::function<ProtobufMessagePtr(Request &request, Engine &engine)> > Handlers = {
 	HANDLER(TextRequest),
 	HANDLER(ListDevicesRequest),
 	HANDLER(UpdateDeviceParameterRequest),
@@ -117,24 +119,27 @@ void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message
 	}
 
 	Request request(envelope.id(), envelope.payload());
+	ProtobufMessagePtr response;
 
 	try {
 		const auto handler = Handlers.find(envelope.type());
 
 		if (handler == Handlers.end()) {
-			setErrorResponse(request, "Unhandled message type: " + envelope.type());
+			response = createErrorResponse("Unhandled message type: " + envelope.type());
 		} else {
-			if (!handler->second(request, engine)) {
-				std::cerr << "Could not write response" << std::endl;
-				setErrorResponse(request, "Could not write response");
+			response = handler->second(request, engine);
+
+			if (response == nullptr) {
+				std::cerr << "Got null response" << std::endl;
+				response = createErrorResponse("Got null response");
 			}
 		}
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
-		setErrorResponse(request, "std::exception occurred");
+		response = createErrorResponse("std::exception occurred");
 	} catch (...) {
-		setErrorResponse(request, "Unknown exception occurred");
+		response = createErrorResponse("Unknown exception occurred");
 	}
 
-	message->reply(request.encodedResponse());
+	message->reply(request.encodeResponse(std::move(response)));
 }

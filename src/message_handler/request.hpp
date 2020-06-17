@@ -9,27 +9,24 @@ namespace MessageHandlerNS {
 			  _encodedRequest(encodedRequest)
 			{}
 
-			template<typename T>
-			bool setResponse(const std::string type, const T &message) {
+			std::string encodeResponse(std::unique_ptr<google::protobuf::Message> message) {
 				synthz0r::messages::Envelope envelope;
 				envelope.set_id(_id);
-				envelope.set_type(type);
+				envelope.set_type(message->GetTypeName());
 
-				if (!message.SerializeToString(envelope.mutable_payload())) {
+				std::string encodedResponse;
+
+				if (!message->SerializeToString(envelope.mutable_payload())) {
 					std::cerr << "Could not serialize message" << std::endl;
-					return false;
+					throw std::runtime_error("Could not serialize message");
 				}
 
-				if (!envelope.SerializeToString(&_encodedResponse)) {
+				if (!envelope.SerializeToString(&encodedResponse)) {
 					std::cerr << "Could not serialize envelope" << std::endl;
-					return false;
+					throw std::runtime_error("Could not serialize envelope");
 				}
 
-				return true;
-			}
-
-			const std::string & encodedResponse() {
-				return _encodedResponse;
+				return encodedResponse;
 			}
 
 			const std::string & encodedRequest() const {
@@ -39,7 +36,6 @@ namespace MessageHandlerNS {
 		private:
 			const uint32_t _id;
 			const std::string _encodedRequest;
-			std::string _encodedResponse;
 	};
 }
 
