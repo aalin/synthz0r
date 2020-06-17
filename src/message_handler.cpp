@@ -5,21 +5,10 @@ using namespace synthz0r;
 
 class Request {
 	public:
-		Request(uint32_t id, std::string data)
+		Request(uint32_t id, std::string encodedRequest)
 		: _id(id),
-		  _data(data)
+		  _encodedRequest(encodedRequest)
 		{}
-
-		template<typename T>
-		T parse() {
-			T msg;
-
-			if (!msg.ParseFromString(_data)) {
-				throw "Could not parse data";
-			}
-
-			return msg;
-		}
 
 		template<typename T>
 		bool setResponse(const std::string type, const T &message) {
@@ -32,7 +21,7 @@ class Request {
 				return false;
 			}
 
-			if (!envelope.SerializeToString(&_response)) {
+			if (!envelope.SerializeToString(&_encodedResponse)) {
 				std::cerr << "Could not serialize envelope" << std::endl;
 				return false;
 			}
@@ -40,14 +29,18 @@ class Request {
 			return true;
 		}
 
-		const std::string & response() {
-			return _response;
+		const std::string & encodedResponse() {
+			return _encodedResponse;
+		}
+
+		const std::string & encodedRequest() const {
+			return _encodedRequest;
 		}
 
 	private:
 		const uint32_t _id;
-		const std::string _data;
-		std::string _response;
+		const std::string _encodedRequest;
+		std::string _encodedResponse;
 };
 
 bool createTextResponse(Request &request, std::string payload) {
@@ -58,17 +51,31 @@ bool createTextResponse(Request &request, std::string payload) {
 	return request.setResponse("TextResponse", textResponse);
 }
 
-bool handleTextRequest(Request &request) {
-	messages::TextRequest textRequest = request.parse<messages::TextRequest>();
+bool handleRequest(messages::TextRequest &msg, Request &request, Engine &engine) {
+	std::cout << "textRequest.message() = " << msg.message() << std::endl;
 
-	std::cout << "textRequest.message() = " << textRequest.message() << std::endl;
-
-	if (textRequest.message() == "hello") {
+	if (msg.message() == "hello") {
 		return createTextResponse(request, "hello world");
 	}
 
 	return createTextResponse(request, "Could not understand whatever you sent");
 }
+
+template<typename T>
+bool parseAndHandle(Request &request, Engine &engine) {
+	T parsed;
+
+	if (!parsed.ParseFromString(request.encodedRequest())) {
+		std::cerr << "Could not parse data" << std::endl;
+		return false;
+	}
+
+	return handleRequest(parsed, request, engine);
+}
+
+static const std::map<std::string, std::function<bool(Request &request, Engine &engine)> > Handlers = {
+	{"TextRequest", parseAndHandle<messages::TextRequest>}
+};
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {
 	messages::Envelope envelope;
@@ -78,15 +85,15 @@ void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message
 		return;
 	}
 
-	std::cout << envelope.DebugString() << std::endl;
-
 	Request request(envelope.id(), envelope.payload());
 
-	if (envelope.type() == "TextRequest") {
-		handleTextRequest(request);
-	} else {
+	const auto handler = Handlers.find(envelope.type());
+
+	if (handler == Handlers.end()) {
 		createTextResponse(request, "Unhandled message type: " + envelope.type());
+	} else {
+		handler->second(request, engine);
 	}
 
-	message->reply(request.response());
+	message->reply(request.encodedResponse());
 }
