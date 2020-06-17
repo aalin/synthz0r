@@ -3,12 +3,12 @@ const Client = require('./client');
 
 async function main() {
   const protocol = await Protocol.initialize('messages.proto', 'synthz0r.messages');
-  const client = new Client(protocol, 'ws://localhost:5555/');
+  const client = new Client(protocol, 'ws://localhost:5556/');
 
   client.on('open', () => {
     console.log('connected');
 
-    client.request('TextRequest', { message: 'hello' }).then((response) => {
+    client.request('ListDevicesRequest').then((response) => {
       console.log('Got response', JSON.stringify(response, null, 2));
     })
   });

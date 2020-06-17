@@ -59,6 +59,10 @@ class Engine {
 			return _timer.seconds();
 		}
 
+		const std::list<Devices::DevicePtr> & devices() const {
+			return _devices;
+		}
+
 	private:
 		Timer _timer;
 

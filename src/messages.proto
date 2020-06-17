@@ -18,8 +18,8 @@ message TextResponse {
 
 message DeviceParameter {
   string name = 1;
-  int32 minValue = 2;
-  int32 maxValue = 3;
+  int32 min = 2;
+  int32 max = 3;
   int32 defaultValue = 4;
   int32 value = 5;
   float scale = 6;
@@ -30,6 +30,9 @@ message Device {
   int64 id = 1;
   string name = 2;
   repeated DeviceParameter parameters = 3;
+}
+
+message ListDevicesRequest {
 }
 
 message ListDevicesResponse {

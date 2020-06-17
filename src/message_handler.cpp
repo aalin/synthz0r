@@ -24,6 +24,31 @@ bool handleRequest(messages::TextRequest &msg, Request &request, Engine &engine)
 	return createTextResponse(request, "Could not understand whatever you sent");
 }
 
+bool handleRequest(messages::ListDevicesRequest &, Request &request, Engine &engine) {
+	std::cout << "Listing devices" << std::endl;
+
+	messages::ListDevicesResponse response;
+
+	for (Devices::DevicePtr device : engine.devices()) {
+		messages::Device *d = response.add_devices();
+		d->set_id(0); // TODO: Implement some sort of device id
+		d->set_name(device->name());
+
+		for (const auto &param : device->parameters()) {
+			messages::DeviceParameter *p = d->add_parameters();
+			p->set_name(param.name());
+			p->set_defaultvalue(param.defaultValue());
+			p->set_min(param.min());
+			p->set_max(param.max());
+			p->set_value(param.value());
+			p->set_scale(1.0);
+			p->set_unit("");
+		}
+	}
+
+	return request.setResponse("ListDevicesResponse", response);
+}
+
 template<typename T>
 bool parseAndHandle(Request &request, Engine &engine) {
 	T message;
@@ -39,7 +64,8 @@ bool parseAndHandle(Request &request, Engine &engine) {
 #define HANDLER(NAME) {#NAME, parseAndHandle<messages::NAME>}
 
 static const std::map<std::string, std::function<bool(Request &request, Engine &engine)> > Handlers = {
-	HANDLER(TextRequest)
+	HANDLER(TextRequest),
+	HANDLER(ListDevicesRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {
@@ -57,7 +83,9 @@ void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message
 	if (handler == Handlers.end()) {
 		createTextResponse(request, "Unhandled message type: " + envelope.type());
 	} else {
-		handler->second(request, engine);
+		if (!handler->second(request, engine)) {
+			std::cerr << "Could not write response??" << std::endl;
+		}
 	}
 
 	message->reply(request.encodedResponse());
