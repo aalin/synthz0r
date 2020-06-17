@@ -36,8 +36,10 @@ bool parseAndHandle(Request &request, Engine &engine) {
 	return handleRequest(message, request, engine);
 }
 
+#define HANDLER(NAME) {#NAME, parseAndHandle<messages::NAME>}
+
 static const std::map<std::string, std::function<bool(Request &request, Engine &engine)> > Handlers = {
-	{"TextRequest", parseAndHandle<messages::TextRequest>}
+	HANDLER(TextRequest)
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {
