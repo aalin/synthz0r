@@ -5,7 +5,7 @@
 
 namespace Units {
 struct StateVariableFilter {
-	enum Type {
+	enum Type : int {
 		LOWPASS = 0,
 		HIGHPASS = 1,
 		BANDPASS = 2,
@@ -16,7 +16,10 @@ struct StateVariableFilter {
 	int _resonance;
 	int _bandwidth;
 
-	Type _type;
+	union {
+		Type _type;
+		int _typeInt;
+	};
 
 	struct {
 		float low = 0.0;

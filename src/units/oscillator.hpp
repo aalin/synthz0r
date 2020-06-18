@@ -7,16 +7,20 @@
 namespace Units {
 class Oscillator {
 	public:
-		enum Type {
-			SINE,
-			SAW,
-			TRIANGLE,
-			SQUARE,
-			NOISE
+		enum Type : int {
+			SINE = 0,
+			SAW = 1,
+			TRIANGLE = 2,
+			SQUARE = 3,
+			NOISE = 4
 		};
 
-		Oscillator(Type type = Type::SQUARE)
+		Oscillator(Type type = Type::SINE)
 		: _type(type)
+		{}
+
+		Oscillator(int type = 0)
+		: _typeInt(type)
 		{}
 
 		float update(float frequency, const Timer &timer) {
@@ -74,7 +78,10 @@ class Oscillator {
 			return _phase.update(frequency, sampleRate) * TWO_PI;
 		}
 
-		Type _type;
+		union {
+			Type _type;
+			int _typeInt;
+		};
 		Phase _phase;
 };
 }

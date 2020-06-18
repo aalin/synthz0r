@@ -12,7 +12,7 @@ namespace Devices {
 class Synth : public BaseDevice {
 	public:
 		struct Voice {
-			Voice(Units::Oscillator::Type oscillatorType, int note, float velocity, float noteOnTime = 0.0)
+			Voice(int oscillatorType, int note, float velocity, float noteOnTime = 0.0)
 			: note(note),
 			  velocity(velocity),
 			  noteOnTime(noteOnTime),
@@ -31,7 +31,7 @@ class Synth : public BaseDevice {
 		: BaseDevice("Synth", {
 			Parameter("pitchBendRange",        0,    24,    2, _pitchBendRange),
 			Parameter("transpose",           -24,    24,    2, _transpose),
-			Parameter("oscillatorType",        0,     5,    0, reinterpret_cast<int&>(_oscillatorType)),
+			Parameter("oscillatorType",        0,     5,    0, _oscillatorType),
 			Parameter("panning",            -127,   127,    0, _panning),
 			Parameter("amplitude",             0,   128,    0, _amplitude),
 			Parameter("envelope.attackMs",     0,  1000,  150, _envelope._attackMs),
@@ -42,7 +42,7 @@ class Synth : public BaseDevice {
 			Parameter("filter.cutoffHz",       0, 10000, 8000, _filter._cutoffHz),
 			Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
 			Parameter("filter.bandwidth",      0,  1000,  500, _filter._bandwidth),
-			Parameter("filter.type",           0,     4,    0, reinterpret_cast<int&>(_filter._type)),
+			Parameter("filter.type",           0,     4,    0, _filter._typeInt),
 		  })
 		{}
 
@@ -78,8 +78,8 @@ class Synth : public BaseDevice {
 	private:
 		Units::ADSR _envelope;
 		Units::StateVariableFilter _filter;
-		Units::Oscillator::Type _oscillatorType;
 
+		int _oscillatorType;
 		int _amplitude;
 		int _pitchBendRange;
 		int _transpose;
