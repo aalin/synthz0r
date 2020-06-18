@@ -27,10 +27,12 @@ void signalHandler(int signal) {
 	shutdownHandler(signal);
 }
 
+constexpr static unsigned int TERMINATE_TIMEOUT = 1000;
+
 struct {
 	typedef std::chrono::time_point<std::chrono::steady_clock> time_point;
 
-	time_point lastTime = std::chrono::steady_clock::now();
+	time_point lastTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(TERMINATE_TIMEOUT);
 
 	bool shouldTerminate() {
 		time_point now = std::chrono::steady_clock::now();
@@ -39,7 +41,7 @@ struct {
 
 		lastTime = now;
 
-		return diff < 500;
+		return diff < TERMINATE_TIMEOUT;
 	}
 
 } InterruptTimer;
@@ -62,10 +64,11 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (InterruptTimer.shouldTerminate()) {
+			std::cout << "Terminating..." << std::endl;
 			isTerminating = true;
 			app.stop();
 		} else {
-			std::cout << "Press Ctrl+C again if you want to terminate" << std::endl;
+			std::cout << "\rPress Ctrl+C again if you want to terminate" << std::endl;
 		}
 	};
 
