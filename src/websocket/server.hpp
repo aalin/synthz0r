@@ -7,6 +7,7 @@
 namespace Websocket {
 	class ServerPimpl {
 		public:
+			virtual ~ServerPimpl() {}
 			virtual void start(uint16_t) = 0;
 			virtual void stop() = 0;
 			virtual void broadcast(const std::string &message) = 0;
@@ -16,6 +17,7 @@ namespace Websocket {
 	class Server {
 		public:
 			Server();
+			~Server();
 
 			void start(uint16_t port) {
 				_serverPimpl->start(port);

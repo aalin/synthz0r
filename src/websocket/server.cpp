@@ -22,6 +22,7 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		~WSServer() {
+			std::cout << "Stopping server" << std::endl;;
 			_server.stop();
 		}
 
@@ -82,3 +83,7 @@ class WSServer : public Websocket::ServerPimpl {
 Websocket::Server::Server()
 : _serverPimpl(std::make_unique<WSServer>())
 {}
+
+Websocket::Server::~Server() {
+	std::cout << "Destroying server" << std::endl;
+}
