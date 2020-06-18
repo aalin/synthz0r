@@ -249,8 +249,17 @@ void Application::run() {
 
 		engine.addDevice(sequencer2);
 
+		int seconds = -1;
+
 		while (_running) {
 			const Timer &timer = engine.timer();
+
+			int now = timer.seconds();
+
+			if (now > seconds) {
+				std::cout << "Timer: " << now << std::endl;
+				seconds = now;
+			}
 
 			processMessageQueue(_server.update());
 
