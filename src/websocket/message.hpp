@@ -8,6 +8,7 @@
 namespace Websocket {
 	struct Message {
 		Message(std::string payload) : payload(payload) {}
+		virtual ~Message() {}
 
 		std::string payload;
 

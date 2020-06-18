@@ -8,6 +8,7 @@
 
 class AudioBufferBase {
 	public:
+		virtual ~AudioBufferBase() {}
 		virtual SampleFormat::Type sampleFormat() const = 0;
 		virtual void write(AudioOutputPtr) = 0;
 		virtual size_t size() const = 0;

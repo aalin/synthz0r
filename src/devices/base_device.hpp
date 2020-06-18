@@ -29,6 +29,8 @@ class BaseDevice {
 		  _respondingToParameterChange(false)
 		{ }
 
+		virtual ~BaseDevice() {}
+
 		uintptr_t id() const {
 			return reinterpret_cast<uintptr_t>(this);
 		}
