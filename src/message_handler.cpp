@@ -1,7 +1,7 @@
 #include "message_handler.hpp"
 #include "protobuf/messages.pb.h"
 #include "message_handler/request.hpp"
-#include "device_factory.hpp"
+#include "devices/factory.hpp"
 
 namespace messages = synthz0r::messages;
 
@@ -80,7 +80,7 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message
 }
 
 ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine &engine) {
-	auto device = DeviceFactory::create(message.name());
+	auto device = Devices::Factory::create(message.name());
 
 	if (device == nullptr) {
 		return createErrorResponse("Invalid device name");

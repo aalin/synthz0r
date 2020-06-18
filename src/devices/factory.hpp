@@ -1,13 +1,13 @@
-#ifndef DEVICE_FACTORY_HPP
-#define DEVICE_FACTORY_HPP
+#ifndef DEVICE__FACTORY_HPP
+#define DEVICE__FACTORY_HPP
 
 #include <list>
 #include <string>
-#include "devices/instrument_device.hpp"
-#include "devices/effect_device.hpp"
-#include "devices/note_device.hpp"
+#include "instrument_device.hpp"
+#include "effect_device.hpp"
+#include "note_device.hpp"
 
-namespace DeviceFactory {
+namespace Devices::Factory {
 	typedef std::initializer_list<std::pair<std::string, int> > ParameterInitializerList;
 	typedef std::initializer_list<std::pair<std::string, std::vector<int> > > TableInitializerList;
 
@@ -19,8 +19,8 @@ namespace DeviceFactory {
 
 	Devices::EffectDevicePtr createEffectDevice(
 		std::string name,
-		ParameterInitializerList,
-		TableInitializerList
+		ParameterInitializerList = {},
+		TableInitializerList = {}
 	);
 
 	Devices::NoteDevicePtr createNoteDevice(
