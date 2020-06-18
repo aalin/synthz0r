@@ -20,4 +20,6 @@ struct NoteEvent {
 	uint8_t velocity;
 };
 
+typedef std::list<NoteEvent> NoteEventList;
+
 #endif

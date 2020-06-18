@@ -79,20 +79,16 @@ void Application::run() {
 
 		perf.log("Created output");
 
-		auto kick = DeviceFactory::create("Kickdrum");
+		auto kickChannel = engine.createChannel("Kick channel");
+
+		Devices::InstrumentDevicePtr kick = DeviceFactory::createInstrumentDevice("Kickdrum");
+
 		kick->setName("Kickdrum");
 		kick->setParam("amplitude", 100);
-		engine.addDevice(kick);
 
-		kick->outputs()
-			//.add(DeviceFactory::create("Overdrive", 52, 100))->outputs()
-			.add(engine.getOutputDevice());
-		perf.log("Created kick");
+		kickChannel->setInstrument(kick);
 
-		auto kickSeq = DeviceFactory::create("Sequencer");
-		engine.addDevice(kickSeq);
-
-		kickSeq->outputs().add(kick);
+		auto kickSeq = DeviceFactory::createNoteDevice("Sequencer");
 
 		kickSeq->setTable("notes", {
 			NOTE(C,4),
@@ -101,167 +97,7 @@ void Application::run() {
 			NOTE_OFF,
 		});
 
-		auto snare = DeviceFactory::create("Synth");
-		kick->setName("Snare");
-
-		perf.log("Created snare");
-
-		snare->setParam("oscillatorType", Units::Oscillator::Type::NOISE);
-		snare->setParam("amplitude", 30);
-		snare->setParam("transpose", 0);
-		snare->setParam("envelope.attackMs", 50);
-		snare->setParam("envelope.decayMs", 100);
-		snare->setParam("envelope.sustain", 0);
-		snare->setParam("envelope.releaseMs", 50);
-		snare->setParam("filter.enabled", 0);
-		snare->setParam("filter.type", 1);
-		snare->setParam("filter.cutoffHz", 3000);
-		snare->setParam("filter.resonance", 300);
-
-		perf.log("Set snare params");
-
-		engine.addDevice(snare);
-
-		perf.log("Adding snare to engine");
-
-		perf.log("Created snare delay effect");
-
-		snare->outputs()
-			.add(
-				DeviceFactory::create("Delay", {
-					{"timeMs", 150},
-					{"decay", 100},
-					{"mix", 50},
-				})
-			)->outputs()
-			.add(engine.getOutputDevice());
-
-		perf.log("Route snare outputs");
-
-
-		auto snareSeq = DeviceFactory::create("Sequencer");
-		engine.addDevice(snareSeq);
-
-		snareSeq->outputs().add(snare);
-		snareSeq->setTable("notes", {
-			NOTE(C,4),
-			NOTE_OFF,
-			NOTE(C,4),
-			NOTE(C,4)
-		});
-
-		perf.log("Create snare sequencer");
-
-		auto wavetableSynth = DeviceFactory::create("WavetableSynth");
-		wavetableSynth->setName("Wavetable synth");
-		wavetableSynth->setParam("amplitude", 50);
-		wavetableSynth->setParam("transpose", 0);
-		wavetableSynth->setParam("panning", 127);
-		wavetableSynth->setParam("envelope.attackMs", 500);
-		wavetableSynth->setParam("envelope.decayMs", 100);
-		wavetableSynth->setParam("envelope.sustain", 100);
-		wavetableSynth->setParam("envelope.releaseMs", 50);
-		wavetableSynth->setParam("waveformIndex", 7);
-
-		wavetableSynth->outputs()
-			.add(engine.getOutputDevice());
-
-		engine.addDevice(wavetableSynth);
-
-		auto synth1 = DeviceFactory::create("WavetableSynth");
-
-		synth1->setName("Synth 1");
-
-		for (const auto &param : synth1->parameters()) {
-			std::cout << param << std::endl;
-		}
-
-		synth1->setParam("amplitude", 50);
-		synth1->setParam("transpose", 0);
-		synth1->setParam("panning",-127);
-		synth1->setParam("envelope.attackMs", 100);
-		synth1->setParam("envelope.decayMs", 100);
-		synth1->setParam("envelope.sustain", 0);
-		synth1->setParam("envelope.releaseMs", 50);
-
-/*
-		synth1->setParam("filter.enabled", 1);
-		synth1->setParam("filter.type", 1);
-		synth1->setParam("filter.cutoffHz", 5000);
-		synth1->setParam("filter.resonance", 400);
-		synth1->setParam("filter.bandwidth", 450);
-*/
-		synth1->setParam("waveformIndex", 8);
-
-		synth1->outputs()
-			.add(DeviceFactory::create("Overdrive", {{"gain", 50}, {"volume", 100}}))->outputs()
-			.add(DeviceFactory::create("Delay", {{"timeMs", 250}, {"decay", 64}, {"mix", 50}}))->outputs()
-			.add(engine.getOutputDevice());
-
-		engine.addDevice(synth1);
-
-		auto sequencer1 = DeviceFactory::create("Sequencer");
-		engine.addDevice(sequencer1);
-
-		sequencer1->outputs().add(synth1);
-		sequencer1->outputs().add(wavetableSynth);
-
-		sequencer1->setTable("notes", {
-			NOTE(G,4), NOTE(G,4), NOTE(D,5), NOTE(D,5),
-			NOTE(E,5), NOTE(E,5), NOTE(D,5), NOTE_OFF,
-			NOTE(C,5), NOTE(C,5), NOTE(B,4), NOTE(B,4),
-			NOTE(A,4), NOTE(A,4), NOTE(G,4), NOTE_OFF
-		});
-
-
-		auto bass = DeviceFactory::create("WavetableSynth");
-		bass->setName("Wavetable synth");
-		bass->setParam("amplitude", 70);
-		bass->setParam("transpose", -12 * 2);
-		bass->setParam("panning", 0);
-		bass->setParam("waveformIndex", 5);
-
-		/*
-		auto bass = DeviceFactory::create("Synth");
-
-		bass->setName("Synth 2");
-
-		bass->setParam("oscillatorType", Units::Oscillator::Type::SQUARE);
-		bass->setParam("amplitude", 5);
-		bass->setParam("transpose", -12 * 1);
-		*/
-		bass->setParam("envelope.attackMs", 150);
-		bass->setParam("envelope.decayMs", 150);
-		bass->setParam("envelope.sustain", 80);
-		bass->setParam("envelope.releaseMs", 50);
-		/*
-		bass->setParam("filter.enabled", 0);
-		bass->setParam("filter.cutoffHz", 4000);
-		bass->setParam("filter.resonance", 200);
-		*/
-
-		bass->outputs()
-			//.add(DeviceFactory::create("Bitcrusher", 4, 20))->outputs()
-			.add(engine.getOutputDevice());
-
-		engine.addDevice(bass);
-
-		auto sequencer2 = DeviceFactory::create("Sequencer");
-
-		sequencer2->setTable("notes", {
-			NOTE(G,4), NOTE(G,5), NOTE(G,4), NOTE(G,5),
-			NOTE(D,4), NOTE(D,5), NOTE(D,4), NOTE(D,5),
-			NOTE(E,4), NOTE(E,5), NOTE(E,4), NOTE(E,5),
-			NOTE(D,4), NOTE(D,3), NOTE(D,4), NOTE(D,5),
-			NOTE(C,4), NOTE(C,5), NOTE(C,4), NOTE(C,5),
-			NOTE(B,3), NOTE(B,4), NOTE(B,3), NOTE(B,4),
-			NOTE(A,3), NOTE(A,4), NOTE(A,3), NOTE(A,4),
-			NOTE(G,3), NOTE(G,2), NOTE(G,3), NOTE(G,4)
-		});
-
-		sequencer2->outputs().add(bass);
-
-		engine.addDevice(sequencer2);
+		kickChannel->appendNoteDevice(kickSeq);
 
 		int seconds = -1;
 
@@ -273,23 +109,12 @@ void Application::run() {
 			if (now > seconds) {
 				std::cout << "Timer: " << now << std::endl;
 				seconds = now;
-
-				//synth1->setParam("waveformIndex", seconds % 19);
 			}
 
 			processMessageQueue(_server.update());
 
-			synth1->setParam("panning", -127);
-			wavetableSynth->setParam("panning", 127);
-
 			const int bpm = Utils::rsin(timer.seconds() / 2.0, 90, 120);
 
-			sequencer1->setParam("bpm", bpm);
-			sequencer2->setParam("bpm", bpm);
-			sequencer1->setParam("rate", 1);
-			sequencer2->setParam("rate", 2);
-			snareSeq->setParam("bpm", bpm);
-			snareSeq->setParam("rate", 4);
 			kickSeq->setParam("bpm", bpm);
 			kickSeq->setParam("rate", 4);
 
