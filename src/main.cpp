@@ -59,12 +59,12 @@ int main(int argc, char *argv[]) {
 
 	shutdownHandler = [&](int) -> void {
 		if (isTerminating) {
-			std::cout << "Terminating..." << std::endl;
+			std::cout << "\rTerminating..." << std::endl;
 			return;
 		}
 
 		if (InterruptTimer.shouldTerminate()) {
-			std::cout << "Terminating..." << std::endl;
+			std::cout << "\rTerminating..." << std::endl;
 			isTerminating = true;
 			app.stop();
 		} else {
