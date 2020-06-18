@@ -154,20 +154,21 @@ void Application::run() {
 
 		auto wavetableSynth = DeviceFactory::create("WavetableSynth");
 		wavetableSynth->setName("Wavetable synth");
-		wavetableSynth->setParam("amplitude", 100);
-		wavetableSynth->setParam("transpose", -12 * 1);
+		wavetableSynth->setParam("amplitude", 50);
+		wavetableSynth->setParam("transpose", 0);
 		wavetableSynth->setParam("panning", 127);
 		wavetableSynth->setParam("envelope.attackMs", 500);
 		wavetableSynth->setParam("envelope.decayMs", 100);
 		wavetableSynth->setParam("envelope.sustain", 100);
 		wavetableSynth->setParam("envelope.releaseMs", 50);
+		wavetableSynth->setParam("waveformIndex", 7);
 
 		wavetableSynth->outputs()
 			.add(engine.getOutputDevice());
 
 		engine.addDevice(wavetableSynth);
 
-		auto synth1 = DeviceFactory::create("Synth");
+		auto synth1 = DeviceFactory::create("WavetableSynth");
 
 		synth1->setName("Synth 1");
 
@@ -175,20 +176,22 @@ void Application::run() {
 			std::cout << param << std::endl;
 		}
 
-		synth1->setParam("oscillatorType", Units::Oscillator::Type::SAW);
-		synth1->setParam("panning", -127);
-		synth1->setParam("amplitude", 20);
-		synth1->setParam("transpose", 12);
+		synth1->setParam("amplitude", 50);
+		synth1->setParam("transpose", 0);
+		synth1->setParam("panning",-127);
 		synth1->setParam("envelope.attackMs", 100);
-		synth1->setParam("envelope.decayMs", 300);
+		synth1->setParam("envelope.decayMs", 100);
 		synth1->setParam("envelope.sustain", 0);
 		synth1->setParam("envelope.releaseMs", 50);
 
+/*
 		synth1->setParam("filter.enabled", 1);
 		synth1->setParam("filter.type", 1);
 		synth1->setParam("filter.cutoffHz", 5000);
 		synth1->setParam("filter.resonance", 400);
 		synth1->setParam("filter.bandwidth", 450);
+*/
+		synth1->setParam("waveformIndex", 8);
 
 		synth1->outputs()
 			.add(DeviceFactory::create("Overdrive", {{"gain", 50}, {"volume", 100}}))->outputs()
@@ -210,6 +213,15 @@ void Application::run() {
 			NOTE(A,4), NOTE(A,4), NOTE(G,4), NOTE_OFF
 		});
 
+
+		auto bass = DeviceFactory::create("WavetableSynth");
+		bass->setName("Wavetable synth");
+		bass->setParam("amplitude", 70);
+		bass->setParam("transpose", -12 * 2);
+		bass->setParam("panning", 0);
+		bass->setParam("waveformIndex", 5);
+
+		/*
 		auto bass = DeviceFactory::create("Synth");
 
 		bass->setName("Synth 2");
@@ -217,14 +229,16 @@ void Application::run() {
 		bass->setParam("oscillatorType", Units::Oscillator::Type::SQUARE);
 		bass->setParam("amplitude", 5);
 		bass->setParam("transpose", -12 * 1);
+		*/
 		bass->setParam("envelope.attackMs", 150);
-		bass->setParam("envelope.decayMs", 250);
-		bass->setParam("envelope.sustain", 100);
+		bass->setParam("envelope.decayMs", 150);
+		bass->setParam("envelope.sustain", 80);
 		bass->setParam("envelope.releaseMs", 50);
-
+		/*
 		bass->setParam("filter.enabled", 0);
 		bass->setParam("filter.cutoffHz", 4000);
 		bass->setParam("filter.resonance", 200);
+		*/
 
 		bass->outputs()
 			//.add(DeviceFactory::create("Bitcrusher", 4, 20))->outputs()
@@ -259,6 +273,8 @@ void Application::run() {
 			if (now > seconds) {
 				std::cout << "Timer: " << now << std::endl;
 				seconds = now;
+
+				//synth1->setParam("waveformIndex", seconds % 19);
 			}
 
 			processMessageQueue(_server.update());

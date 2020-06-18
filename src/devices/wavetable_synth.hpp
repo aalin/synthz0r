@@ -45,7 +45,7 @@ class WavetableSynth : public BaseDevice {
 			Parameter("envelope.decayMs",      0,                       1000,   0, _envelope._decayMs),
 			Parameter("envelope.sustain",      0,                        127,   0, _envelope._sustain),
 			Parameter("envelope.releaseMs",    0,                       1000,   0, _envelope._releaseMs),
-			Parameter("waveformIndex",         0, Waveform::WAVEFORMS.size(),   0, _waveformIndex)
+			Parameter("waveformIndex",         0, Waveform::WAVEFORMS.size()-1, 0, _waveformIndex)
 		  })
 		{}
 
