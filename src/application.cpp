@@ -4,8 +4,6 @@
 
 #include "devices/factory.hpp"
 
-#include "units/oscillator.hpp"
-
 #include "utils.hpp"
 #include "note.hpp"
 #include "performance_log.hpp"
