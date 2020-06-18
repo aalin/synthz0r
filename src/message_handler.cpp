@@ -78,15 +78,46 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message
 	return createErrorResponse("Device not found");
 }
 
-ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine &) {
+ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine &engine) {
 	auto device = DeviceFactory::create(message.name());
 
 	if (device == nullptr) {
 		return createErrorResponse("Invalid device name");
 	}
 
+	engine.addDevice(device);
+
 	auto response = std::make_unique<messages::CreateDeviceResponse>();
 	setDevice(device, response->mutable_device());
+	return response;
+}
+
+ProtobufMessagePtr handleRequest(messages::ConnectDeviceRequest &message, Engine &engine) {
+	const uint64_t sourceId = message.sourceid();
+	const uint64_t targetId = message.targetid();
+
+	auto source = engine.findDeviceById(sourceId);
+
+	if (source == nullptr) {
+		return createErrorResponse("Source not found");
+	}
+
+	auto target = engine.findDeviceById(targetId);
+
+	if (target == nullptr) {
+		return createErrorResponse("Target not found");
+	}
+
+	source->outputs().add(target);
+
+	auto response = std::make_unique<messages::ConnectDeviceResponse>();
+
+	response->mutable_connection()->set_sourceid(source->id());
+
+	for (auto output : source->outputs()) {
+		response->mutable_connection()->add_targetids(output->id());
+	}
+
 	return response;
 }
 
@@ -108,6 +139,8 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(TextRequest),
 	HANDLER(ListDevicesRequest),
 	HANDLER(UpdateDeviceParameterRequest),
+	HANDLER(CreateDeviceRequest),
+	HANDLER(ConnectDeviceRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

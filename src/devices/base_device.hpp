@@ -29,7 +29,7 @@ class BaseDevice {
 		  _respondingToParameterChange(false)
 		{ }
 
-		uintptr_t id() {
+		uintptr_t id() const {
 			return reinterpret_cast<uintptr_t>(this);
 		}
 

@@ -16,6 +16,8 @@
 
 class Engine {
 	public:
+		typedef std::list<Devices::DevicePtr> DeviceList;
+
 		Engine(unsigned int sampleRate, AudioBufferPtr buffer, AudioOutputPtr audioOutput)
 		: _timer(sampleRate),
 		  _audioOutput(audioOutput),
@@ -59,8 +61,26 @@ class Engine {
 			return _timer.seconds();
 		}
 
-		const std::list<Devices::DevicePtr> & devices() const {
+		const DeviceList & devices() const {
 			return _devices;
+		}
+
+		Devices::DevicePtr findDeviceById(uint64_t id) {
+			if (id == 0) {
+				return _outputDevice;
+			}
+
+			auto it = std::find_if(
+				_devices.begin(),
+				_devices.end(),
+				[&id](Devices::DevicePtr device) -> bool { return device->id() == id; }
+			);
+
+			if (it == _devices.end()) {
+				return nullptr;
+			}
+
+			return *it;
 		}
 
 	private:
@@ -73,7 +93,7 @@ class Engine {
 		std::shared_ptr<Devices::OutputDevice> _outputDevice;
 
 		AudioBufferPtr _buffer;
-		std::list<Devices::DevicePtr> _devices;
+		DeviceList _devices;
 };
 
 #endif

@@ -31,6 +31,14 @@ class TOutputs {
 			}
 		}
 
+		const std::list<T>::const_iterator begin() const {
+			return _outputs.begin();
+		}
+
+		const std::list<T>::const_iterator end() const {
+			return _outputs.end();
+		}
+
 	private:
 		std::list<T> _outputs;
 
