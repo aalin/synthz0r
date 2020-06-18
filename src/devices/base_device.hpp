@@ -8,6 +8,7 @@
 #include "../timer.hpp"
 #include "../stereo_sample.hpp"
 #include "../note_event.hpp"
+#include "../identifier.hpp"
 
 namespace Devices {
 	class BaseDevice {
@@ -21,15 +22,11 @@ namespace Devices {
 			  _parameters(params),
 			  _tables(tables),
 			  _respondingToParameterChange(false)
-			{
-				std::cout << "Created InstrumentDevice " << this << std::endl;
-			}
+			{}
 
 			virtual ~BaseDevice() {}
 
-			uintptr_t id() const {
-				return reinterpret_cast<uintptr_t>(this);
-			}
+			uint32_t id() const { return _id; }
 
 			virtual void update(const Timer &, float) { }
 			virtual void update(const Timer &) { }
@@ -70,6 +67,7 @@ namespace Devices {
 			}
 
 		private:
+			Identifier _id;
 			std::string _name;
 			ParameterList _parameters;
 			TableList _tables;

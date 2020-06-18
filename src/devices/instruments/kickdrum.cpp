@@ -16,7 +16,6 @@ namespace Devices::Instruments {
 	  _oscillator(Units::Oscillator::Type::SINE),
 	  _noteOnTime(-1.0)
 	{
-		std::cout << "Created Kickdrum " << this << std::endl;
 		_filter._type = Units::StateVariableFilter::Type::BANDPASS;
 		_pitchEnvelope._attackMs = 0;
 		_pitchEnvelope._decayMs = 100;
