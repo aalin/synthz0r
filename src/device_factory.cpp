@@ -4,8 +4,8 @@
 #include "devices/effects/delay.hpp"
 #include "devices/effects/overdrive.hpp"
 #include "devices/instruments/kickdrum.hpp"
-//#include "devices/instruments/synth.hpp"
-//#include "devices/instruments/wavetable_synth.hpp"
+#include "devices/instruments/synth.hpp"
+#include "devices/instruments/wavetable_synth.hpp"
 #include "devices/notes/sequencer.hpp"
 
 template<typename T> Devices::NoteDevicePtr makeNoteDevice() { return std::make_shared<T>(); }
@@ -23,8 +23,8 @@ static const std::map<std::string, std::function<Devices::EffectDevicePtr()>> Ef
 };
 
 static const std::map<std::string, std::function<Devices::InstrumentDevicePtr()> > InstrumentDeviceHandlers = {
-	//HANDLER(Synth),
-	//HANDLER(WavetableSynth),
+	INSTRUMENT_HANDLER(Synth),
+	INSTRUMENT_HANDLER(WavetableSynth),
 	INSTRUMENT_HANDLER(Kickdrum),
 };
 
