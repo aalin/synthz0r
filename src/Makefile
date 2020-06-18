@@ -20,6 +20,7 @@ LFLAGS=-lpulse-simple -lpulse -lm -lpthread -lprotobuf
 all: $(TARGET)
 
 release: CFLAGS += -O3
+release: CFLAGS := $(filter-out -ggdb,$(CFLAGS))
 release: all
 
 run: $(TARGET)
