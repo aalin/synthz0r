@@ -5,66 +5,19 @@
 #include <string>
 #include "devices.hpp"
 #include "timer.hpp"
+#include "channel/device_container.hpp"
 
 class Channel {
-	template<typename T>
-	class DeviceContainer {
-		public:
-			typedef std::vector<T> ContainerType;
-
-			size_t size() const;
-
-			ContainerType::iterator begin() {
-				return _elements.begin();
-			}
-
-			ContainerType::iterator end() {
-				return _elements.end();
-			}
-
-			void prepend(T elem) {
-				_elements.insert(_elements.begin(), elem);
-			}
-
-			void append(T elem) {
-				_elements.push_back(elem);
-			}
-
-			void insertAt(size_t pos, T elem) {
-				if (pos > _elements.size()) {
-					_elements.insert(_elements.end(), elem);
-					return;
-				}
-
-				_elements.insert(_elements.begin() + pos, elem);
-			}
-
-			void removeAt(size_t pos) {
-				if (pos > _elements.size()) {
-					return;
-				}
-
-				_elements.erase(_elements.begin() + pos);
-			}
-
-			void pop() {
-				_elements.pop_back();
-			}
-
-		private:
-			std::vector<T> _elements;
-	};
-
 	public:
-		Channel(std::string name)
-		: _name(name)
-		{
-			std::cout << "Creating channel: " << _name << std::endl;
+		Channel(std::string name) : _name(name) {
+			std::cout << "Creating channel: " << _name << " id: " << _id.get() << std::endl;
 		}
 
 		~Channel() {
-			std::cout << "Destroying channel: " << _name << std::endl;
+			std::cout << "Destroying channel: " << _name << " id: " << _id.get() << std::endl;
 		}
+
+		uint32_t id() const { return _id; }
 
 		void insertNoteDevice(size_t index, Devices::NoteDevicePtr noteDevice) {
 			_noteDevices.insertAt(index, noteDevice);
@@ -117,10 +70,11 @@ class Channel {
 		}
 
 	private:
+		Identifier _id;
 		std::string _name;
-		DeviceContainer<Devices::NoteDevicePtr> _noteDevices;
+		ChannelNS::DeviceContainer<Devices::NoteDevicePtr> _noteDevices;
 		Devices::InstrumentDevicePtr _instrumentDevice;
-		DeviceContainer<Devices::EffectDevicePtr> _effectDevices;
+		ChannelNS::DeviceContainer<Devices::EffectDevicePtr> _effectDevices;
 };
 
 typedef std::shared_ptr<Channel> ChannelPtr;

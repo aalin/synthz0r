@@ -20,6 +20,42 @@ message ErrorResponse {
   string message = 1;
 }
 
+message Channel {
+  uint32 id = 1;
+  string name = 2;
+  Device instrument = 3;
+  repeated Device noteDevices = 4;
+  repeated Device effectDevices = 5;
+}
+
+message ListChannelsRequest {
+}
+
+message ListChannelsResponse {
+  repeated Channel channels = 1;
+}
+
+message CreateChannelRequest {
+  string name = 1;
+}
+
+message CreateChannelResponse {
+  Channel channel = 1;
+}
+
+message RemoveChannelRequest {
+  uint32 id = 1;
+}
+
+message SetChannelInstrumentRequest {
+  uint32 channelId = 1;
+  uint32 instrumentId = 2;
+}
+
+message SetChannelInstrumentResponse {
+  Channel channel = 1;
+}
+
 message DeviceParameter {
   string name = 1;
   int32 min = 2;
@@ -31,20 +67,13 @@ message DeviceParameter {
 }
 
 message Device {
-  uint64 id = 1;
+  uint32 id = 1;
   string name = 2;
   repeated DeviceParameter parameters = 3;
 }
 
-message ListDevicesRequest {
-}
-
-message ListDevicesResponse {
-  repeated Device devices = 1;
-}
-
 message UpdateDeviceParameterRequest {
-  uint64 id = 1;
+  uint32 id = 1;
   string name = 2;
   int32 value = 3;
 }
@@ -59,35 +88,4 @@ message CreateDeviceRequest {
 
 message CreateDeviceResponse {
   Device device = 1;
-}
-
-message DeviceConnection {
-  uint64 sourceId = 1;
-  repeated uint64 targetIds = 2;
-}
-
-message GetDeviceConnectionsReqest {
-  uint64 deviceId = 1;
-}
-
-message GetDeviceConnectionsResponse {
-  DeviceConnection connection = 1;
-}
-
-message ConnectDeviceRequest {
-  uint64 sourceId = 1;
-  uint64 targetId = 2;
-}
-
-message ConnectDeviceResponse {
-  DeviceConnection connection = 1;
-}
-
-message DisconnectDeviceRequest {
-  uint64 sourceId = 1;
-  uint64 targetId = 2;
-}
-
-message DisconnectDeviceResponse {
-  DeviceConnection connection = 1;
 }

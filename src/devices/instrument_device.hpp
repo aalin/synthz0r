@@ -14,9 +14,7 @@ namespace Devices {
 				std::initializer_list<Table> tables = {}
 			)
 			: BaseDevice(name, params, tables)
-			{
-				std::cout << "Created InstrumentDevice " << this << std::endl;
-			}
+			{}
 
 			virtual ~InstrumentDevice() {}
 
