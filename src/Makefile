@@ -1,5 +1,5 @@
 #FILES = $(basename $(wildcard *.cpp) $(wildcard **/*.cpp))
-FILES = $(basename $(shell find . -name "*.cpp" | grep -v ignore))
+FILES = $(basename $(shell find . -name "*.cpp"))
 OBJS = $(addsuffix .o, $(FILES))
 TARGET = ../synthz0r
 
