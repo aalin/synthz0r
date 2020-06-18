@@ -12,7 +12,6 @@ void Devices::Sequencer::update(const Timer &timer, float) {
 	_time += speed;
 
 	if (step != _lastStep) {
-		std::cout << "Sequencer update: " << step << std::endl;
 		if (_lastNote >= 0) {
 			output(timer, NoteEvent::noteOff(_lastNote));
 		}

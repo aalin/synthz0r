@@ -16,7 +16,6 @@ namespace Devices {
 			void input(const Timer &timer, const NoteEvent &event) {
 				switch (event.type) {
 					case NoteEvent::Type::NOTE_ON:
-						std::cout << name() << " received a NoteOn_" << (int)event.note << std::endl;
 						noteOn(timer, event.note, event.velocity / 100.0);
 						break;
 					default:
@@ -25,7 +24,6 @@ namespace Devices {
 			}
 
 			void noteOn(const Timer &timer, int, float) {
-				std::cout << "Trigger kick" << std::endl;
 				_noteOnTime = timer.seconds();
 			}
 
