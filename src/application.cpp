@@ -2,7 +2,7 @@
 #include <memory>
 #include "application.hpp"
 
-#include "device_factory.hpp"
+#include "devices/factory.hpp"
 
 #include "units/oscillator.hpp"
 
@@ -81,14 +81,14 @@ void Application::run() {
 
 		auto kickChannel = engine.createChannel("Kick channel");
 
-		Devices::InstrumentDevicePtr kick = DeviceFactory::createInstrumentDevice("Kickdrum");
+		Devices::InstrumentDevicePtr kick = Devices::Factory::createInstrumentDevice("Kickdrum");
 
 		kick->setName("Kickdrum");
 		kick->setParam("amplitude", 100);
 
 		kickChannel->setInstrument(kick);
 
-		auto kickSeq = DeviceFactory::createNoteDevice("Sequencer");
+		auto kickSeq = Devices::Factory::createNoteDevice("Sequencer");
 
 		kickSeq->setTable("notes", {
 			NOTE(C,4),
