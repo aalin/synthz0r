@@ -3,17 +3,35 @@
 
 #include <list>
 #include <string>
-#include "devices/base_device.hpp"
+#include "devices/instrument_device.hpp"
+#include "devices/effect_device.hpp"
+#include "devices/note_device.hpp"
 
 namespace DeviceFactory {
 	typedef std::initializer_list<std::pair<std::string, int> > ParameterInitializerList;
 	typedef std::initializer_list<std::pair<std::string, std::vector<int> > > TableInitializerList;
 
-	Devices::DevicePtr create(std::string name);
-	Devices::DevicePtr create(std::string name, ParameterInitializerList);
-	Devices::DevicePtr create(std::string name, ParameterInitializerList, TableInitializerList);
+	Devices::InstrumentDevicePtr createInstrumentDevice(
+		std::string name,
+		ParameterInitializerList = {},
+		TableInitializerList = {}
+	);
 
-	const std::list<std::string> getDeviceNames();
+	Devices::EffectDevicePtr createEffectDevice(
+		std::string name,
+		ParameterInitializerList,
+		TableInitializerList
+	);
+
+	Devices::NoteDevicePtr createNoteDevice(
+		std::string name,
+		ParameterInitializerList = {},
+		TableInitializerList = {}
+	);
+
+	const std::list<std::string> getInstrumentDeviceNames();
+	const std::list<std::string> getEffectDeviceNames();
+	const std::list<std::string> getNoteDeviceNames();
 }
 
 #endif

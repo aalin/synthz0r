@@ -31,6 +31,7 @@ ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &) {
 	return createErrorResponse("Could not understand whatever you sent");
 }
 
+/*
 template<typename T>
 void setParameters(Devices::DevicePtr device, T *parent) {
 	for (const auto &param : device->parameters()) {
@@ -121,6 +122,8 @@ ProtobufMessagePtr handleRequest(messages::ConnectDeviceRequest &message, Engine
 	return response;
 }
 
+*/
+
 template<typename T>
 ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 	T message;
@@ -137,10 +140,10 @@ ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 
 static const std::map<std::string, std::function<ProtobufMessagePtr(Request &request, Engine &engine)> > Handlers = {
 	HANDLER(TextRequest),
-	HANDLER(ListDevicesRequest),
-	HANDLER(UpdateDeviceParameterRequest),
-	HANDLER(CreateDeviceRequest),
-	HANDLER(ConnectDeviceRequest),
+	//HANDLER(ListDevicesRequest),
+	//`HANDLER(UpdateDeviceParameterRequest),
+	//HANDLER(CreateDeviceRequest),
+	//HANDLER(ConnectDeviceRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {
