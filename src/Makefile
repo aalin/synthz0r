@@ -19,6 +19,9 @@ LFLAGS=-lpulse-simple -lpulse -lm -lpthread -lprotobuf
 
 all: $(TARGET)
 
+release: CFLAGS += -O3
+release: all
+
 run: $(TARGET)
 	$(TARGET)
 
@@ -33,7 +36,7 @@ protobuf/messages.pb.cc: messages.proto
 
 protobuf/messages.pb.o: protobuf/messages.pb.cc
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
-	@$(CC) -c $(CFLAGS) $< -o $@
+	@$(CC) -c $< -o $@
 	@echo -e "$(GREEN)Compiled $< => $@$(RESET)"
 
 info:

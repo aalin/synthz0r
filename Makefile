@@ -1,9 +1,4 @@
-default: synthz0r
+.DEFAULT_GOAL := all
 
-synthz0r: FORCE
-	$(MAKE) -j -C src/
-
-clean:
-	$(MAKE) -C src/ clean
-
-FORCE:
+%::
+	$(MAKE) -j -C src/ $@
