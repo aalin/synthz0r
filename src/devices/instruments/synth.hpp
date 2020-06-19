@@ -33,7 +33,7 @@ namespace Devices::Instruments {
 				Parameter("transpose",           -24,    24,    2, _transpose),
 				Parameter("oscillatorType",        0,     5,    0, _oscillatorType),
 				Parameter("panning",            -127,   127,    0, _panning),
-				Parameter("amplitude",             0,   128,    0, _amplitude),
+				Parameter("amplitude",             0,   128,  100, _amplitude),
 				Parameter("envelope.attackMs",     0,  1000,  150, _envelope._attackMs),
 				Parameter("envelope.decayMs",      0,  1000,    0, _envelope._decayMs),
 				Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
