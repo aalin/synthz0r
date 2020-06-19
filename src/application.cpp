@@ -87,10 +87,6 @@ void Application::run() {
 			processMessageQueue(_server.update());
 
 			engine.update();
-
-			if (timer.seconds() > 60) {
-				stop();
-			}
 		}
 	} catch (std::exception &e) {
 		std::cerr << "Caught error: " << e.what() << std::endl;
