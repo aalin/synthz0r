@@ -44,7 +44,7 @@ class Client extends EventEmitter {
 
     this._callbacks.delete(id);
 
-    callback({ type, message });
+    callback(message);
   }
 }
 
