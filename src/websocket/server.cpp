@@ -22,8 +22,7 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		~WSServer() {
-			std::cout << "Stopping server" << std::endl;;
-			_server.stop();
+			std::cout << "Destroying server impl" << std::endl;;
 		}
 
 		void start(uint16_t port) {
@@ -33,7 +32,14 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		void stop() {
-			_server.stop();
+			std::cout << "Stopping server" << std::endl;
+
+			_server.stop_listening();
+
+			for (auto connection : _connections) {
+				std::cout << "Closing connection" << std::endl;
+				_server.close(connection, websocketpp::close::status::normal, "Terminating");
+			}
 		}
 
 		void broadcast(const std::string &message) {
