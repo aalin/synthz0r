@@ -9,7 +9,9 @@
 
 class Channel {
 	public:
-		Channel(std::string name) : _name(name) {
+		Channel(std::string name)
+		: _name(name)
+		{
 			std::cout << "Creating channel: " << _name << " id: " << _id.get() << std::endl;
 		}
 
@@ -18,6 +20,10 @@ class Channel {
 		}
 
 		uint32_t id() const { return _id; }
+
+		const std::string & name() {
+			return _name;
+		}
 
 		void insertNoteDevice(size_t index, Devices::NoteDevicePtr noteDevice) {
 			_noteDevices.insertAt(index, noteDevice);
@@ -41,6 +47,18 @@ class Channel {
 
 		void removeEffectDevice(size_t index) {
 			_effectDevices.removeAt(index);
+		}
+
+		const ChannelNS::DeviceContainer<Devices::NoteDevicePtr> & getNoteDevices() {
+			return _noteDevices;
+		}
+
+		const ChannelNS::DeviceContainer<Devices::EffectDevicePtr> & getEffectDevices() {
+			return _effectDevices;
+		}
+
+		Devices::InstrumentDevicePtr getInstrument() {
+			return _instrumentDevice;
 		}
 
 		void setInstrument(Devices::InstrumentDevicePtr instrument) {
@@ -70,8 +88,8 @@ class Channel {
 		}
 
 	private:
-		Identifier _id;
 		std::string _name;
+		Identifier _id;
 		ChannelNS::DeviceContainer<Devices::NoteDevicePtr> _noteDevices;
 		Devices::InstrumentDevicePtr _instrumentDevice;
 		ChannelNS::DeviceContainer<Devices::EffectDevicePtr> _effectDevices;

@@ -7,11 +7,12 @@ class Identifier {
 	static uint32_t NEXT_ID;
 
 	public:
+		Identifier() : _id(NEXT_ID++) {}
 		const uint32_t & get() const { return _id; }
 		operator uint32_t() const { return _id; }
 
 	private:
-		uint32_t _id;
+		const uint32_t _id;
 };
 
 #endif

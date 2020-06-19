@@ -31,7 +31,6 @@ ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &) {
 	return createErrorResponse("Could not understand whatever you sent");
 }
 
-/*
 template<typename T>
 void setParameters(Devices::DevicePtr device, T *parent) {
 	for (const auto &param : device->parameters()) {
@@ -44,85 +43,171 @@ void setParameters(Devices::DevicePtr device, T *parent) {
 	}
 }
 
-void setDevice(Devices::DevicePtr device, messages::Device *ptr) {
-	ptr->set_id(device->id());
-	ptr->set_name(device->name());
+template<typename T>
+void setTables(Devices::DevicePtr device, T *parent) {
+	for (const auto &table : device->tables()) {
+		messages::DeviceTable *p = parent->add_tables();
+		p->set_name(table.name());
+		p->set_defaultvalue(table.defaultValue());
+		p->set_min(table.min());
+		p->set_max(table.max());
 
-	setParameters(device, ptr);
+		google::protobuf::RepeatedField<int> data(table.data().begin(), table.data().end());
+		p->mutable_data()->Swap(&data);
+	}
 }
 
-ProtobufMessagePtr handleRequest(messages::ListDevicesRequest &, Engine &engine) {
-	std::cout << "Listing devices" << std::endl;
+void setDevice(const Devices::DevicePtr device, messages::Device *msg) {
+	msg->set_id(device->id());
+	msg->set_name(device->name());
 
-	auto response = std::make_unique<messages::ListDevicesResponse>();
+	setParameters(device, msg);
+	setTables(device, msg);
+}
 
-	for (Devices::DevicePtr device : engine.devices()) {
-		setDevice(device, response->add_devices());
+void setChannel(ChannelPtr channel, messages::Channel *msg) {
+	msg->set_id(channel->id());
+	msg->set_name(channel->name());
+
+	if (channel->getInstrument() != nullptr) {
+		setDevice(channel->getInstrument(), msg->mutable_instrument());
+	}
+
+	for (const auto effect : channel->getEffectDevices()) {
+		setDevice(effect, msg->add_effectdevices());
+	}
+
+	for (const auto noteDevice : channel->getNoteDevices()) {
+		setDevice(noteDevice, msg->add_notedevices());
+	}
+}
+
+ProtobufMessagePtr handleRequest(messages::ListChannelsRequest &, Engine &engine) {
+	std::cout << "Listing channels" << std::endl;
+
+	auto response = std::make_unique<messages::ListChannelsResponse>();
+
+	for (ChannelPtr channel : engine.channels()) {
+		setChannel(channel, response->add_channels());
 	}
 
 	return response;
 }
 
-ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message, Engine &engine) {
-	std::cout << "Updating device parameter" << std::endl;
+ProtobufMessagePtr handleRequest(messages::CreateChannelRequest &msg, Engine &engine) {
+	auto channel = engine.createChannel(msg.name());
 
-	for (Devices::DevicePtr device : engine.devices()) {
-		if (device->id() == message.id()) {
-			device->setParam(message.name(), message.value());
+	auto response = std::make_unique<messages::CreateChannelResponse>();
 
-			auto response = std::make_unique<messages::UpdateDeviceParameterResponse>();
-			setParameters(device, response.get());
-			return response;
-		}
-	}
+	setChannel(channel, response->mutable_channel());
 
-	return createErrorResponse("Device not found");
+	return response;
 }
 
-ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine &engine) {
-	auto device = Devices::Factory::create(message.name());
+ProtobufMessagePtr handleRequest(messages::RemoveChannelRequest &msg, Engine &engine) {
+	if (engine.removeChannel(msg.id())) {
+		return std::make_unique<messages::SuccessResponse>();
+	}
+
+	return createErrorResponse("Could not find channel");
+}
+
+ProtobufMessagePtr handleRequest(messages::CreateInstrumentDeviceRequest &message, Engine &engine) {
+	auto channel = engine.getChannelById(message.channelid());
+
+	if (channel == nullptr) {
+		return createErrorResponse("No such channel");
+	}
+
+	auto device = Devices::Factory::createInstrumentDevice(message.name());
 
 	if (device == nullptr) {
 		return createErrorResponse("Invalid device name");
 	}
 
-	engine.addDevice(device);
+	engine.registerDevice(device);
+	channel->setInstrument(device);
 
 	auto response = std::make_unique<messages::CreateDeviceResponse>();
 	setDevice(device, response->mutable_device());
 	return response;
 }
 
-ProtobufMessagePtr handleRequest(messages::ConnectDeviceRequest &message, Engine &engine) {
-	const uint64_t sourceId = message.sourceid();
-	const uint64_t targetId = message.targetid();
+ProtobufMessagePtr handleRequest(messages::CreateEffectDeviceRequest &message, Engine &engine) {
+	auto channel = engine.getChannelById(message.channelid());
 
-	auto source = engine.findDeviceById(sourceId);
-
-	if (source == nullptr) {
-		return createErrorResponse("Source not found");
+	if (channel == nullptr) {
+		return createErrorResponse("No such channel");
 	}
 
-	auto target = engine.findDeviceById(targetId);
+	auto device = Devices::Factory::createEffectDevice(message.name());
 
-	if (target == nullptr) {
-		return createErrorResponse("Target not found");
+	if (device == nullptr) {
+		return createErrorResponse("Invalid device name");
 	}
 
-	source->outputs().add(target);
+	engine.registerDevice(device);
+	channel->appendEffectDevice(device);
 
-	auto response = std::make_unique<messages::ConnectDeviceResponse>();
-
-	response->mutable_connection()->set_sourceid(source->id());
-
-	for (auto output : source->outputs()) {
-		response->mutable_connection()->add_targetids(output->id());
-	}
-
+	auto response = std::make_unique<messages::CreateDeviceResponse>();
+	setDevice(device, response->mutable_device());
 	return response;
 }
 
-*/
+ProtobufMessagePtr handleRequest(messages::CreateNoteDeviceRequest &message, Engine &engine) {
+	auto channel = engine.getChannelById(message.channelid());
+
+	if (channel == nullptr) {
+		return createErrorResponse("No such channel");
+	}
+
+	auto device = Devices::Factory::createNoteDevice(message.name());
+
+	if (device == nullptr) {
+		return createErrorResponse("Invalid device name");
+	}
+
+	engine.registerDevice(device);
+	channel->appendNoteDevice(device);
+
+	auto response = std::make_unique<messages::CreateDeviceResponse>();
+	setDevice(device, response->mutable_device());
+	return response;
+}
+
+ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message, Engine &engine) {
+	std::cout << "Updating device parameter" << std::endl;
+
+	auto device = engine.findDeviceById(message.id());
+
+	if (device == nullptr) {
+		return createErrorResponse("Device not found");
+	}
+
+	device->setParam(message.name(), message.value());
+
+	auto response = std::make_unique<messages::UpdateDeviceParameterResponse>();
+	setParameters(device, response.get());
+	return response;
+}
+
+ProtobufMessagePtr handleRequest(messages::UpdateDeviceTableRequest &message, Engine &engine) {
+	std::cout << "Updating device table" << std::endl;
+
+	auto device = engine.findDeviceById(message.id());
+
+	if (device == nullptr) {
+		return createErrorResponse("Device not found");
+	}
+
+	std::vector<int> data(message.data().begin(), message.data().end());
+
+	device->setTable(message.name(), data);
+
+	auto response = std::make_unique<messages::UpdateDeviceTableResponse>();
+	setTables(device, response.get());
+	return response;
+}
 
 template<typename T>
 ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
@@ -140,10 +225,14 @@ ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 
 static const std::map<std::string, std::function<ProtobufMessagePtr(Request &request, Engine &engine)> > Handlers = {
 	HANDLER(TextRequest),
-	//HANDLER(ListDevicesRequest),
-	//`HANDLER(UpdateDeviceParameterRequest),
-	//HANDLER(CreateDeviceRequest),
-	//HANDLER(ConnectDeviceRequest),
+	HANDLER(ListChannelsRequest),
+	HANDLER(CreateChannelRequest),
+	HANDLER(RemoveChannelRequest),
+	HANDLER(CreateInstrumentDeviceRequest),
+	HANDLER(CreateEffectDeviceRequest),
+	HANDLER(CreateNoteDeviceRequest),
+	HANDLER(UpdateDeviceParameterRequest),
+	HANDLER(UpdateDeviceTableRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

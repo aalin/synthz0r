@@ -9,11 +9,11 @@ namespace ChannelNS {
 
 			size_t size() const;
 
-			ContainerType::iterator begin() {
+			ContainerType::const_iterator begin() const {
 				return _elements.begin();
 			}
 
-			ContainerType::iterator end() {
+			ContainerType::const_iterator end() const {
 				return _elements.end();
 			}
 

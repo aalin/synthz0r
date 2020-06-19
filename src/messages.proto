@@ -20,6 +20,9 @@ message ErrorResponse {
   string message = 1;
 }
 
+message SuccessResponse {
+}
+
 message Channel {
   uint32 id = 1;
   string name = 2;
@@ -66,10 +69,19 @@ message DeviceParameter {
   string unit = 7;
 }
 
+message DeviceTable {
+  string name = 1;
+  int32 min = 2;
+  int32 max = 3;
+  int32 defaultValue = 4;
+  repeated int32 data = 5;
+}
+
 message Device {
   uint32 id = 1;
   string name = 2;
   repeated DeviceParameter parameters = 3;
+  repeated DeviceTable tables = 4;
 }
 
 message UpdateDeviceParameterRequest {
@@ -82,8 +94,29 @@ message UpdateDeviceParameterResponse {
   repeated DeviceParameter parameters = 1;
 }
 
-message CreateDeviceRequest {
+message UpdateDeviceTableRequest {
+  uint32 id = 1;
+  string name = 2;
+  repeated int32 data = 3;
+}
+
+message UpdateDeviceTableResponse {
+  repeated DeviceTable tables = 1;
+}
+
+message CreateInstrumentDeviceRequest {
   string name = 1;
+  int32 channelId = 2;
+}
+
+message CreateNoteDeviceRequest {
+  string name = 1;
+  int32 channelId = 2;
+}
+
+message CreateEffectDeviceRequest {
+  string name = 1;
+  int32 channelId = 2;
 }
 
 message CreateDeviceResponse {

@@ -8,11 +8,11 @@
 #include <list>
 #include <cmath>
 #include "devices/base_device.hpp"
-#include "channel.hpp"
 #include "pulse_audio.hpp"
 #include "audio_buffer.hpp"
 #include "utils.hpp"
 #include "timer.hpp"
+#include "channel.hpp"
 
 class Engine {
 	public:
@@ -31,14 +31,52 @@ class Engine {
 			return _timer;
 		}
 
+		void registerDevice(Devices::DevicePtr device) {
+			_devices[device->id()] = device;
+			cleanExpiredDevices();
+		}
+
+		Devices::DevicePtr findDeviceById(uint32_t id) {
+			cleanExpiredDevices();
+
+			auto it = _devices.find(id);
+
+			if (it == _devices.end()) {
+				return nullptr;
+			}
+
+			return it->second.lock();
+		}
+
 		ChannelPtr createChannel(std::string name) {
 			ChannelPtr channel = std::make_shared<Channel>(name);
 			_channels.push_back(channel);
 			return channel;
 		}
 
-		void removeChannel(size_t) {
-			throw std::runtime_error("TODO: Implement me");
+		bool removeChannel(uint32_t id) {
+			for (auto it = _channels.begin(); it != _channels.end(); it++) {
+				if ((*it)->id() == id) {
+					_channels.erase(it);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		ChannelPtr getChannelById(uint32_t id) {
+			for (auto channel : _channels) {
+				if (channel->id() == id) {
+					return channel;
+				}
+			}
+
+			return nullptr;
+		}
+
+		const std::list<ChannelPtr> & channels() const {
+			return _channels;
 		}
 
 		float update() {
@@ -68,6 +106,19 @@ class Engine {
 
 		AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;
+		std::map<uint32_t, std::weak_ptr<Devices::BaseDevice> > _devices;
+
+		void cleanExpiredDevices() {
+			auto it = _devices.begin();
+
+			while (it != _devices.end()) {
+				if (it->second.expired()) {
+					it = _devices.erase(it);
+				} else {
+					it++;
+				}
+			}
+		}
 };
 
 #endif

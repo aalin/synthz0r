@@ -56,6 +56,10 @@ namespace Devices {
 				_respondingToParameterChange = false;
 			}
 
+			const TableList & tables() const {
+				return _tables;
+			}
+
 			void setTable(const std::string &name, std::vector<int> data) {
 				Table &table = _tables.get(name);
 				table.setData(data);
