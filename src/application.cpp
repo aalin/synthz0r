@@ -6,7 +6,6 @@
 
 #include "utils.hpp"
 #include "note.hpp"
-#include "performance_log.hpp"
 
 #include "file_output.hpp"
 
@@ -73,30 +72,6 @@ void Application::run() {
 	Engine &engine = getEngine();
 
 	try {
-		PerformanceLog perf;
-
-		perf.log("Created output");
-
-		auto kickChannel = engine.createChannel("Kick channel");
-
-		Devices::InstrumentDevicePtr kick = Devices::Factory::createInstrumentDevice("Kickdrum");
-
-		kick->setName("Kickdrum");
-		kick->setParam("amplitude", 100);
-
-		kickChannel->setInstrument(kick);
-
-		auto kickSeq = Devices::Factory::createNoteDevice("Sequencer");
-
-		kickSeq->setTable("notes", {
-			NOTE(C,4),
-			NOTE_OFF,
-			NOTE_OFF,
-			NOTE_OFF,
-		});
-
-		kickChannel->appendNoteDevice(kickSeq);
-
 		int seconds = -1;
 
 		while (_running) {
@@ -110,11 +85,6 @@ void Application::run() {
 			}
 
 			processMessageQueue(_server.update());
-
-			const int bpm = Utils::rsin(timer.seconds() / 2.0, 90, 120);
-
-			kickSeq->setParam("bpm", bpm);
-			kickSeq->setParam("rate", 4);
 
 			engine.update();
 
