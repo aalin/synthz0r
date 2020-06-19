@@ -1,7 +1,8 @@
 const Protocol = require('./protocol');
 const Client = require('./client');
+const { notesToArray } = require('./note');
 
-async function createSynth(client, deviceName) {
+async function createSynthWithSequencer(client, deviceName, sequencerData) {
   const createChannelResponse =
     await client.request('CreateChannelRequest', { name: "New channel" });
 
@@ -34,7 +35,7 @@ async function createSynth(client, deviceName) {
     await client.request('UpdateDeviceTableRequest', {
       id: createSequencerResponse.device.id,
       name: "notes",
-      data: [69, 70, 71, -1]
+      data: sequencerData
     });
 
   console.log(updateSequencerTableResponse);
@@ -50,9 +51,18 @@ async function main({ port }) {
 
     client.request('ListChannelsRequest').then((response) => {
       console.log('Got response', JSON.stringify(response, null, 2));
-    })
+    });
 
-    createSynth(client, "WavetableSynth");
+    createSynthWithSequencer(
+      client,
+      "WavetableSynth",
+      notesToArray(
+        "G4 G4 D5 D5 | E5 E5 D5 OFF " +
+        "C5 C5 B4 B4 | A4 A4 G4 OFF " +
+        "D5 D5 C5 C5 | B4 B4 A4 OFF " +
+        "D5 D5 C5 C5 | B4 B4 A4 OFF "
+      )
+    );
   });
 
   client.on('close', () => {
