@@ -32,7 +32,7 @@ namespace Utils {
 		return n % m;
 	}
 
-	template<typename T, typename V> T clip(V value) {
+	template<typename T, typename V> T quantize(V value) {
 		constexpr T min = std::numeric_limits<T>::min();
 		constexpr T max = std::numeric_limits<T>::max();
 

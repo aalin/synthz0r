@@ -50,7 +50,7 @@ class AudioBuffer : public AudioBufferBase {
 		void set(size_t index, size_t channel, float value) {
 			constexpr float amplitude = std::numeric_limits<BufferType>::max();
 			size_t idx = index * _numChannels + channel;
-			_buffer[idx] = Utils::clip<BufferType>(value * amplitude);
+			_buffer[idx] = Utils::quantize<BufferType>(value * amplitude);
 		}
 
 		void set(size_t index, const StereoSample &sample) {
