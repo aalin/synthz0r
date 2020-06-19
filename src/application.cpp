@@ -12,7 +12,7 @@
 constexpr unsigned int BUFFER_SIZE = 1024 * 8;
 constexpr unsigned int SAMPLE_RATE = 44100;
 constexpr unsigned int NUM_CHANNELS = 2;
-constexpr int DEFAULT_PORT = 9000;
+constexpr int DEFAULT_PORT = 5555;
 
 uint16_t getPort(const ArgumentParser &args) {
 	auto option = args.get("-p");
