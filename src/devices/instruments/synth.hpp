@@ -1,5 +1,5 @@
-#ifndef SYNTH_HPP
-#define SYNTH_HPP
+#ifndef DEVICES__INSTRUMENTS__SYNTH_HPP
+#define DEVICES__INSTRUMENTS__SYNTH_HPP
 
 #include <list>
 #include "../instrument_device.hpp"

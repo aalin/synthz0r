@@ -1,5 +1,5 @@
-#ifndef WAVETABLE_SYNTH_HPP
-#define WAVETABLE_SYNTH_HPP
+#ifndef DEVICES__INSTRUMENTS__WAVETABLE_SYNTH_HPP
+#define DEVICES__INSTRUMENTS__WAVETABLE_SYNTH_HPP
 
 #include "../instrument_device.hpp"
 #include "../../units/adsr.hpp"

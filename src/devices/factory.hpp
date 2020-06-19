@@ -1,5 +1,5 @@
-#ifndef DEVICE__FACTORY_HPP
-#define DEVICE__FACTORY_HPP
+#ifndef DEVICES__FACTORY_HPP
+#define DEVICES__FACTORY_HPP
 
 #include <list>
 #include <string>
