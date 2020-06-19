@@ -2,6 +2,7 @@
 #include "protobuf/messages.pb.h"
 #include "message_handler/request.hpp"
 #include "devices/factory.hpp"
+#include "performance_log.hpp"
 
 namespace messages = synthz0r::messages;
 
@@ -236,6 +237,7 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {
+	PerformanceLog perf;
 	messages::Envelope envelope;
 
 	if (!envelope.ParseFromString(message->payload)) {
@@ -244,6 +246,9 @@ void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message
 	}
 
 	Request request(envelope.id(), envelope.payload());
+
+	perf.log("Parsed request");
+
 	ProtobufMessagePtr response;
 
 	try {
@@ -266,5 +271,9 @@ void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message
 		response = createErrorResponse("Unknown exception occurred");
 	}
 
+	perf.log("Created response");
+
 	message->reply(request.encodeResponse(std::move(response)));
+
+	perf.log("Sent reply");
 }
