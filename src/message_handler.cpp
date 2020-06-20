@@ -33,7 +33,7 @@ ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &) {
 }
 
 template<typename T>
-void setParameters(Devices::DevicePtr device, T *parent) {
+void setParameters(T *parent, Devices::DevicePtr device) {
 	for (const auto &param : device->parameters()) {
 		messages::DeviceParameter *p = parent->add_parameters();
 		p->set_name(param.name());
@@ -45,7 +45,7 @@ void setParameters(Devices::DevicePtr device, T *parent) {
 }
 
 template<typename T>
-void setTables(Devices::DevicePtr device, T *parent) {
+void setTables(T *parent, Devices::DevicePtr device) {
 	for (const auto &table : device->tables()) {
 		messages::DeviceTable *p = parent->add_tables();
 		p->set_name(table.name());
@@ -58,12 +58,12 @@ void setTables(Devices::DevicePtr device, T *parent) {
 	}
 }
 
-void setDevice(const Devices::DevicePtr device, messages::Device *msg) {
+void setDevice(messages::Device *msg, const Devices::DevicePtr device) {
 	msg->set_id(device->id());
 	msg->set_name(device->name());
 
-	setParameters(device, msg);
-	setTables(device, msg);
+	setParameters(msg, device);
+	setTables(msg, device);
 }
 
 void setChannel(ChannelPtr channel, messages::Channel *msg) {
@@ -71,15 +71,15 @@ void setChannel(ChannelPtr channel, messages::Channel *msg) {
 	msg->set_name(channel->name());
 
 	if (channel->getInstrument() != nullptr) {
-		setDevice(channel->getInstrument(), msg->mutable_instrument());
+		setDevice(msg->mutable_instrument(), channel->getInstrument());
 	}
 
 	for (const auto effect : channel->getEffectDevices()) {
-		setDevice(effect, msg->add_effectdevices());
+		setDevice(msg->add_effectdevices(), effect);
 	}
 
 	for (const auto noteDevice : channel->getNoteDevices()) {
-		setDevice(noteDevice, msg->add_notedevices());
+		setDevice(msg->add_notedevices(), noteDevice);
 	}
 }
 
@@ -130,7 +130,7 @@ ProtobufMessagePtr handleRequest(messages::CreateInstrumentDeviceRequest &messag
 	channel->setInstrument(device);
 
 	auto response = std::make_unique<messages::CreateDeviceResponse>();
-	setDevice(device, response->mutable_device());
+	setDevice(response->mutable_device(), device);
 	return response;
 }
 
@@ -151,7 +151,7 @@ ProtobufMessagePtr handleRequest(messages::CreateEffectDeviceRequest &message, E
 	channel->appendEffectDevice(device);
 
 	auto response = std::make_unique<messages::CreateDeviceResponse>();
-	setDevice(device, response->mutable_device());
+	setDevice(response->mutable_device(), device);
 	return response;
 }
 
@@ -172,7 +172,7 @@ ProtobufMessagePtr handleRequest(messages::CreateNoteDeviceRequest &message, Eng
 	channel->appendNoteDevice(device);
 
 	auto response = std::make_unique<messages::CreateDeviceResponse>();
-	setDevice(device, response->mutable_device());
+	setDevice(response->mutable_device(), device);
 	return response;
 }
 
@@ -188,7 +188,7 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message
 	device->setParam(message.name(), message.value());
 
 	auto response = std::make_unique<messages::UpdateDeviceParameterResponse>();
-	setParameters(device, response.get());
+	setParameters(response.get(), device);
 	return response;
 }
 
@@ -206,7 +206,7 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceTableRequest &message, En
 	device->setTable(message.name(), data);
 
 	auto response = std::make_unique<messages::UpdateDeviceTableResponse>();
-	setTables(device, response.get());
+	setTables(response.get(), device);
 	return response;
 }
 
