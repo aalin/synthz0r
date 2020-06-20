@@ -101,6 +101,24 @@ void setChannel(ChannelPtr channel, messages::Channel *msg) {
 	}
 }
 
+ProtobufMessagePtr handleRequest(messages::ListDeviceNamesRequest &, Engine &) {
+	auto response = std::make_unique<messages::ListDeviceNamesResponse>();
+
+	for (std::string name : Devices::Factory::getInstrumentDeviceNames()) {
+		response->add_instrumentdevices(name);
+	}
+
+	for (std::string name : Devices::Factory::getEffectDeviceNames()) {
+		response->add_effectdevices(name);
+	}
+
+	for (std::string name : Devices::Factory::getNoteDeviceNames()) {
+		response->add_notedevices(name);
+	}
+
+	return response;
+}
+
 ProtobufMessagePtr handleRequest(messages::ListChannelsRequest &, Engine &engine) {
 	std::cout << "Listing channels" << std::endl;
 
@@ -229,6 +247,7 @@ ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 
 static const std::map<std::string, std::function<ProtobufMessagePtr(Request &request, Engine &engine)> > Handlers = {
 	HANDLER(TextRequest),
+	HANDLER(ListDeviceNamesRequest),
 	HANDLER(ListChannelsRequest),
 	HANDLER(CreateChannelRequest),
 	HANDLER(RemoveChannelRequest),

@@ -38,6 +38,15 @@ message Channel {
   repeated Device effectDevices = 5;
 }
 
+message ListDeviceNamesRequest {
+}
+
+message ListDeviceNamesResponse {
+  repeated string effectDevices = 1;
+  repeated string instrumentDevices = 2;
+  repeated string noteDevices = 3;
+}
+
 message ListChannelsRequest {
 }
 
