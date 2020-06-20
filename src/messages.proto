@@ -2,6 +2,13 @@ syntax = "proto3";
 
 package synthz0r.messages;
 
+enum DeviceType {
+  UNKNOWN = 0;
+  NOTE_DEVICE = 1;
+  INSTRUMENT_DEVICE = 2;
+  EFFECT_DEVICE = 3;
+}
+
 message Envelope {
   uint32 id = 1;
   string type = 2;
@@ -80,8 +87,9 @@ message DeviceTable {
 message Device {
   uint32 id = 1;
   string name = 2;
-  repeated DeviceParameter parameters = 3;
-  repeated DeviceTable tables = 4;
+  DeviceType type = 3;
+  repeated DeviceParameter parameters = 4;
+  repeated DeviceTable tables = 5;
 }
 
 message UpdateDeviceParameterRequest {
@@ -104,21 +112,13 @@ message UpdateDeviceTableResponse {
   repeated DeviceTable tables = 1;
 }
 
-message CreateInstrumentDeviceRequest {
+message CreateDeviceRequest {
   string name = 1;
   int32 channelId = 2;
-}
-
-message CreateNoteDeviceRequest {
-  string name = 1;
-  int32 channelId = 2;
-}
-
-message CreateEffectDeviceRequest {
-  string name = 1;
-  int32 channelId = 2;
+  DeviceType type = 3;
 }
 
 message CreateDeviceResponse {
-  Device device = 1;
+  int32 channelId = 1;
+  Device device = 2;
 }

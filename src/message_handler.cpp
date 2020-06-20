@@ -58,9 +58,27 @@ void setTables(T *parent, Devices::DevicePtr device) {
 	}
 }
 
+synthz0r::messages::DeviceType getDeviceType(const Devices::DevicePtr device) {
+	if (std::dynamic_pointer_cast<Devices::InstrumentDevice>(device)) {
+		return synthz0r::messages::DeviceType::INSTRUMENT_DEVICE;
+	}
+
+	if (std::dynamic_pointer_cast<Devices::EffectDevice>(device)) {
+		return synthz0r::messages::DeviceType::EFFECT_DEVICE;
+	}
+
+	if (std::dynamic_pointer_cast<Devices::NoteDevice>(device)) {
+		return synthz0r::messages::DeviceType::NOTE_DEVICE;
+	}
+
+	throw std::runtime_error("Could not get device type");
+}
+
 void setDevice(messages::Device *msg, const Devices::DevicePtr device) {
 	msg->set_id(device->id());
 	msg->set_name(device->name());
+	std::cout << "Setting device type: " << getDeviceType(device) << std::endl;
+	msg->set_type(getDeviceType(device));
 
 	setParameters(msg, device);
 	setTables(msg, device);
@@ -113,65 +131,50 @@ ProtobufMessagePtr handleRequest(messages::RemoveChannelRequest &msg, Engine &en
 	return createErrorResponse("Could not find channel");
 }
 
-ProtobufMessagePtr handleRequest(messages::CreateInstrumentDeviceRequest &message, Engine &engine) {
-	auto channel = engine.getChannelById(message.channelid());
-
-	if (channel == nullptr) {
-		return createErrorResponse("No such channel");
+Devices::DevicePtr createDeviceFromType(synthz0r::messages::DeviceType type, std::string name) {
+	switch (type) {
+		case synthz0r::messages::DeviceType::NOTE_DEVICE:
+			return Devices::Factory::createNoteDevice(name);
+		case synthz0r::messages::DeviceType::INSTRUMENT_DEVICE:
+			return Devices::Factory::createInstrumentDevice(name);
+		case synthz0r::messages::DeviceType::EFFECT_DEVICE:
+			return Devices::Factory::createEffectDevice(name);
+		default:
+			return nullptr;
 	}
-
-	auto device = Devices::Factory::createInstrumentDevice(message.name());
-
-	if (device == nullptr) {
-		return createErrorResponse("Invalid device name");
-	}
-
-	engine.registerDevice(device);
-	channel->setInstrument(device);
-
-	auto response = std::make_unique<messages::CreateDeviceResponse>();
-	setDevice(response->mutable_device(), device);
-	return response;
 }
 
-ProtobufMessagePtr handleRequest(messages::CreateEffectDeviceRequest &message, Engine &engine) {
+ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine &engine) {
 	auto channel = engine.getChannelById(message.channelid());
 
 	if (channel == nullptr) {
 		return createErrorResponse("No such channel");
 	}
 
-	auto device = Devices::Factory::createEffectDevice(message.name());
+	auto device = createDeviceFromType(message.type(), message.name());
 
 	if (device == nullptr) {
-		return createErrorResponse("Invalid device name");
+		return createErrorResponse("Invalid device name/type");
 	}
 
 	engine.registerDevice(device);
-	channel->appendEffectDevice(device);
 
-	auto response = std::make_unique<messages::CreateDeviceResponse>();
-	setDevice(response->mutable_device(), device);
-	return response;
-}
-
-ProtobufMessagePtr handleRequest(messages::CreateNoteDeviceRequest &message, Engine &engine) {
-	auto channel = engine.getChannelById(message.channelid());
-
-	if (channel == nullptr) {
-		return createErrorResponse("No such channel");
+	switch (message.type()) {
+		case synthz0r::messages::DeviceType::NOTE_DEVICE:
+			channel->appendNoteDevice(std::dynamic_pointer_cast<Devices::NoteDevice>(device));
+			break;
+		case synthz0r::messages::DeviceType::INSTRUMENT_DEVICE:
+			channel->setInstrument(std::dynamic_pointer_cast<Devices::InstrumentDevice>(device));
+			break;
+		case synthz0r::messages::DeviceType::EFFECT_DEVICE:
+			channel->appendEffectDevice(std::dynamic_pointer_cast<Devices::EffectDevice>(device));
+			break;
+		default:
+			throw std::runtime_error("Invalid device type?? This should never happen.");
 	}
 
-	auto device = Devices::Factory::createNoteDevice(message.name());
-
-	if (device == nullptr) {
-		return createErrorResponse("Invalid device name");
-	}
-
-	engine.registerDevice(device);
-	channel->appendNoteDevice(device);
-
 	auto response = std::make_unique<messages::CreateDeviceResponse>();
+	response->set_channelid(message.channelid());
 	setDevice(response->mutable_device(), device);
 	return response;
 }
@@ -229,9 +232,7 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(ListChannelsRequest),
 	HANDLER(CreateChannelRequest),
 	HANDLER(RemoveChannelRequest),
-	HANDLER(CreateInstrumentDeviceRequest),
-	HANDLER(CreateEffectDeviceRequest),
-	HANDLER(CreateNoteDeviceRequest),
+	HANDLER(CreateDeviceRequest),
 	HANDLER(UpdateDeviceParameterRequest),
 	HANDLER(UpdateDeviceTableRequest),
 };
