@@ -1,6 +1,8 @@
 #ifndef NOTE_EVENT_HPP
 #define NOTE_EVENT_HPP
 
+#include <list>
+
 struct NoteEvent {
 	enum Type {
 		NOTE_ON,

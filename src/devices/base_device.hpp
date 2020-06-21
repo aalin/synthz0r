@@ -2,7 +2,6 @@
 #define DEVICES__BASE_DEVICE_HPP
 
 #include <memory>
-#include "base_device/t_outputs.hpp"
 #include "base_device/parameter_list.hpp"
 #include "base_device/table_list.hpp"
 #include "../timer.hpp"
