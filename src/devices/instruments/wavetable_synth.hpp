@@ -36,18 +36,19 @@ namespace Devices::Instruments {
 			};
 
 			WavetableSynth()
-			: InstrumentDevice("Wavetable Synth", {
-				Parameter("pitchBendRange",        0,                         24,   2, _pitchBendRange),
-				Parameter("transpose",           -24,                        100,   2, _transpose),
-				Parameter("panning",            -127,                        127,   0, _panning),
-				Parameter("amplitude",             0,                        128, 100, _amplitude),
-				Parameter("envelope.attackMs",     0,                       1000, 150, _envelope._attackMs),
-				Parameter("envelope.decayMs",      0,                       1000,  60, _envelope._decayMs),
-				Parameter("envelope.sustain",      0,                        127,  30, _envelope._sustain),
-				Parameter("envelope.releaseMs",    0,                       1000,  70, _envelope._releaseMs),
-				Parameter("waveformIndex",         0, Waveform::WAVEFORMS.size()-1, 0, _waveformIndex)
-			  })
-			{}
+			: InstrumentDevice("Wavetable Synth") {
+				setupParameters({
+					Parameter("pitchBendRange",        0,                         24,   2, _pitchBendRange),
+					Parameter("transpose",           -24,                        100,   2, _transpose),
+					Parameter("panning",            -127,                        127,   0, _panning),
+					Parameter("amplitude",             0,                        128, 100, _amplitude),
+					Parameter("envelope.attackMs",     0,                       1000, 150, _envelope._attackMs),
+					Parameter("envelope.decayMs",      0,                       1000,  60, _envelope._decayMs),
+					Parameter("envelope.sustain",      0,                        127,  30, _envelope._sustain),
+					Parameter("envelope.releaseMs",    0,                       1000,  70, _envelope._releaseMs),
+					Parameter("waveformIndex",         0, Waveform::WAVEFORMS.size()-1, 0, _waveformIndex)
+				});
+			}
 
 			const std::string &getWaveformName() {
 				return Waveform::WAVEFORMS.at(_waveformIndex).name;

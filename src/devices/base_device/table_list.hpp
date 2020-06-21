@@ -23,6 +23,9 @@ namespace Devices {
 		};
 
 		public:
+			TableList() {
+			}
+
 			TableList(std::initializer_list<Table> tables) {
 				for (const Table &table : tables) {
 					_tables.insert({table.name(), table});
@@ -35,6 +38,10 @@ namespace Devices {
 
 			value_iterator end() const {
 				return value_iterator(_tables.end());
+			}
+
+			void setTable(const std::string &name, const std::vector<int> &data) {
+				get(name).setData(data);
 			}
 
 			const Table & get(std::string name) const {

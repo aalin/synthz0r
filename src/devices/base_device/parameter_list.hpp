@@ -23,14 +23,13 @@ class ParameterList {
 	};
 
 	public:
-		ParameterList(std::initializer_list<Parameter> params) {
-			PerformanceLog perf;
+		ParameterList() {
+		}
 
+		ParameterList(std::initializer_list<Parameter> params) {
 			for (Parameter param : params) {
 				_parameters.insert({param.name(), param});
 			}
-
-			perf.log("Creating parameters");
 		}
 
 		value_iterator begin() const {

@@ -12,14 +12,8 @@
 namespace Devices {
 	class BaseDevice {
 		public:
-			BaseDevice(
-				std::string name,
-				std::initializer_list<Parameter> params = {},
-				std::initializer_list<Table> tables = {}
-			)
+			BaseDevice(std::string name)
 			: _name(name),
-			  _parameters(params),
-			  _tables(tables),
 			  _respondingToParameterChange(false)
 			{}
 
@@ -59,12 +53,19 @@ namespace Devices {
 				return _tables;
 			}
 
-			void setTable(const std::string &name, std::vector<int> data) {
-				Table &table = _tables.get(name);
-				table.setData(data);
+			void setTable(const std::string &name, const std::vector<int> &data) {
+				_tables.setTable(name, data);
 			}
 
 		protected:
+			void setupParameters(std::initializer_list<Parameter> params) {
+				_parameters = params;
+			}
+
+			void setupTables(std::initializer_list<Table> tables) {
+				_tables = tables;
+			}
+
 			virtual void respondToParameterChange(const Parameter &) {
 				// Implement me to handle parameter updates
 			}

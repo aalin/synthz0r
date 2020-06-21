@@ -8,13 +8,7 @@
 namespace Devices {
 	class InstrumentDevice : public BaseDevice {
 		public:
-			InstrumentDevice(
-				std::string name,
-				std::initializer_list<Parameter> params = {},
-				std::initializer_list<Table> tables = {}
-			)
-			: BaseDevice(name, params, tables)
-			{}
+			InstrumentDevice(std::string name) : BaseDevice(name) {}
 
 			virtual ~InstrumentDevice() {}
 

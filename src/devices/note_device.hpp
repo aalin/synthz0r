@@ -7,13 +7,7 @@
 namespace Devices {
 	class NoteDevice : public BaseDevice {
 		public:
-			NoteDevice(
-				std::string name,
-				std::initializer_list<Parameter> params = {},
-				std::initializer_list<Table> tables = {}
-			)
-			: BaseDevice(name, params, tables)
-			{}
+			NoteDevice(std::string name) : BaseDevice(name) {}
 
 			virtual ~NoteDevice() {}
 

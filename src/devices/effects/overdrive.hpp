@@ -9,11 +9,12 @@ namespace Devices {
 		class Overdrive : public EffectDevice {
 			public:
 				Overdrive(int gain = 50, int volume = 100)
-				: EffectDevice("Overdrive", {
-					Parameter("gain",   0, 100, gain,   _gain),
-					Parameter("volume", 0, 128, volume, _volume),
-				  })
-				{}
+				: EffectDevice("Overdrive") {
+					setupParameters({
+						Parameter("gain",   0, 100, gain,   _gain),
+						Parameter("volume", 0, 128, volume, _volume),
+					});
+				}
 
 				StereoSample apply(const Timer &, const StereoSample &sample) {
 					return StereoSample(

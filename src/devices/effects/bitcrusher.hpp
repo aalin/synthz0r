@@ -8,12 +8,12 @@ namespace Devices {
 	namespace Effects {
 		class Bitcrusher : public Devices::EffectDevice {
 			public:
-				Bitcrusher(int bits = 4, int volume = 100)
-				: EffectDevice("Bitcrusher", {
-					Parameter("bits",   0, 100, bits,   _bits),
-					Parameter("volume", 0, 128, volume, _volume),
-				})
-				{}
+				Bitcrusher(int bits = 4, int volume = 100) : EffectDevice("Bitcrusher") {
+					setupParameters({
+						Parameter("bits",   0, 100, bits,   _bits),
+						Parameter("volume", 0, 128, volume, _volume),
+					});
+				}
 
 				StereoSample apply(const Timer &, const StereoSample &sample) {
 					return StereoSample(

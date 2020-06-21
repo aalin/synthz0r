@@ -28,23 +28,24 @@ namespace Devices::Instruments {
 			};
 
 			Synth()
-			: InstrumentDevice("Synth", {
-				Parameter("pitchBendRange",        0,    24,    2, _pitchBendRange),
-				Parameter("transpose",           -24,    24,    2, _transpose),
-				Parameter("oscillatorType",        0,     5,    0, _oscillatorType),
-				Parameter("panning",            -127,   127,    0, _panning),
-				Parameter("amplitude",             0,   128,  100, _amplitude),
-				Parameter("envelope.attackMs",     0,  1000,  150, _envelope._attackMs),
-				Parameter("envelope.decayMs",      0,  1000,    0, _envelope._decayMs),
-				Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
-				Parameter("envelope.releaseMs",    0,  1000,    0, _envelope._releaseMs),
-				Parameter("filter.enabled",        0,     1,    1, _filterEnabled),
-				Parameter("filter.cutoffHz",       0, 10000, 8000, _filter._cutoffHz),
-				Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
-				Parameter("filter.bandwidth",      0,  1000,  500, _filter._bandwidth),
-				Parameter("filter.type",           0,     4,    0, _filter._typeInt),
-			  })
-			{}
+			: InstrumentDevice("Synth") {
+				setupParameters({
+					Parameter("pitchBendRange",        0,    24,    2, _pitchBendRange),
+					Parameter("transpose",           -24,    24,    2, _transpose),
+					Parameter("oscillatorType",        0,     5,    0, _oscillatorType),
+					Parameter("panning",            -127,   127,    0, _panning),
+					Parameter("amplitude",             0,   128,  100, _amplitude),
+					Parameter("envelope.attackMs",     0,  1000,  150, _envelope._attackMs),
+					Parameter("envelope.decayMs",      0,  1000,    0, _envelope._decayMs),
+					Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
+					Parameter("envelope.releaseMs",    0,  1000,    0, _envelope._releaseMs),
+					Parameter("filter.enabled",        0,     1,    1, _filterEnabled),
+					Parameter("filter.cutoffHz",       0, 10000, 8000, _filter._cutoffHz),
+					Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
+					Parameter("filter.bandwidth",      0,  1000,  500, _filter._bandwidth),
+					Parameter("filter.type",           0,     4,    0, _filter._typeInt),
+				});
+			}
 
 			StereoSample apply(const Timer &timer, const NoteEventList &events);
 

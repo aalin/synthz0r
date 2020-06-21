@@ -11,12 +11,13 @@ namespace Devices {
 				static constexpr size_t BUFFER_SIZE = 1024 * 1024 * 4;
 
 				Delay(int timeMs = 250, int decay = 64, int mix = 0)
-				: EffectDevice("Delay", {
-					Parameter("timeMs",    0, 10000, timeMs, _timeMs),
-					Parameter("decay",     0,   128, decay,  _decay),
-					Parameter("mix",    -127,   127, mix,    _mix)
-				  })
-				{}
+				: EffectDevice("Delay") {
+					setupParameters({
+						Parameter("timeMs",    0, 10000, timeMs, _timeMs),
+						Parameter("decay",     0,   128, decay,  _decay),
+						Parameter("mix",    -127,   127, mix,    _mix)
+					});
+				}
 
 				StereoSample apply(const Timer &, const StereoSample &);
 

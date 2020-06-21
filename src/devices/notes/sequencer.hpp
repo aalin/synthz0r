@@ -13,16 +13,18 @@ namespace Devices {
 			constexpr static uint8_t INITIAL_RATE = 1;
 
 			public:
-				Sequencer()
-				: NoteDevice("Sequencer", {
-					Parameter("numSteps", 0,  32, INITIAL_STEPS,    _steps),
-					Parameter("velocity", 0, 127, INITIAL_VELOCITY, _velocity),
-					Parameter("bpm",      0, 400, INITIAL_BPM,      _bpm),
-					Parameter("rate",     0,   8, INITIAL_RATE,     _rate)
-				  }, {
-					Table("notes", -1, 127, -1, INITIAL_STEPS, _notes)
-				  })
-				{}
+				Sequencer() : NoteDevice("Sequencer") {
+					setupParameters({
+						Parameter("numSteps", 0,  32, INITIAL_STEPS,    _steps),
+						Parameter("velocity", 0, 127, INITIAL_VELOCITY, _velocity),
+						Parameter("bpm",      0, 400, INITIAL_BPM,      _bpm),
+						Parameter("rate",     0,   8, INITIAL_RATE,     _rate)
+					});
+
+					setupTables({
+						Table("notes", -1, 127, -1, INITIAL_STEPS, _notes)
+					});
+				}
 
 				void apply(const Timer &, NoteEventList &);
 

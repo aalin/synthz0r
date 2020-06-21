@@ -2,20 +2,22 @@
 
 namespace Devices::Instruments {
 	Kickdrum::Kickdrum()
-	: InstrumentDevice("Kickdrum", {
-		Parameter("panning",            -127,   127,    0, _panning),
-		Parameter("amplitude",             0,   128,  100, _amplitude),
-		Parameter("envelope.attackMs",     0,  1000,   50, _envelope._attackMs),
-		Parameter("envelope.decayMs",      0,  1000,   80, _envelope._decayMs),
-		Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
-		Parameter("envelope.releaseMs",    0,  1000,    0, _envelope._releaseMs),
-		Parameter("filter.cutoffHz",       0, 10000,  500, _filter._cutoffHz),
-		Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
-		Parameter("filter.bandwidth",      0,  1000,  900, _filter._bandwidth),
-	  }),
+	: InstrumentDevice("Kickdrum"),
 	  _oscillator(Units::Oscillator::Type::SINE),
 	  _noteOnTime(-1.0)
 	{
+		setupParameters({
+			Parameter("panning",            -127,   127,    0, _panning),
+			Parameter("amplitude",             0,   128,  100, _amplitude),
+			Parameter("envelope.attackMs",     0,  1000,   50, _envelope._attackMs),
+			Parameter("envelope.decayMs",      0,  1000,   80, _envelope._decayMs),
+			Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
+			Parameter("envelope.releaseMs",    0,  1000,    0, _envelope._releaseMs),
+			Parameter("filter.cutoffHz",       0, 10000,  500, _filter._cutoffHz),
+			Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
+			Parameter("filter.bandwidth",      0,  1000,  900, _filter._bandwidth),
+		});
+
 		_filter._type = Units::StateVariableFilter::Type::BANDPASS;
 		_pitchEnvelope._attackMs = 0;
 		_pitchEnvelope._decayMs = 100;

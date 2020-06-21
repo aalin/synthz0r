@@ -8,13 +8,7 @@
 namespace Devices {
 	class EffectDevice : public BaseDevice {
 		public:
-			EffectDevice(
-				std::string name,
-				std::initializer_list<Parameter> params = {},
-				std::initializer_list<Table> tables = {}
-			)
-			: BaseDevice(name, params, tables)
-			{}
+			EffectDevice(std::string name) : BaseDevice(name) {}
 
 			virtual ~EffectDevice() {}
 
