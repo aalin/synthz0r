@@ -17,7 +17,6 @@ namespace Devices {
 					setupParameters({
 						Parameter("numSteps", 0,  32, INITIAL_STEPS,    _steps),
 						Parameter("velocity", 0, 127, INITIAL_VELOCITY, _velocity),
-						Parameter("bpm",      0, 400, INITIAL_BPM,      _bpm),
 						Parameter("rate",     0,   8, INITIAL_RATE,     _rate)
 					});
 
@@ -31,7 +30,6 @@ namespace Devices {
 			private:
 				int _steps;
 				int _velocity;
-				int _bpm;
 				int _rate;
 
 				int8_t _lastStep = -1;
