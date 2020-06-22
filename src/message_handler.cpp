@@ -22,11 +22,16 @@ ProtobufMessagePtr createErrorResponse(const std::string &message) {
 	return response;
 }
 
-ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &) {
+ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &engine) {
 	std::cout << msg.GetTypeName() << ".message() = " << msg.message() << std::endl;
 
 	if (msg.message() == "hello") {
 		return createTextResponse("hello world");
+	}
+
+	if (msg.message() == "exit") {
+		engine.exit();
+		return createTextResponse("exiting");
 	}
 
 	return createErrorResponse("Could not understand whatever you sent");

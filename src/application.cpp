@@ -87,6 +87,10 @@ void Application::run() {
 			processMessageQueue(_server.update());
 
 			engine.update();
+
+			if (_engine.hasRequestedExit()) {
+				stop();
+			}
 		}
 	} catch (std::exception &e) {
 		std::cerr << "Caught error: " << e.what() << std::endl;

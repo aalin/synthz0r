@@ -21,7 +21,7 @@ class Engine {
 		  _audioOutput(audioOutput),
 		  _sampleRate(sampleRate),
 		  _buffer(buffer)
-		{ }
+		{}
 
 		~Engine() {
 			_audioOutput->drain();
@@ -97,8 +97,17 @@ class Engine {
 			return _timer.seconds();
 		}
 
+		bool hasRequestedExit() {
+			return _hasRequestedExit;
+		}
+
+		void exit() {
+			_hasRequestedExit = true;
+		}
+
 	private:
 		Timer _timer;
+		bool _hasRequestedExit = false;
 
 		AudioOutputPtr _audioOutput;
 
