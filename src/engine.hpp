@@ -97,12 +97,12 @@ class Engine {
 			return _timer.seconds();
 		}
 
-		bool hasRequestedExit() {
-			return _hasRequestedExit;
-		}
-
 		void exit() {
 			_hasRequestedExit = true;
+		}
+
+		bool hasRequestedExit() {
+			return _hasRequestedExit;
 		}
 
 	private:
