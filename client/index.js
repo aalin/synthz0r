@@ -2,7 +2,7 @@ const Protocol = require('./protocol');
 const Client = require('./client');
 const { notesToArray } = require('./note');
 
-async function createSynthWithSequencer(client, deviceName, sequencerData) {
+async function createSynthWithSequencer(client, deviceName, sequencerData, opts = {}) {
   const createChannelResponse =
     await client.request('CreateChannelRequest', { name: "New channel" });
 
@@ -14,6 +14,12 @@ async function createSynthWithSequencer(client, deviceName, sequencerData) {
       channelId: createChannelResponse.channel.id
     });
 
+  if (opts.instrumentOpts) {
+    for ([name, value] of Object.entries(opts.instrumentOpts)) {
+      client.request('UpdateDeviceParameterRequest', { id: createInstrumentResponse.device.id, name, value })
+    }
+  }
+
   console.log(JSON.stringify(createInstrumentResponse, null, 2));
 
   const createSequencerResponse =
@@ -23,14 +29,13 @@ async function createSynthWithSequencer(client, deviceName, sequencerData) {
       channelId: createChannelResponse.channel.id
     });
 
-  console.log(JSON.stringify(createSequencerResponse, null, 2));
+  if (opts.sequencerOpts) {
+    for ([name, value] of Object.entries(opts.sequencerOpts)) {
+      client.request('UpdateDeviceParameterRequest', { id: createSequencerResponse.device.id, name, value })
+    }
+  }
 
-  const updateSequencerParamResponse =
-    await client.request('UpdateDeviceParameterRequest', {
-      id: createSequencerResponse.device.id,
-      name: "bpm",
-      value: 120,
-    });
+  console.log(JSON.stringify(createSequencerResponse, null, 2));
 
   const updateSequencerTableResponse =
     await client.request('UpdateDeviceTableRequest', {
@@ -58,12 +63,33 @@ async function main({ port }) {
       client,
       "WavetableSynth",
       notesToArray(
-        "G4 G4 D5 D5 | E5 E5 D5 OFF " +
-        "C5 C5 B4 B4 | A4 A4 G4 OFF " +
-        "D5 D5 C5 C5 | B4 B4 A4 OFF " +
-        "D5 D5 C5 C5 | B4 B4 A4 OFF "
-      )
+        "G4 G4 | D5 D5 | E5 E5 | D5 OFF " +
+        "C5 C5 | B4 B4 | A4 A4 | G4 OFF " +
+        "D5 D5 | C5 C5 | B4 B4 | A4 OFF " +
+        "D5 D5 | C5 C5 | B4 B4 | A4 OFF "
+      ),
+      {
+        sequencerOpts: { rate: 0 },
+      }
     );
+
+    createSynthWithSequencer(
+      client,
+      "WavetableSynth",
+      notesToArray(
+        "G4 G5 G4 G5 | D5 D6 D5 D6 | E5 E6 E5 E6 | D5 D6 OFF OFF " +
+        "C5 C6 C5 C6 | B4 B5 B4 B5 | A4 A5 A4 A5 | G4 G5 OFF OFF " +
+        "D5 D6 D5 D6 | C5 C6 C5 C6 | B4 B5 B4 B5 | A4 A5 OFF OFF " +
+        "D5 D6 D5 D6 | C5 C6 C5 C6 | B4 B5 B4 B5 | A4 A5 OFF OFF "
+      ),
+      {
+        sequencerOpts: { rate: 1 },
+        instrumentOpts: {
+          waveformIndex: 5,
+          transpose: -12
+        }
+      }
+    )
 
     setTimeout(async () => {
       const response = await client.request('TextRequest', { message: "exit" });
@@ -74,8 +100,19 @@ async function main({ port }) {
       client,
       "Kickdrum",
       notesToArray(
-        "C4 C4 C4 C4"
-      )
+        "C4 C4 C4 C4 OFF OFF OFF OFF"
+      ),
+      { sequencerOpts: { rate: 0 } }
+    );
+
+    createSynthWithSequencer(
+      client,
+      "Kickdrum",
+      notesToArray(
+        "OFF OFF OFF OFF OFF OFF OFF OFF " +
+        "C4  OFF C4  OFF C4  OFF C4  OFF "
+      ),
+      { sequencerOpts: { rate: 1 } }
     );
   });
 
