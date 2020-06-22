@@ -6,6 +6,8 @@ class Timer {
 		Timer(float sampleRate)
 		: _tick(0),
 		  _seconds(0.0),
+		  _bpm(120.0),
+		  _beat(0.0),
 		  _sampleRate(sampleRate)
 		{}
 
@@ -15,6 +17,19 @@ class Timer {
 
 		float seconds() const {
 			return _seconds;
+		}
+
+		float bpm() const {
+			return _bpm;
+		}
+
+		double beat() const {
+			return _beat;
+		}
+
+		double beatsPerSample() const {
+			const double beatsPerSecond = _bpm / 60.0;
+			return beatsPerSecond / _sampleRate;
 		}
 
 		void setSeconds(float seconds) {
@@ -27,8 +42,8 @@ class Timer {
 		}
 
 		void update() {
-			_tick++;
-			_seconds = _tick / _sampleRate;
+			_beat += beatsPerSample();
+			_seconds = _tick++ / _sampleRate;
 		}
 
 		void reset() {
@@ -38,6 +53,8 @@ class Timer {
 	private:
 		unsigned long int _tick;
 		float _seconds;
+		float _bpm;
+		double _beat;
 		const float _sampleRate;
 };
 

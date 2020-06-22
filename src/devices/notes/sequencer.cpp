@@ -6,11 +6,7 @@ namespace Devices::Notes {
 			return;
 		}
 
-		const double beatsPerSecond = (_bpm * _rate) / 60.0;
-		const double speed = beatsPerSecond / timer.sampleRate();
-		const int step = Utils::mod(static_cast<size_t>(_time), _notes.size());
-
-		_time += speed;
+		const int step = Utils::mod(static_cast<size_t>(timer.beat()), _notes.size());
 
 		if (step != _lastStep) {
 			if (_lastNote >= 0) {
@@ -18,6 +14,7 @@ namespace Devices::Notes {
 			}
 
 			if (_notes[step] >= 0) {
+				std::cout << "Sequencer triggering note " << _notes[step] << std::endl;
 				events.push_back(NoteEvent::noteOn(_notes[step], _velocity));
 			}
 
