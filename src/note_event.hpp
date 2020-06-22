@@ -2,6 +2,7 @@
 #define NOTE_EVENT_HPP
 
 #include <list>
+#include <ostream>
 
 struct NoteEvent {
 	enum Type {
@@ -21,6 +22,8 @@ struct NoteEvent {
 	uint8_t note;
 	uint8_t velocity;
 };
+
+std::ostream & operator<<(std::ostream &, const NoteEvent &);
 
 typedef std::list<NoteEvent> NoteEventList;
 

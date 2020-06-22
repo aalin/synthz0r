@@ -9,6 +9,7 @@ namespace Devices::Instruments {
 		setupParameters({
 			Parameter("panning",            -127,   127,    0, _panning),
 			Parameter("amplitude",             0,   128,  100, _amplitude),
+			Parameter("pitch",                 1,   880,  440, _pitch),
 			Parameter("envelope.attackMs",     0,  1000,   50, _envelope._attackMs),
 			Parameter("envelope.decayMs",      0,  1000,   80, _envelope._decayMs),
 			Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
@@ -39,7 +40,7 @@ namespace Devices::Instruments {
 			return StereoSample();
 		}
 
-		float freq = 330.0 * _pitchEnvelope.update(timer, _noteOnTime, -1.0);
+		float freq = 880.0 * _pitchEnvelope.update(timer, _noteOnTime, -1.0);
 
 		float v = _oscillator.update(freq, timer) * _envelope.update(timer, _noteOnTime, -1.0);
 		v = _filter.update(timer, v);
