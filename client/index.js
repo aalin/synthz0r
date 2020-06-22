@@ -6,19 +6,20 @@ async function createSynthWithSequencer(client, deviceName, sequencerData) {
   const createChannelResponse =
     await client.request('CreateChannelRequest', { name: "New channel" });
 
-  console.log(createChannelResponse);
 
   const createInstrumentResponse =
-    await client.request('CreateInstrumentDeviceRequest', {
+    await client.request('CreateDeviceRequest', {
       name: deviceName,
+      type: client.protocol.enumValues('DeviceType').INSTRUMENT_DEVICE,
       channelId: createChannelResponse.channel.id
     });
 
   console.log(JSON.stringify(createInstrumentResponse, null, 2));
 
   const createSequencerResponse =
-    await client.request('CreateNoteDeviceRequest', {
+    await client.request('CreateDeviceRequest', {
       name: "Sequencer",
+      type: client.protocol.enumValues('DeviceType').NOTE_DEVICE,
       channelId: createChannelResponse.channel.id
     });
 
@@ -61,6 +62,19 @@ async function main({ port }) {
         "C5 C5 B4 B4 | A4 A4 G4 OFF " +
         "D5 D5 C5 C5 | B4 B4 A4 OFF " +
         "D5 D5 C5 C5 | B4 B4 A4 OFF "
+      )
+    );
+
+    setTimeout(async () => {
+      const response = await client.request('TextRequest', { message: "exit" });
+      console.log(response);
+    }, 60 * 1000);
+
+    createSynthWithSequencer(
+      client,
+      "Kickdrum",
+      notesToArray(
+        "C4 C4 C4 C4"
       )
     );
   });

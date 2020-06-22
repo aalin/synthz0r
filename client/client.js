@@ -5,7 +5,7 @@ class Client extends EventEmitter {
   constructor(protocol, host, options = {}) {
     super();
 
-    this._protocol = protocol;
+    this.protocol = protocol;
 
     this._idCounter = 0;
 
@@ -21,7 +21,7 @@ class Client extends EventEmitter {
   request(type, data = {}) {
     const id = this._idCounter++;
 
-    const encoded = this._protocol.encode(id, type, data);
+    const encoded = this.protocol.encode(id, type, data);
 
     return new Promise((resolve) => {
       console.log('Requesting', id, type, data);
@@ -31,7 +31,7 @@ class Client extends EventEmitter {
   }
 
   _handleMessage(encodedMessage) {
-    const {id, type, message} = this._protocol.decode(encodedMessage);
+    const {id, type, message} = this.protocol.decode(encodedMessage);
 
     const callback = this._callbacks.get(id);
 

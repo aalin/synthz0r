@@ -25,7 +25,7 @@ class Protocol {
   }
 
   decode(buffer) {
-    const Envelope = this._lookupType('Envelope');
+    const Envelope = this.lookupType('Envelope');
     const envelope = Envelope.decode(buffer);
 
     const Type = this._root.lookupType(envelope.type);
@@ -38,7 +38,7 @@ class Protocol {
   }
 
   _encodeEnvelope(id, type, payload) {
-    const Message = this._lookupType('Envelope');
+    const Message = this.lookupType('Envelope');
     const message = Message.create({
       id, type, payload
     });
@@ -46,14 +46,22 @@ class Protocol {
   }
 
   _encodeMessage(type, data) {
-    const Type = this._lookupType(type);
+    const Type = this.lookupType(type);
     const error = Type.verify(data);
     if (error) { throw error; }
     const message = Type.create(data);
     return Type.encode(message).finish();
   }
 
-  _lookupType(name) {
+  enumValues(enumName) {
+    return this.lookup(enumName).values;
+  }
+
+  lookup(name) {
+    return this._root.lookup(this._namespace.concat(name).join('.'));
+  }
+
+  lookupType(name) {
     return this._root.lookupType(this._namespace.concat(name).join('.'));
   }
 }
