@@ -7,23 +7,8 @@
 namespace Devices {
 	namespace Notes {
 		class Sequencer : public NoteDevice {
-			constexpr static uint8_t INITIAL_STEPS = 8;
-			constexpr static uint8_t INITIAL_VELOCITY = 100;
-			constexpr static uint8_t INITIAL_BPM = 50;
-			constexpr static uint8_t INITIAL_RATE = 1;
-
 			public:
-				Sequencer() : NoteDevice("Sequencer") {
-					setupParameters({
-						Parameter("numSteps", 0,  32, INITIAL_STEPS,    _steps),
-						Parameter("velocity", 0, 127, INITIAL_VELOCITY, _velocity),
-						Parameter("rate",     0,   8, INITIAL_RATE,     _rate)
-					});
-
-					setupTables({
-						Table("notes", -1, 127, -1, INITIAL_STEPS, _notes)
-					});
-				}
+				Sequencer();
 
 				void apply(const Timer &, NoteEventList &);
 

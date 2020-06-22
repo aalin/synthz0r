@@ -23,6 +23,7 @@ namespace Devices {
 				Units::StateVariableFilter _filter;
 				int _panning;
 				int _amplitude;
+				int _pitch;
 				float _noteOnTime;
 
 				float amplitude() {
