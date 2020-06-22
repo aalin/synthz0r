@@ -16,7 +16,7 @@ float Units::ADSR::update(const Timer &timer, float noteOnTime, float noteOffTim
 	const float dt = std::max(0.f, time - noteOnTime);
 
 	if (dt < attack()) {
-		return Utils::lerp(0.0f, 1.0f, dt / attack());
+		return Utils::lerp(attackStart(), 1.0f, dt / attack());
 	}
 
 	if (dt < attack() + decay()) {

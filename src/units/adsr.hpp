@@ -19,8 +19,13 @@ class ADSR {
 
 		float update(const Timer &timer, float noteOnTime, float noteOffTime);
 
-		int _attackMs, _decayMs, _releaseMs, _sustain;
+		int _attackStart = 0;
+		int _attackMs = 100;
+		int _decayMs = 100;
+		int _releaseMs = 100;
+		int _sustain = 50;
 
+		float attackStart() { return _attackStart / 100.0; }
 		float attack() { return _attackMs / 1000.0; }
 		float decay() { return _decayMs / 1000.0; }
 		float release() { return _releaseMs / 1000.0; }
