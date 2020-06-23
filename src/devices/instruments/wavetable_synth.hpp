@@ -39,7 +39,7 @@ namespace Devices::Instruments {
 			: InstrumentDevice("Wavetable Synth") {
 				setupParameters({
 					Parameter("pitchBendRange",        0,                         24,   2, _pitchBendRange),
-					Parameter("transpose",           -24,                        100,   2, _transpose),
+					Parameter("transpose",           -24,                        100,   0, _transpose),
 					Parameter("panning",            -127,                        127,   0, _panning),
 					Parameter("amplitude",             0,                        128, 100, _amplitude),
 					Parameter("envelope.attackMs",     0,                       1000, 150, _envelope._attackMs),

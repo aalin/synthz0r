@@ -31,7 +31,7 @@ namespace Devices::Instruments {
 			: InstrumentDevice("Synth") {
 				setupParameters({
 					Parameter("pitchBendRange",        0,    24,    2, _pitchBendRange),
-					Parameter("transpose",           -24,    24,    2, _transpose),
+					Parameter("transpose",           -24,    24,    0, _transpose),
 					Parameter("oscillatorType",        0,     5,    0, _oscillatorType),
 					Parameter("panning",            -127,   127,    0, _panning),
 					Parameter("amplitude",             0,   128,  100, _amplitude),
