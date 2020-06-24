@@ -1,0 +1,19 @@
+{
+  "src/*.hpp": {
+    "type": "header",
+    "alternate": "src/{}.cpp",
+    "template": [
+      "#ifndef {underscore|uppercase}_HPP",
+      "#define {underscore|uppercase}_HPP",
+      "\n\n\n",
+      "#endif"
+    ]
+  },
+  "src/*.cpp": {
+    "type": "implementation",
+    "alternate": "src/{}.hpp",
+    "template": [
+      "#include \"{}.hpp\"\n\n\n"
+    ]
+  }
+}

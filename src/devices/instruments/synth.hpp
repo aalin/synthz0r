@@ -44,7 +44,7 @@ namespace Devices::Instruments {
 					Parameter("envelope.releaseMs",    0,  1000,    0, _envelopeSettings._releaseMs),
 					Parameter("filter.enabled",        0,     1,    1, _filterEnabled),
 					Parameter("filter.cutoffHz",       0, 10000, 8000, _filter._cutoffHz),
-					Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
+					Parameter("filter.resonance",      0, 10000,  200, _filter._resonance),
 					Parameter("filter.bandwidth",      0,  1000,  500, _filter._bandwidth),
 					Parameter("filter.type",           0,     4,    0, _filter._typeInt),
 				});
