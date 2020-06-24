@@ -11,24 +11,19 @@
 #include "pulse_audio.hpp"
 #include "audio_buffer.hpp"
 #include "utils.hpp"
-#include "timer.hpp"
+#include "transport.hpp"
 #include "channel.hpp"
 
 class Engine {
 	public:
 		Engine(unsigned int sampleRate, AudioBufferPtr buffer, AudioOutputPtr audioOutput)
-		: _timer(sampleRate),
+		: _transport(sampleRate),
 		  _audioOutput(audioOutput),
-		  _sampleRate(sampleRate),
 		  _buffer(buffer)
 		{}
 
 		~Engine() {
 			_audioOutput->drain();
-		}
-
-		const Timer & timer() const {
-			return _timer;
 		}
 
 		void registerDevice(Devices::DevicePtr device) {
@@ -84,17 +79,17 @@ class Engine {
 				StereoSample out;
 
 				for (auto &channel : _channels) {
-					out.add(channel->update(_timer, {}));
+					out.add(channel->update(_transport, {}));
 				}
 
 				_buffer->set(i, out);
 
-				_timer.update();
+				_transport.update();
 			}
 
 			_buffer->write(_audioOutput);
 
-			return _timer.seconds();
+			return _transport.secondsElapsedSinceStart();
 		}
 
 		void exit() {
@@ -105,13 +100,15 @@ class Engine {
 			return _hasRequestedExit;
 		}
 
+		Transport & transport() {
+			return _transport;
+		}
+
 	private:
-		Timer _timer;
+		Transport _transport;
 		bool _hasRequestedExit = false;
 
 		AudioOutputPtr _audioOutput;
-
-		const unsigned int _sampleRate;
 
 		AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;

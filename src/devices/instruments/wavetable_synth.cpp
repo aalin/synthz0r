@@ -1,8 +1,10 @@
 #include "wavetable_synth.hpp"
 
 namespace Devices::Instruments {
-	StereoSample WavetableSynth::apply(const Timer &timer, const NoteEventList &events) {
-		handleEvents(timer, events);
+	StereoSample WavetableSynth::apply(const Transport &transport, const NoteEventList &events) {
+		handleEvents(transport, events);
+
+		const Timer &timer = transport.timer();
 
 		float pitchBend = 0.0;
 		float v = 0.0;
@@ -20,7 +22,7 @@ namespace Devices::Instruments {
 			}
 
 			float freq = Utils::noteToFrequency(voice.note + transpose);
-			float value = voice.update(freq, timer);
+			float value = voice.update(freq, transport);
 			float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
 			v += value * voice.velocity * env;

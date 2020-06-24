@@ -12,11 +12,11 @@ namespace Devices {
 
 			virtual ~EffectDevice() {}
 
-			virtual StereoSample apply(const Timer &timer, const StereoSample &stereoSample, const NoteEventList &) {
-				return apply(timer, stereoSample);
+			virtual StereoSample apply(const Transport &transport, const StereoSample &stereoSample, const NoteEventList &) {
+				return apply(transport, stereoSample);
 			}
 
-			virtual StereoSample apply(const Timer &, const StereoSample &) {
+			virtual StereoSample apply(const Transport &, const StereoSample &) {
 				return StereoSample();
 			}
 	};

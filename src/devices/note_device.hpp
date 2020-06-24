@@ -11,7 +11,7 @@ namespace Devices {
 
 			virtual ~NoteDevice() {}
 
-			virtual void apply(const Timer &, NoteEventList &) = 0;
+			virtual void apply(const Transport &, NoteEventList &) = 0;
 	};
 
 	typedef std::shared_ptr<NoteDevice> NoteDevicePtr;

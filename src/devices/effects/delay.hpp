@@ -19,7 +19,7 @@ namespace Devices {
 					});
 				}
 
-				StereoSample apply(const Timer &, const StereoSample &);
+				StereoSample apply(const Transport &, const StereoSample &);
 
 			private:
 				StereoSample _buffer[BUFFER_SIZE];

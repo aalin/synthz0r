@@ -37,6 +37,16 @@ ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &engine) {
 	return createErrorResponse("Could not understand whatever you sent");
 }
 
+ProtobufMessagePtr handleRequest(messages::PlayRequest &, Engine &engine) {
+	engine.transport().play();
+	return std::make_unique<messages::SuccessResponse>();
+}
+
+ProtobufMessagePtr handleRequest(messages::PauseRequest &, Engine &engine) {
+	engine.transport().pause();
+	return std::make_unique<messages::SuccessResponse>();
+}
+
 template<typename T>
 void setParameters(T *parent, Devices::DevicePtr device) {
 	for (const auto &param : device->parameters()) {
@@ -279,6 +289,8 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(CreateDeviceRequest),
 	HANDLER(UpdateDeviceParametersRequest),
 	HANDLER(UpdateDeviceTablesRequest),
+	HANDLER(PlayRequest),
+	HANDLER(PauseRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

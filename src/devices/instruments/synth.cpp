@@ -1,8 +1,10 @@
 #include "synth.hpp"
 
 namespace Devices::Instruments {
-	StereoSample Synth::apply(const Timer &timer, const NoteEventList &events) {
-		handleEvents(timer, events);
+	StereoSample Synth::apply(const Transport &transport, const NoteEventList &events) {
+		handleEvents(transport, events);
+
+		const Timer &timer = transport.timer();
 
 		float pitchBend = 0.0;
 		float v = 0.0;

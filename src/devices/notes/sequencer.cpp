@@ -19,23 +19,23 @@ namespace Devices::Notes {
 		});
 	}
 
-	void Sequencer::apply(const Timer &timer, NoteEventList &events) {
+	void Sequencer::apply(const Transport &transport, NoteEventList &events) {
 		if (_notes.empty()) {
 			return;
 		}
 
-		const int step = Utils::mod(static_cast<size_t>(timer.position().total4ths() * std::pow(2, _rate)), _notes.size());
+		const int step = Utils::mod(static_cast<size_t>(transport.position().total4ths() * std::pow(2, _rate)), _notes.size());
 
 		if (step != _lastStep) {
 			std::cout << "Step:" << step << std::endl;
 
 			if (_lastNote >= 0) {
 				events.push_back(NoteEvent::noteOff(_lastNote));
-				std::cout << "Sequencer " << id() << " event at " << timer.position() << ": " << NoteEvent::noteOff(_lastNote) << std::endl;
+				std::cout << "Sequencer " << id() << " event at " << transport.position() << ": " << NoteEvent::noteOff(_lastNote) << std::endl;
 			}
 
 			if (_notes[step] >= 0) {
-				std::cout << "Sequencer " << id() << " event at " << timer.position() << ": " << NoteEvent::noteOn(_notes[step], _velocity) << std::endl;
+				std::cout << "Sequencer " << id() << " event at " << transport.position() << ": " << NoteEvent::noteOn(_notes[step], _velocity) << std::endl;
 				events.push_back(NoteEvent::noteOn(_notes[step], _velocity));
 			}
 

@@ -5,23 +5,28 @@
 
 class Position {
 	public:
-		void update(const float &bpm, const float &sampleRate) {
-			const double ticksPerSecond = (bpm * 4.0 * 240.0) / 60.0;
-			_totalTicks += ticksPerSecond / sampleRate;
-
-			uint32_t tmp = _totalTicks;
-			ticks = tmp % 240;
-			tmp /= 240;
-			sixteenths = tmp % 4;
-			tmp /= 4;
-			beat = tmp % 4;
-			bar = tmp / 4;
-		}
+		void update(const float &bpm, const float &sampleRate);
 
 		uint32_t bar = 0;
 		uint8_t beat = 0;
 		uint8_t sixteenths = 0;
 		uint8_t ticks = 0;
+
+		void skipTo(double ticks) {
+			_totalTicks = ticks;
+
+			recalculate();
+		}
+
+		void skipTo(uint32_t _bar, uint32_t _beat, uint32_t _sixteenths, uint32_t _ticks) {
+			_totalTicks =
+				_ticks +
+				_sixteenths * 240 +
+				_beat * 240 * 4 +
+				_bar * 240 * 4 * 4;
+
+			recalculate();
+		}
 
 		float total4ths() const {
 			return _totalTicks / 960.0;
@@ -57,6 +62,8 @@ class Position {
 
 	private:
 		double _totalTicks;
+
+		void recalculate();
 };
 
 std::ostream & operator<<(std::ostream &, const Position &);

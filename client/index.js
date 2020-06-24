@@ -139,6 +139,8 @@ async function main({ port }) {
         }
       }
     ).then((id) => {
+      client.request('PlayRequest');
+
       async function updateFilter(deviceId) {
         const filterCutoffHz = Math.floor(Math.pow(Math.sin(new Date().getTime() / 500), 2) * 8000) + 2000;
 
@@ -157,7 +159,7 @@ async function main({ port }) {
         setTimeout(() => updateFilter(deviceId), 100);
       }
 
-      updateFilter(id);
+      //updateFilter(id);
     })
   });
 

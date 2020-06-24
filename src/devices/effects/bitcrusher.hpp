@@ -15,7 +15,7 @@ namespace Devices {
 					});
 				}
 
-				StereoSample apply(const Timer &, const StereoSample &sample) {
+				StereoSample apply(const Transport &, const StereoSample &sample) {
 					return StereoSample(
 						apply(sample.left),
 						apply(sample.right)

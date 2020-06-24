@@ -4,7 +4,7 @@
 #include <memory>
 #include "base_device/parameter_list.hpp"
 #include "base_device/table_list.hpp"
-#include "../timer.hpp"
+#include "../transport.hpp"
 #include "../stereo_sample.hpp"
 #include "../note_event.hpp"
 #include "../identifier.hpp"
@@ -20,9 +20,6 @@ namespace Devices {
 			virtual ~BaseDevice() {}
 
 			uint32_t id() const { return _id; }
-
-			virtual void update(const Timer &, float) { }
-			virtual void update(const Timer &) { }
 
 			std::string name() const { return _name; }
 			void setName(std::string name) { _name = name; }

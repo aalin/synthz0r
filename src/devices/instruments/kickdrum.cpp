@@ -27,8 +27,9 @@ namespace Devices::Instruments {
 		_pitchEnvelope._releaseMs = 0;
 	}
 
-	StereoSample Kickdrum::apply(const Timer &timer, const NoteEventList &events) {
-		handleEvents(timer, events);
+	StereoSample Kickdrum::apply(const Transport &transport, const NoteEventList &events) {
+		handleEvents(transport, events);
+		const Timer &timer = transport.timer();
 
 		if (_noteOnTime < 0.0) {
 			return StereoSample();

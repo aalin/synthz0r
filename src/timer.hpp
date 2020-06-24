@@ -1,53 +1,34 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include "position.hpp"
-
 class Timer {
 	public:
 		Timer(float sampleRate)
-		: _tick(0),
+		: _ticks(0),
 		  _seconds(0.0),
-		  _bpm(120.0),
 		  _sampleRate(sampleRate)
 		{}
-
-		float bpm() const {
-			return _bpm;
-		}
-
-		float sampleRate() const {
-			return _sampleRate;
-		}
 
 		float seconds() const {
 			return _seconds;
 		}
 
-		const Position & position() const {
-			return _position;
+		unsigned long int ticks() const {
+			return _ticks;
 		}
 
-		void setSeconds(float seconds) {
-			_tick = seconds * _sampleRate;
-			_seconds = seconds;
+		void update(const float &sampleRate) {
+			_seconds = _ticks++ / sampleRate;
 		}
 
-		size_t tick() const {
-			return _tick;
-		}
-
-		void update() {
-			_position.update(_bpm, _sampleRate);
-			_seconds = _tick++ / _sampleRate;
+		const float & sampleRate() const {
+			return _sampleRate;
 		}
 
 	private:
-		unsigned long int _tick;
+		unsigned long int _ticks;
 		float _seconds;
-		float _bpm;
 		const float _sampleRate;
-		Position _position;
 };
 
 #endif

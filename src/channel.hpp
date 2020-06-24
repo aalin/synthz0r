@@ -69,19 +69,19 @@ class Channel {
 			_instrumentDevice = nullptr;
 		}
 
-		StereoSample update(const Timer &timer, std::list<NoteEvent> events) {
+		StereoSample update(const Transport &transport, std::list<NoteEvent> events) {
 			if (_instrumentDevice == nullptr) {
 				return StereoSample();
 			}
 
 			for (auto noteDevice : _noteDevices) {
-				noteDevice->apply(timer, events);
+				noteDevice->apply(transport, events);
 			}
 
-			StereoSample out = _instrumentDevice->apply(timer, events);
+			StereoSample out = _instrumentDevice->apply(transport, events);
 
 			for (auto effectDevice : _effectDevices) {
-				out = effectDevice->apply(timer, out, events);
+				out = effectDevice->apply(transport, out, events);
 			}
 
 			return out;

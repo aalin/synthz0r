@@ -1,10 +1,10 @@
 #include "delay.hpp"
 
 namespace Devices::Effects {
-	StereoSample Delay::apply(const Timer &timer, const StereoSample &sample) {
-		const size_t t = timer.tick() % BUFFER_SIZE;
+	StereoSample Delay::apply(const Transport &transport, const StereoSample &sample) {
+		const size_t t = transport.timer().ticks() % BUFFER_SIZE;
 
-		const size_t delaySamples = static_cast<size_t>(timeSeconds() * timer.sampleRate());
+		const size_t delaySamples = static_cast<size_t>(timeSeconds() * transport.sampleRate());
 		const size_t index = Utils::mod(t + delaySamples, BUFFER_SIZE);
 
 		StereoSample out(

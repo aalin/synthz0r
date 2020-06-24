@@ -9,6 +9,12 @@ enum DeviceType {
   EFFECT_DEVICE = 3;
 }
 
+message PlayRequest {
+}
+
+message PauseRequest {
+}
+
 message Envelope {
   uint32 id = 1;
   string type = 2;

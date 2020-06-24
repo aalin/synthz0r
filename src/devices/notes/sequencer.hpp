@@ -10,7 +10,7 @@ namespace Devices {
 			public:
 				Sequencer();
 
-				void apply(const Timer &, NoteEventList &);
+				void apply(const Transport &, NoteEventList &);
 
 			private:
 				int _steps;

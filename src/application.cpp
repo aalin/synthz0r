@@ -75,9 +75,7 @@ void Application::run() {
 		int seconds = -1;
 
 		while (_running) {
-			const Timer &timer = engine.timer();
-
-			int now = timer.seconds();
+			int now = engine.transport().secondsElapsedSinceStart();
 
 			if (now > seconds) {
 				std::cout << "Timer: " << now << std::endl;

@@ -14,7 +14,7 @@ namespace Devices {
 			public:
 				Kickdrum();
 
-				StereoSample apply(const Timer &timer, const NoteEventList &events);
+				StereoSample apply(const Transport &transport, const NoteEventList &events);
 
 			private:
 				Units::Oscillator _oscillator;
@@ -34,11 +34,11 @@ namespace Devices {
 					return _panning / 127.f;
 				}
 
-				void handleEvents(const Timer &timer, const NoteEventList &events) {
+				void handleEvents(const Transport &transport, const NoteEventList &events) {
 					for (const auto &event : events) {
 						switch (event.type) {
 							case NoteEvent::Type::NOTE_ON:
-								noteOn(timer, event.note, event.velocity / 100.0);
+								noteOn(transport, event.note, event.velocity / 100.0);
 								break;
 							default:
 								break;
@@ -46,8 +46,8 @@ namespace Devices {
 					}
 				}
 
-				void noteOn(const Timer &timer, int, float) {
-					_noteOnTime = timer.seconds();
+				void noteOn(const Transport &transport, int, float) {
+					_noteOnTime = transport.secondsElapsedSinceStart();
 				}
 		};
 	}

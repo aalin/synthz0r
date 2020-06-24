@@ -25,9 +25,9 @@ namespace Devices::Instruments {
 				float noteOnTime;
 				float noteOffTime;
 
-				float update(float freq, const Timer &timer) {
+				float update(float freq, const Transport &transport) {
 					return waveform.getValue(
-						_phase.update(freq, timer.sampleRate())
+						_phase.update(freq, transport.sampleRate())
 					);
 				}
 
@@ -54,7 +54,7 @@ namespace Devices::Instruments {
 				return Waveform::WAVEFORMS.at(_waveformIndex).name;
 			}
 
-			StereoSample apply(const Timer &timer, const NoteEventList &events);
+			StereoSample apply(const Transport &transport, const NoteEventList &events);
 
 		private:
 			Units::ADSR _envelope;
@@ -74,14 +74,14 @@ namespace Devices::Instruments {
 				return _panning / 127.0;
 			}
 
-			void handleEvents(const Timer &timer, const NoteEventList &events) {
+			void handleEvents(const Transport &transport, const NoteEventList &events) {
 				for (const auto &event : events) {
 					switch (event.type) {
 						case NoteEvent::Type::NOTE_ON:
-							noteOn(timer, event.note, event.velocity / 255.0);
+							noteOn(transport, event.note, event.velocity / 255.0);
 							break;
 						case NoteEvent::Type::NOTE_OFF:
-							noteOff(timer, event.note);
+							noteOff(transport, event.note);
 							break;
 						default:
 							break;
@@ -89,14 +89,14 @@ namespace Devices::Instruments {
 				}
 			}
 
-			void noteOn(const Timer &timer, int note, float velocity = 1.0) {
-				_voices.push_back(Voice(_waveformIndex, note, velocity, timer.seconds()));
+			void noteOn(const Transport &transport, int note, float velocity = 1.0) {
+				_voices.push_back(Voice(_waveformIndex, note, velocity, transport.secondsElapsedSinceStart()));
 			}
 
-			void noteOff(const Timer &timer, int note) {
+			void noteOff(const Transport &transport, int note) {
 				for (auto &v : _voices) {
 					if (v.note == note && v.noteOffTime < 0.0) {
-						v.noteOffTime = timer.seconds();
+						v.noteOffTime = transport.secondsElapsedSinceStart();
 					}
 				}
 			}
