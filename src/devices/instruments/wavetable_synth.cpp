@@ -1,7 +1,5 @@
 #include "wavetable_synth.hpp"
 
-constexpr float sampleTranspose = 0.0f;
-
 namespace Devices::Instruments {
 	StereoSample WavetableSynth::apply(const Timer &timer, const NoteEventList &events) {
 		handleEvents(timer, events);
@@ -9,7 +7,7 @@ namespace Devices::Instruments {
 		float pitchBend = 0.0;
 		float v = 0.0;
 
-		float transpose = sampleTranspose + _transpose + _pitchBendRange * pitchBend;
+		float transpose = _transpose + _pitchBendRange * pitchBend;
 
 		for (auto it = _voices.begin(); it != _voices.end();) {
 			auto &voice = *it;

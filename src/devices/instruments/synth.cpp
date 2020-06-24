@@ -7,6 +7,8 @@ namespace Devices::Instruments {
 		float pitchBend = 0.0;
 		float v = 0.0;
 
+		float transpose = _transpose + _pitchBendRange * pitchBend;
+
 		for (auto it = _voices.begin(); it != _voices.end();) {
 			auto &voice = *it;
 
@@ -17,7 +19,7 @@ namespace Devices::Instruments {
 				++it;
 			}
 
-			float freq = Utils::noteToFrequency(voice.note + _transpose + _pitchBendRange * pitchBend);
+			float freq = Utils::noteToFrequency(voice.note + transpose);
 			float value = voice.oscillator.update(freq, timer);
 			float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
 
