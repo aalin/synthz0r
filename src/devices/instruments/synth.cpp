@@ -31,7 +31,7 @@ namespace Devices::Instruments {
 		}
 
 		return Utils::pan(
-			v * amplitude() * 0.5,
+			v * amplitude() * 0.2,
 			panning()
 		);
 	}
