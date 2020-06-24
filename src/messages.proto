@@ -111,16 +111,6 @@ message UpdateDeviceParametersResponse {
   map<string, int32> parameters = 2;
 }
 
-message UpdateDeviceParameterRequest {
-  uint32 id = 1;
-  string name = 2;
-  int32 value = 3;
-}
-
-message UpdateDeviceParameterResponse {
-  repeated DeviceParameter parameters = 1;
-}
-
 message UpdateDeviceTableRequest {
   uint32 id = 1;
   string name = 2;

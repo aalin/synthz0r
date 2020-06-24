@@ -15,10 +15,10 @@ async function createSynthWithSequencer(client, deviceName, sequencerData, opts 
       channelId: createChannelResponse.channel.id
     });
 
-  if (opts.instrumentOpts) {
+  if (opts.instrumentParams) {
     client.request('UpdateDeviceParametersRequest', {
       id: createInstrumentResponse.device.id,
-      parameters: opts.instrumentOpts
+      parameters: opts.instrumentParams
     });
   }
 
@@ -31,10 +31,11 @@ async function createSynthWithSequencer(client, deviceName, sequencerData, opts 
       channelId: createChannelResponse.channel.id
     });
 
-  if (opts.sequencerOpts) {
-    for ([name, value] of Object.entries(opts.sequencerOpts)) {
-      client.request('UpdateDeviceParameterRequest', { id: createSequencerResponse.device.id, name, value })
-    }
+  if (opts.sequencerParams) {
+    client.request('UpdateDeviceParametersRequest', {
+      id: createSequencerResponse.device.id,
+      parameters: opts.sequencerParams
+    });
   }
 
   console.log(JSON.stringify(createSequencerResponse, null, 2));
@@ -80,7 +81,7 @@ async function main({ port }) {
         "D5 D5 | C5 C5 | B4 B4 | A4 OFF "
       ),
       {
-        sequencerOpts: { rate: 0 },
+        sequencerParams: { rate: 0 },
       }
     );
 
@@ -94,8 +95,8 @@ async function main({ port }) {
         "D4 D5 D4 D5 | C4 C5 C4 C5 | B4 B3 B4 B3 | A4 A3 A4 A5 "
       ),
       {
-        sequencerOpts: { rate: 1 },
-        instrumentOpts: {
+        sequencerParams: { rate: 1 },
+        instrumentParams: {
           waveformIndex: 5,
           transpose: -24,
           "envelope.attackMs": 150,
@@ -112,7 +113,7 @@ async function main({ port }) {
       notesToArray(
         "C4 C4 C4 C4"
       ),
-      { sequencerOpts: { rate: 0 } }
+      { sequencerParams: { rate: 0 } }
     );
 
     createSynthWithSequencer(
@@ -122,8 +123,8 @@ async function main({ port }) {
         "OFF OFF C4 C4 OFF OFF C4 C4"
       ),
       {
-        sequencerOpts: { rate: 2 },
-        instrumentOpts: {
+        sequencerParams: { rate: 2 },
+        instrumentParams: {
           oscillatorType: 4,
           amplitude: 20,
           "envelope.attackMs": 50,
