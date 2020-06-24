@@ -70,7 +70,6 @@ async function main({ port }) {
     }, 5 * 1000);
     */
 
-    /*
     createSynthWithSequencer(
       client,
       "WavetableSynth",
@@ -107,8 +106,6 @@ async function main({ port }) {
       }
     )
 
-    */
-
     createSynthWithSequencer(
       client,
       "Kickdrum",
@@ -128,11 +125,12 @@ async function main({ port }) {
         sequencerOpts: { rate: 2 },
         instrumentOpts: {
           oscillatorType: 4,
-          amplitude: 80,
+          amplitude: 20,
           "envelope.attackMs": 50,
           "envelope.decayMs": 50,
           "envelope.sustain": 30,
           "envelope.releaseMs": 200,
+          "filter.type": 1
         }
       }
     ).then((id) => {
@@ -143,8 +141,7 @@ async function main({ port }) {
             parameters: {
               "filter.cutoffHz":
                 Math.floor(Math.pow(Math.sin(new Date().getTime() / 5000), 2) * 8000) + 2000,
-              "filter.resonance":
-                Math.floor(Math.pow(Math.sin(new Date().getTime() / 500), 2) * 10000)
+              "filter.resonance": 10000
             }
           }
         )
