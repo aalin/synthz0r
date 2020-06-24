@@ -202,6 +202,27 @@ ProtobufMessagePtr handleRequest(messages::CreateDeviceRequest &message, Engine 
 	return response;
 }
 
+ProtobufMessagePtr handleRequest(messages::UpdateDeviceParametersRequest &message, Engine &engine) {
+	std::cout << "Updating device parameters" << std::endl;
+
+	auto device = engine.findDeviceById(message.id());
+
+	if (device == nullptr) {
+		return createErrorResponse("Device not found");
+	}
+
+	auto response = std::make_unique<messages::UpdateDeviceParametersResponse>();
+	response->set_id(message.id());
+
+	for (auto &param : message.parameters()) {
+		device->setParam(param.first, param.second);
+
+		(*response->mutable_parameters())[param.first] = device->getParam(param.first);
+	}
+
+	return response;
+}
+
 ProtobufMessagePtr handleRequest(messages::UpdateDeviceParameterRequest &message, Engine &engine) {
 	std::cout << "Updating device parameter" << std::endl;
 
@@ -258,6 +279,7 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(RemoveChannelRequest),
 	HANDLER(CreateDeviceRequest),
 	HANDLER(UpdateDeviceParameterRequest),
+	HANDLER(UpdateDeviceParametersRequest),
 	HANDLER(UpdateDeviceTableRequest),
 };
 

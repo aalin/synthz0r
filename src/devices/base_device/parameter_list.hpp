@@ -40,7 +40,13 @@ class ParameterList {
 			return value_iterator(_parameters.end());
 		}
 
-		const Parameter & get(std::string name) const {
+		const Parameter & setParam(const std::string &name, const int32_t &value) {
+			Parameter &param = get(name);
+			param.setValue(value);
+			return param;
+		}
+
+		const Parameter & get(const std::string &name) const {
 			auto param = _parameters.find(name);
 
 			if (param == _parameters.end()) {
@@ -51,7 +57,7 @@ class ParameterList {
 			return param->second;
 		}
 
-		Parameter & get(std::string name) {
+		Parameter & get(const std::string &name) {
 			auto param = _parameters.find(name);
 
 			if (param == _parameters.end()) {

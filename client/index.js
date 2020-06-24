@@ -16,9 +16,10 @@ async function createSynthWithSequencer(client, deviceName, sequencerData, opts 
     });
 
   if (opts.instrumentOpts) {
-    for ([name, value] of Object.entries(opts.instrumentOpts)) {
-      client.request('UpdateDeviceParameterRequest', { id: createInstrumentResponse.device.id, name, value })
-    }
+    client.request('UpdateDeviceParametersRequest', {
+      id: createInstrumentResponse.device.id,
+      parameters: opts.instrumentOpts
+    });
   }
 
   console.log(JSON.stringify(createInstrumentResponse, null, 2));
@@ -137,18 +138,14 @@ async function main({ port }) {
     ).then((id) => {
       async function updateFilter(deviceId) {
         client.request(
-          'UpdateDeviceParameterRequest', {
+          'UpdateDeviceParametersRequest', {
             id: deviceId,
-            name: "filter.cutoffHz",
-            value: Math.floor(Math.pow(Math.sin(new Date().getTime() / 5000), 2) * 8000) + 2000
-          }
-        )
-
-        await client.request(
-          'UpdateDeviceParameterRequest', {
-            id: deviceId,
-            name: "filter.resonance",
-            value: Math.floor(Math.pow(Math.sin(new Date().getTime() / 500), 2) * 10000)
+            parameters: {
+              "filter.cutoffHz":
+                Math.floor(Math.pow(Math.sin(new Date().getTime() / 5000), 2) * 8000) + 2000,
+              "filter.resonance":
+                Math.floor(Math.pow(Math.sin(new Date().getTime() / 500), 2) * 10000)
+            }
           }
         )
 

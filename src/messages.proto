@@ -101,6 +101,16 @@ message Device {
   repeated DeviceTable tables = 5;
 }
 
+message UpdateDeviceParametersRequest {
+  uint32 id = 1;
+  map<string, int32> parameters = 2;
+}
+
+message UpdateDeviceParametersResponse {
+  uint32 id = 1;
+  map<string, int32> parameters = 2;
+}
+
 message UpdateDeviceParameterRequest {
   uint32 id = 1;
   string name = 2;
