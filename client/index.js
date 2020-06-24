@@ -41,10 +41,11 @@ async function createSynthWithSequencer(client, deviceName, sequencerData, opts 
   console.log(JSON.stringify(createSequencerResponse, null, 2));
 
   const updateSequencerTableResponse =
-    await client.request('UpdateDeviceTableRequest', {
+    await client.request('UpdateDeviceTablesRequest', {
       id: createSequencerResponse.device.id,
-      name: "notes",
-      data: sequencerData
+      tables: {
+        notes: { values: sequencerData }
+      }
     });
 
   console.log(updateSequencerTableResponse);
@@ -97,7 +98,7 @@ async function main({ port }) {
       {
         sequencerParams: { rate: 1 },
         instrumentParams: {
-          waveformIndex: 5,
+          waveformIndex: 4,
           transpose: -24,
           "envelope.attackMs": 150,
           "envelope.decayMs": 150,
@@ -113,7 +114,10 @@ async function main({ port }) {
       notesToArray(
         "C4 C4 C4 C4"
       ),
-      { sequencerParams: { rate: 0 } }
+      {
+        sequencerParams: { rate: 0 },
+        instrumentParams: { pitch: 880 }
+      }
     );
 
     createSynthWithSequencer(
@@ -136,18 +140,21 @@ async function main({ port }) {
       }
     ).then((id) => {
       async function updateFilter(deviceId) {
+        const filterCutoffHz = Math.floor(Math.pow(Math.sin(new Date().getTime() / 500), 2) * 8000) + 2000;
+
+        console.log('Setting filter cutoff', filterCutoffHz);
+
         client.request(
           'UpdateDeviceParametersRequest', {
             id: deviceId,
             parameters: {
-              "filter.cutoffHz":
-                Math.floor(Math.pow(Math.sin(new Date().getTime() / 5000), 2) * 8000) + 2000,
+              "filter.cutoffHz": filterCutoffHz,
               "filter.resonance": 10000
             }
           }
-        )
+        );
 
-        setTimeout(() => updateFilter(deviceId), 100)
+        setTimeout(() => updateFilter(deviceId), 100);
       }
 
       updateFilter(id);

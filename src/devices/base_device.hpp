@@ -56,6 +56,10 @@ namespace Devices {
 				_tables.setTable(name, data);
 			}
 
+			const Table & getTable(const std::string &name) const {
+				return _tables.get(name);
+			}
+
 		protected:
 			void setupParameters(std::initializer_list<Parameter> params) {
 				_parameters = params;

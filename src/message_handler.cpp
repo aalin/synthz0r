@@ -223,8 +223,8 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceParametersRequest &messag
 	return response;
 }
 
-ProtobufMessagePtr handleRequest(messages::UpdateDeviceTableRequest &message, Engine &engine) {
-	std::cout << "Updating device table" << std::endl;
+ProtobufMessagePtr handleRequest(messages::UpdateDeviceTablesRequest &message, Engine &engine) {
+	std::cout << "Updating device tables" << std::endl;
 
 	auto device = engine.findDeviceById(message.id());
 
@@ -232,12 +232,27 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceTableRequest &message, En
 		return createErrorResponse("Device not found");
 	}
 
-	std::vector<int> data(message.data().begin(), message.data().end());
+	auto response = std::make_unique<messages::UpdateDeviceTablesResponse>();
+	response->set_id(message.id());
 
-	device->setTable(message.name(), data);
+	for (auto &entry : message.tables()) {
+		std::vector<int> data(entry.second.values().begin(), entry.second.values().end());
 
-	auto response = std::make_unique<messages::UpdateDeviceTableResponse>();
-	setTables(response.get(), device);
+		std::cout << "Updating table " << entry.first << " with " << entry.second.values().size() << " values" << std::endl;
+
+		for (auto v : data) {
+			std::cout << "\t" << v << std::endl;
+		}
+
+		device->setTable(entry.first, data);
+
+		const auto &updatedTable = device->getTable(entry.first);
+		auto updatedValues = google::protobuf::RepeatedField<int>(updatedTable.data().begin(), updatedTable.data().end());
+		messages::TableData tableData;
+		tableData.mutable_values()->Swap(&updatedValues);
+		(*response->mutable_tables())[entry.first] = tableData;
+	}
+
 	return response;
 }
 
@@ -263,7 +278,7 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(RemoveChannelRequest),
 	HANDLER(CreateDeviceRequest),
 	HANDLER(UpdateDeviceParametersRequest),
-	HANDLER(UpdateDeviceTableRequest),
+	HANDLER(UpdateDeviceTablesRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

@@ -111,14 +111,18 @@ message UpdateDeviceParametersResponse {
   map<string, int32> parameters = 2;
 }
 
-message UpdateDeviceTableRequest {
-  uint32 id = 1;
-  string name = 2;
-  repeated int32 data = 3;
+message TableData {
+  repeated int32 values = 1;
 }
 
-message UpdateDeviceTableResponse {
-  repeated DeviceTable tables = 1;
+message UpdateDeviceTablesRequest {
+  uint32 id = 1;
+  map<string, TableData> tables = 2;
+}
+
+message UpdateDeviceTablesResponse {
+  uint32 id = 1;
+  map<string, TableData> tables = 2;
 }
 
 message CreateDeviceRequest {

@@ -5,6 +5,9 @@ class Client extends EventEmitter {
   constructor(protocol, host, options = {}) {
     super();
 
+    this._log = options.log ? console.log : ()=>{};
+    delete options.log;
+
     this.protocol = protocol;
 
     this._idCounter = 0;
@@ -24,7 +27,7 @@ class Client extends EventEmitter {
     const encoded = this.protocol.encode(id, type, data);
 
     return new Promise((resolve) => {
-      console.log('Requesting', id, type, data);
+      this._log('Requesting', id, type, data);
       this._ws.send(encoded);
       this._callbacks.set(id, resolve);
     });
@@ -40,7 +43,7 @@ class Client extends EventEmitter {
       return;
     }
 
-    console.log(`Got ${type} for message`, id);
+    this._log(`Got ${type} for message`, id);
 
     this._callbacks.delete(id);
 
