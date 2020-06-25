@@ -38,12 +38,12 @@ ProtobufMessagePtr handleRequest(messages::TextRequest &msg, Engine &engine) {
 }
 
 ProtobufMessagePtr handleRequest(messages::PlayRequest &, Engine &engine) {
-	engine.transport().play();
+	engine.play();
 	return std::make_unique<messages::SuccessResponse>();
 }
 
 ProtobufMessagePtr handleRequest(messages::PauseRequest &, Engine &engine) {
-	engine.transport().pause();
+	engine.pause();
 	return std::make_unique<messages::SuccessResponse>();
 }
 

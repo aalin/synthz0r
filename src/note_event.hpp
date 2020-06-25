@@ -8,7 +8,12 @@ struct NoteEvent {
 	enum Type {
 		NOTE_ON,
 		NOTE_OFF,
+		PAUSE_ALL
 	};
+
+	static NoteEvent pauseAll() {
+		return { PAUSE_ALL, 0, 0 };
+	}
 
 	static NoteEvent noteOn(uint8_t note, uint8_t velocity = 100) {
 		return { NOTE_ON, note, velocity };

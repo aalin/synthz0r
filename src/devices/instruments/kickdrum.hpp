@@ -37,6 +37,8 @@ namespace Devices {
 				void handleEvents(const Transport &transport, const NoteEventList &events) {
 					for (const auto &event : events) {
 						switch (event.type) {
+							case NoteEvent::Type::PAUSE_ALL:
+								return;
 							case NoteEvent::Type::NOTE_ON:
 								noteOn(transport, event.note, event.velocity / 100.0);
 								break;

@@ -73,6 +73,9 @@ namespace Devices::Instruments {
 			void handleEvents(const Transport &transport, const NoteEventList &events) {
 				for (const auto &event : events) {
 					switch (event.type) {
+						case NoteEvent::Type::PAUSE_ALL:
+							pauseAll(transport);
+							return;
 						case NoteEvent::Type::NOTE_ON:
 							noteOn(transport, event.note, event.velocity / 100.0);
 							break;
@@ -94,6 +97,12 @@ namespace Devices::Instruments {
 					if (v.note == note && v.noteOffTime < 0.0) {
 						v.noteOffTime = transport.secondsElapsedSinceStart();
 					}
+				}
+			}
+
+			void pauseAll(const Transport &transport) {
+				for (auto &v : _voices) {
+					v.noteOffTime = transport.secondsElapsedSinceStart();
 				}
 			}
 	};

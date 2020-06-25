@@ -79,13 +79,15 @@ class Engine {
 				StereoSample out;
 
 				for (auto &channel : _channels) {
-					out.add(channel->update(_transport, {}));
+					out.add(channel->update(_transport, _noteEvents));
 				}
 
 				_buffer->set(i, out);
 
 				_transport.update();
 			}
+
+			_noteEvents.clear();
 
 			_buffer->write(_audioOutput);
 
@@ -104,6 +106,15 @@ class Engine {
 			return _transport;
 		}
 
+		void play() {
+			_transport.play();
+		}
+
+		void pause() {
+			_transport.pause();
+			_noteEvents.push_back(NoteEvent::pauseAll());
+		}
+
 	private:
 		Transport _transport;
 		bool _hasRequestedExit = false;
@@ -113,6 +124,8 @@ class Engine {
 		AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;
 		std::map<uint32_t, std::weak_ptr<Devices::BaseDevice> > _devices;
+
+		std::list<NoteEvent> _noteEvents;
 
 		void cleanExpiredDevices() {
 			auto it = _devices.begin();

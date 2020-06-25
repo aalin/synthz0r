@@ -139,7 +139,21 @@ async function main({ port }) {
         }
       }
     ).then((id) => {
-      client.request('PlayRequest');
+      let playing = false;
+
+      async function togglePlayPause() {
+        if (playing) {
+          await client.request('PlayRequest');
+        } else {
+          await client.request('PauseRequest');
+        }
+
+        playing = !playing;
+
+        setTimeout(togglePlayPause, 2000);
+      }
+
+      togglePlayPause();
 
       async function updateFilter(deviceId) {
         const filterCutoffHz = Math.floor(Math.pow(Math.sin(new Date().getTime() / 500), 2) * 8000) + 2000;
