@@ -142,15 +142,20 @@ async function main({ port }) {
       let playing = false;
 
       async function togglePlayPause() {
+        let timeout = 2000;
+
         if (playing) {
+          console.log('Playing');
           await client.request('PlayRequest');
+          timeout += Math.random() * 8000;
         } else {
+          console.log('Pausing');
           await client.request('PauseRequest');
         }
 
         playing = !playing;
 
-        setTimeout(togglePlayPause, 2000);
+        setTimeout(togglePlayPause, timeout);
       }
 
       togglePlayPause();
