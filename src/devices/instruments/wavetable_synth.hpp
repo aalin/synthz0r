@@ -2,51 +2,45 @@
 #define DEVICES__INSTRUMENTS__WAVETABLE_SYNTH_HPP
 
 #include "../instrument_device.hpp"
-#include "../../units/adsr.hpp"
+#include "../../units/adsr2.hpp"
 #include "../../units/phase.hpp"
 #include "../../waveform.hpp"
 #include "../../utils.hpp"
+#include "utils/voices.hpp"
 
 namespace Devices::Instruments {
 	class WavetableSynth : public InstrumentDevice {
 		public:
-			struct Voice {
-				Voice(size_t waveformIndex, int note, float velocity, float noteOnTime = 0.0)
-				: waveform(Waveform::WAVEFORMS.at(waveformIndex)),
-				  note(note),
-				  velocity(velocity),
-				  noteOnTime(noteOnTime),
-				  noteOffTime(-1)
-				{}
+			class Voice {
+				public:
+					Voice(size_t waveformIndex, Units::ADSR2::Settings envelopeSettings);
 
-				const Waveform &waveform;
-				int note;
-				float velocity;
-				float noteOnTime;
-				float noteOffTime;
+					float update(const Transport &transport, const VoiceData &voiceData, float transpose);
 
-				float update(float freq, const Transport &transport) {
-					return waveform.getValue(
-						_phase.update(freq, transport.sampleRate())
-					);
-				}
+					bool hasStopped() {
+						return _envelope.isOff();
+					}
 
 				private:
-				Units::Phase _phase;
+					const Waveform &_waveform;
+					Units::ADSR2 _envelope;
+					Units::Phase _phase;
 			};
 
-			WavetableSynth()
-			: InstrumentDevice("Wavetable Synth") {
+			WavetableSynth() : InstrumentDevice("Wavetable Synth") {
+				const int maxWf = Waveform::WAVEFORMS.size() - 1;
+
 				setupParameters({
-					Parameter("pitchBendRange",        0,                         24,   2, _pitchBendRange),
-					Parameter("transpose",           -24,                        100,   0, _transpose),
-					Parameter("panning",            -127,                        127,   0, _panning),
-					Parameter("amplitude",             0,                        128, 100, _amplitude),
-					Parameter("envelope.attackMs",     0,                       1000, 150, _envelope._attackMs),
-					Parameter("envelope.decayMs",      0,                       1000,  60, _envelope._decayMs),
-					Parameter("envelope.sustain",      0,                        127,  30, _envelope._sustain),
-					Parameter("envelope.releaseMs",    0,                       1000,  70, _envelope._releaseMs),
-					Parameter("waveformIndex",         0, Waveform::WAVEFORMS.size()-1, 0, _waveformIndex)
+					Parameter("pitchBendRange",      -24,    24,   2, _pitchBendRange),
+					Parameter("transpose",           -24,    24,   0, _transpose),
+					Parameter("panning",            -127,   127,   0, _panning),
+					Parameter("amplitude",             0,   128, 100, _amplitude),
+					Parameter("envelope.attackStart",  0,   100,   0, _envelopeSettings._attackStart),
+					Parameter("envelope.attackMs",     0,  1000, 150, _envelopeSettings._attackMs),
+					Parameter("envelope.decayMs",      0,  1000,  60, _envelopeSettings._decayMs),
+					Parameter("envelope.sustain",      0,   100,  30, _envelopeSettings._sustain),
+					Parameter("envelope.releaseMs",    0,  1000,  70, _envelopeSettings._releaseMs),
+					Parameter("waveformIndex",         0, maxWf, 0, _waveformIndex)
 				});
 			}
 
@@ -57,14 +51,14 @@ namespace Devices::Instruments {
 			StereoSample apply(const Transport &transport, const NoteEventList &events);
 
 		private:
-			Units::ADSR _envelope;
+			Units::ADSR2::Settings _envelopeSettings;
 			int _amplitude;
 			int _pitchBendRange;
 			int _transpose;
 			int _panning;
 			int _waveformIndex;
 
-			std::list<Voice> _voices;
+			Voices<Voice> _voices;
 
 			float amplitude() const {
 				return _amplitude / 100.0;
@@ -78,35 +72,22 @@ namespace Devices::Instruments {
 				for (const auto &event : events) {
 					switch (event.type) {
 						case NoteEvent::Type::PAUSE_ALL:
-							pauseAll(transport);
+							_voices.stopAll(transport);
 							return;
 						case NoteEvent::Type::NOTE_ON:
-							noteOn(transport, event.note, event.velocity / 255.0);
+							_voices.play(
+								transport,
+								event.note,
+								event.velocity / 128.0,
+								Voice(_waveformIndex, _envelopeSettings)
+							);
 							break;
 						case NoteEvent::Type::NOTE_OFF:
-							noteOff(transport, event.note);
+							_voices.stop(transport, event.note);
 							break;
 						default:
 							break;
 					}
-				}
-			}
-
-			void noteOn(const Transport &transport, int note, float velocity = 1.0) {
-				_voices.push_back(Voice(_waveformIndex, note, velocity, transport.secondsElapsedSinceStart()));
-			}
-
-			void noteOff(const Transport &transport, int note) {
-				for (auto &v : _voices) {
-					if (v.note == note && v.noteOffTime < 0.0) {
-						v.noteOffTime = transport.secondsElapsedSinceStart();
-					}
-				}
-			}
-
-			void pauseAll(const Transport &transport) {
-				for (auto &v : _voices) {
-					v.noteOffTime = transport.secondsElapsedSinceStart();
 				}
 			}
 	};

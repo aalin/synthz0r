@@ -16,6 +16,8 @@ class WSServer : public Websocket::ServerPimpl {
 		WSServer() {
 			_server.init_asio();
 
+			_server.clear_access_channels(websocketpp::log::alevel::all);
+
 			_server.set_open_handler(bind(&WSServer::onOpen, this, ::_1));
 			_server.set_close_handler(bind(&WSServer::onClose, this, ::_1));
 			_server.set_message_handler(bind(&WSServer::onMessage, this, ::_1, ::_2));

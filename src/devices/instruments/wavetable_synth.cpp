@@ -1,32 +1,35 @@
 #include "wavetable_synth.hpp"
 
 namespace Devices::Instruments {
+	WavetableSynth::Voice::Voice(size_t waveformIndex, Units::ADSR2::Settings envelopeSettings)
+	: _waveform(Waveform::WAVEFORMS.at(waveformIndex)),
+	  _envelope(envelopeSettings)
+	{}
+
+	float WavetableSynth::Voice::update(const Transport &transport, const VoiceData &voiceData, float transpose) {
+		float freq = Utils::noteToFrequency(voiceData.note + transpose);
+
+		float env = _envelope.update(
+			transport.timer(),
+			voiceData.noteOnTime,
+			voiceData.noteOffTime
+		);
+
+		float value = _waveform.getValue(
+			_phase.update(freq, transport.sampleRate())
+		);
+
+		return value * voiceData.velocity * env;
+	}
+
 	StereoSample WavetableSynth::apply(const Transport &transport, const NoteEventList &events) {
 		handleEvents(transport, events);
 
-		const Timer &timer = transport.timer();
-
 		float pitchBend = 0.0;
-		float v = 0.0;
 
 		float transpose = _transpose + _pitchBendRange * pitchBend;
 
-		for (auto it = _voices.begin(); it != _voices.end();) {
-			auto &voice = *it;
-
-			if (_envelope.isNoteDone(timer, voice.noteOffTime)) {
-				it = _voices.erase(it);
-				continue;
-			} else {
-				++it;
-			}
-
-			float freq = Utils::noteToFrequency(voice.note + transpose);
-			float value = voice.update(freq, transport);
-			float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
-
-			v += value * voice.velocity * env;
-		}
+		float v = _voices.update(transport, transpose);
 
 		return Utils::pan(
 			v * amplitude() * 0.2,
