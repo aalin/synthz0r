@@ -13,6 +13,13 @@ namespace Utils {
 	}
 
 	template<typename T>
+	T cosineInterpolate(T y1, T y2, T mu) {
+		// http://paulbourke.net/miscellaneous/interpolation/
+		T mu2 = (1.0 - std::cos(mu * M_PI)) / 2.0;
+		return (y1 * (1.0 - mu2) + y2 * mu2);
+	}
+
+	template<typename T>
 	T clamp(T value, T min, T max) {
 		if (value < min) {
 			return min;

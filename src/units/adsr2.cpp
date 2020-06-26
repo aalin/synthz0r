@@ -12,7 +12,7 @@ float Units::ADSR2::update(const Timer &timer, float noteOnTime, float noteOffTi
 				return 1.0f;
 			}
 
-			return Utils::lerp(_settings.attackStart(), 1.0f, dt / _settings.attack());
+			return Utils::cosineInterpolate(_settings.attackStart(), 1.0f, dt / _settings.attack());
 		}
 		case State::DECAYING: {
 			const float dt = std::max(0.f, time - noteOnTime);
@@ -22,7 +22,7 @@ float Units::ADSR2::update(const Timer &timer, float noteOnTime, float noteOffTi
 				return _settings.sustain();
 			}
 
-			return Utils::lerp(1.0f, _settings.sustain(), (dt - _settings.attack()) / _settings.decay());
+			return Utils::cosineInterpolate(1.0f, _settings.sustain(), (dt - _settings.attack()) / _settings.decay());
 		}
 		case State::SUSTAINING: {
 			if (noteOffTime >= 0.0 && time > noteOffTime) {
@@ -39,7 +39,7 @@ float Units::ADSR2::update(const Timer &timer, float noteOnTime, float noteOffTi
 				return 0.0f;
 			}
 
-			return Utils::lerp(_settings.sustain(), 0.0f, dt / _settings.release());
+			return Utils::cosineInterpolate(_settings.sustain(), 0.0f, dt / _settings.release());
 		}
 		default:
 			return 0.0f;
