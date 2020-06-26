@@ -30,8 +30,22 @@ std::string noteString(uint8_t value) {
 }
 
 std::ostream & operator<<(std::ostream &out, const NoteEvent &noteEvent) {
-	return out <<
-		"NoteEvent(" <<
-		(noteEvent.type == NoteEvent::Type::NOTE_ON ? "NOTE_ON" : "NOTE_OFF") <<
-		" " << noteString(noteEvent.note) << ")";
+	out << "NoteEvent(";
+
+	switch (noteEvent.type) {
+		case NoteEvent::Type::NOTE_ON:
+			out << "NOTE_ON" << " " << noteString(noteEvent.note);
+			break;
+		case NoteEvent::Type::NOTE_OFF:
+			out << "NOTE_OFF" << " " << noteString(noteEvent.note);
+			break;
+		case NoteEvent::Type::PAUSE_ALL:
+			out << "PAUSE_ALL";
+			break;
+		default:
+			out << "???";
+			break;
+	}
+
+	return out << ")";
 }
