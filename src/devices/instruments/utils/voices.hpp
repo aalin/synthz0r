@@ -81,8 +81,6 @@ class Voices {
 		std::list<Voice> _voices;
 
 		void clearStopped() {
-			size_t stoppedCount = 0;
-
 			for (auto it = _voices.begin(); it != _voices.end();) {
 				if (it->hasStopped()) {
 					stoppedCount++;
@@ -90,10 +88,6 @@ class Voices {
 				} else {
 					++it;
 				}
-			}
-
-			if (stoppedCount > 0) {
-				std::cout << "Stopped " << stoppedCount << " voices" << std::endl;
 			}
 		}
 
