@@ -84,10 +84,9 @@ class Engine {
 
 				_buffer->set(i, out);
 
+				_noteEvents.clear();
 				_transport.update();
 			}
-
-			_noteEvents.clear();
 
 			_buffer->write(_audioOutput);
 
