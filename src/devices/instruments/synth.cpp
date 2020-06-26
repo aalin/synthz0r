@@ -1,32 +1,30 @@
 #include "synth.hpp"
 
 namespace Devices::Instruments {
+	float Synth::Voice::update(const Transport &transport, const Voices::VoiceData &voiceData, const float &transpose) {
+		float freq = ::Utils::noteToFrequency(voiceData.note() + transpose);
+
+		float env = _envelope.update(
+			transport.timer(),
+			voiceData.noteOnTime(),
+			voiceData.noteOffTime()
+		);
+
+		float value = _oscillator.update(freq, transport.timer());
+
+		return value * voiceData.velocity() * env;
+	}
+
 	StereoSample Synth::apply(const Transport &transport, const NoteEventList &events) {
 		handleEvents(transport, events);
 
 		const Timer &timer = transport.timer();
 
 		float pitchBend = 0.0;
-		float v = 0.0;
 
 		float transpose = _transpose + _pitchBendRange * pitchBend;
 
-		for (auto it = _voices.begin(); it != _voices.end();) {
-			auto &voice = *it;
-
-			if (_envelope.isNoteDone(timer, voice.noteOffTime)) {
-				it = _voices.erase(it);
-				continue;
-			} else {
-				++it;
-			}
-
-			float freq = Utils::noteToFrequency(voice.note + transpose);
-			float value = voice.oscillator.update(freq, timer);
-			float env = _envelope.update(timer, voice.noteOnTime, voice.noteOffTime);
-
-			v += value * voice.velocity * env;
-		}
+		float v = _voices.update(transport, transpose);
 
 		if (_filterEnabled) {
 			v = _filter.update(timer, v);

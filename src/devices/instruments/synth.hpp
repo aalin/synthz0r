@@ -1,30 +1,32 @@
 #ifndef DEVICES__INSTRUMENTS__SYNTH_HPP
 #define DEVICES__INSTRUMENTS__SYNTH_HPP
 
-#include <list>
 #include "../instrument_device.hpp"
 #include "../../units/oscillator.hpp"
 #include "../../units/state_variable_filter.hpp"
-#include "../../units/adsr.hpp"
+#include "../../units/adsr2.hpp"
 #include "../../stereo_sample.hpp"
+#include "voices/voice_list.hpp"
 
 namespace Devices::Instruments {
 	class Synth : public InstrumentDevice {
 		public:
-			struct Voice {
-				Voice(int oscillatorType, int note, float velocity, float noteOnTime = 0.0)
-				: note(note),
-				  velocity(velocity),
-				  noteOnTime(noteOnTime),
-				  noteOffTime(-1.0),
-				  oscillator(oscillatorType)
-				{}
+			struct Voice : public Voices::AbstractVoice {
+				public:
+					Voice(int oscillatorType, Units::ADSR2::Settings envelopeSettings)
+					: _oscillator(oscillatorType),
+					  _envelope(envelopeSettings)
+					{}
 
-				int note;
-				float velocity;
-				float noteOnTime;
-				float noteOffTime;
-				Units::Oscillator oscillator;
+					float update(const Transport &transport, const Voices::VoiceData &voiceData, const float &transpose);
+
+					bool hasStopped() {
+						return _envelope.isOff();
+					}
+
+				private:
+					Units::Oscillator _oscillator;
+					Units::ADSR2 _envelope;
 			};
 
 			Synth()
@@ -35,10 +37,11 @@ namespace Devices::Instruments {
 					Parameter("oscillatorType",        0,     5,    0, _oscillatorType),
 					Parameter("panning",            -127,   127,    0, _panning),
 					Parameter("amplitude",             0,   128,  100, _amplitude),
-					Parameter("envelope.attackMs",     0,  1000,  150, _envelope._attackMs),
-					Parameter("envelope.decayMs",      0,  1000,    0, _envelope._decayMs),
-					Parameter("envelope.sustain",      0,   127,    0, _envelope._sustain),
-					Parameter("envelope.releaseMs",    0,  1000,    0, _envelope._releaseMs),
+					Parameter("envelope.attackStart",  0,   100,    0, _envelopeSettings._attackStart),
+					Parameter("envelope.attackMs",     0,  1000,  150, _envelopeSettings._attackMs),
+					Parameter("envelope.decayMs",      0,  1000,    0, _envelopeSettings._decayMs),
+					Parameter("envelope.sustain",      0,   100,    0, _envelopeSettings._sustain),
+					Parameter("envelope.releaseMs",    0,  1000,    0, _envelopeSettings._releaseMs),
 					Parameter("filter.enabled",        0,     1,    1, _filterEnabled),
 					Parameter("filter.cutoffHz",       0, 10000, 8000, _filter._cutoffHz),
 					Parameter("filter.resonance",      0,  1000,  200, _filter._resonance),
@@ -50,7 +53,7 @@ namespace Devices::Instruments {
 			StereoSample apply(const Transport &transport, const NoteEventList &events);
 
 		private:
-			Units::ADSR _envelope;
+			Units::ADSR2::Settings _envelopeSettings;
 			Units::StateVariableFilter _filter;
 
 			int _oscillatorType;
@@ -68,41 +71,31 @@ namespace Devices::Instruments {
 				return _panning / 127.0;
 			}
 
-			std::list<Voice> _voices;
+			Voices::VoiceList _voices;
 
 			void handleEvents(const Transport &transport, const NoteEventList &events) {
 				for (const auto &event : events) {
 					switch (event.type) {
 						case NoteEvent::Type::PAUSE_ALL:
-							pauseAll(transport);
+							_voices.stopAll(transport);
 							return;
 						case NoteEvent::Type::NOTE_ON:
-							noteOn(transport, event.note, event.velocity / 100.0);
+							_voices.play(
+								transport,
+								event.note,
+								event.velocity / 128.f,
+								std::make_unique<Voice>(
+									_oscillatorType,
+									_envelopeSettings
+								)
+							);
 							break;
 						case NoteEvent::Type::NOTE_OFF:
-							noteOff(transport, event.note);
+							_voices.stop(transport, event.note);
 							break;
 						default:
 							break;
 					}
-				}
-			}
-
-			void noteOn(const Transport &transport, int note, float velocity = 1.0) {
-				_voices.push_back(Voice(_oscillatorType, note, velocity, transport.secondsElapsedSinceStart()));
-			}
-
-			void noteOff(const Transport &transport, int note) {
-				for (auto &v : _voices) {
-					if (v.note == note && v.noteOffTime < 0.0) {
-						v.noteOffTime = transport.secondsElapsedSinceStart();
-					}
-				}
-			}
-
-			void pauseAll(const Transport &transport) {
-				for (auto &v : _voices) {
-					v.noteOffTime = transport.secondsElapsedSinceStart();
 				}
 			}
 	};
