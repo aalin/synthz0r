@@ -266,6 +266,30 @@ ProtobufMessagePtr handleRequest(messages::UpdateDeviceTablesRequest &message, E
 	return response;
 }
 
+ProtobufMessagePtr handleRequest(messages::NoteOn &message, Engine &engine) {
+	auto channel = engine.getChannelById(message.channelid());
+
+	if (channel == nullptr) {
+		return createErrorResponse("No such channel");
+	}
+
+	channel->addNoteEvent(NoteEvent::noteOn(message.note(), message.velocity()));
+
+	return std::make_unique<messages::SuccessResponse>();
+}
+
+ProtobufMessagePtr handleRequest(messages::NoteOff &message, Engine &engine) {
+	auto channel = engine.getChannelById(message.channelid());
+
+	if (channel == nullptr) {
+		return createErrorResponse("No such channel");
+	}
+
+	channel->addNoteEvent(NoteEvent::noteOff(message.note()));
+
+	return std::make_unique<messages::SuccessResponse>();
+}
+
 template<typename T>
 ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 	T message;
@@ -291,6 +315,8 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(UpdateDeviceTablesRequest),
 	HANDLER(PlayRequest),
 	HANDLER(PauseRequest),
+	HANDLER(NoteOn),
+	HANDLER(NoteOff),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

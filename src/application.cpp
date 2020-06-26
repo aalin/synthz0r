@@ -99,12 +99,7 @@ void Application::run() {
 
 void Application::processMessageQueue(Websocket::MessageQueue messages) {
 	while (!messages.empty()) {
-		processMessage(std::move(messages.front()));
+		_messageHandler.handleMessage(_engine, std::move(messages.front()));
 		messages.pop();
 	}
-}
-
-void Application::processMessage(Websocket::MessagePtr message) {
-	std::cout << "Got message: " << message->payload << std::endl;
-	_messageHandler.handleMessage(_engine, std::move(message));
 }

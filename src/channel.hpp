@@ -69,22 +69,10 @@ class Channel {
 			_instrumentDevice = nullptr;
 		}
 
-		StereoSample update(const Transport &transport, std::list<NoteEvent> events) {
-			if (_instrumentDevice == nullptr) {
-				return StereoSample();
-			}
+		StereoSample update(const Transport &transport, std::list<NoteEvent> events);
 
-			for (auto noteDevice : _noteDevices) {
-				noteDevice->apply(transport, events);
-			}
-
-			StereoSample out = _instrumentDevice->apply(transport, events);
-
-			for (auto effectDevice : _effectDevices) {
-				out = effectDevice->apply(transport, out, events);
-			}
-
-			return out;
+		void addNoteEvent(NoteEvent event) {
+			_events.push_back(event);
 		}
 
 	private:
@@ -93,6 +81,7 @@ class Channel {
 		ChannelNS::DeviceContainer<Devices::NoteDevicePtr> _noteDevices;
 		Devices::InstrumentDevicePtr _instrumentDevice;
 		ChannelNS::DeviceContainer<Devices::EffectDevicePtr> _effectDevices;
+		std::list<NoteEvent> _events;
 };
 
 typedef std::shared_ptr<Channel> ChannelPtr;

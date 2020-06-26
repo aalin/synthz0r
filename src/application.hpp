@@ -27,7 +27,6 @@ class Application {
 		Websocket::Server _server;
 
 		void processMessageQueue(Websocket::MessageQueue);
-		void processMessage(Websocket::MessagePtr);
 
 		MessageHandler _messageHandler;
 };
