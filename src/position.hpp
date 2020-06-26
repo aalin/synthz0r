@@ -5,6 +5,19 @@
 
 class Position {
 	public:
+		static constexpr unsigned int SIXTEENTHS_LENGTH = 240;
+		static constexpr unsigned int BEAT_LENGTH = SIXTEENTHS_LENGTH * 4;
+		static constexpr unsigned int BAR_LENGTH = BEAT_LENGTH * 4;
+
+		static unsigned long ticksFromPosition(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
+			return (
+				ticks +
+				sixteenths * SIXTEENTHS_LENGTH +
+				beat * BEAT_LENGTH +
+				bar * BAR_LENGTH
+			);
+		}
+
 		void update(const float &bpm, const float &sampleRate);
 
 		uint32_t bar = 0;
@@ -18,12 +31,8 @@ class Position {
 			recalculate();
 		}
 
-		void skipTo(uint32_t _bar, uint32_t _beat, uint32_t _sixteenths, uint32_t _ticks) {
-			_totalTicks =
-				_ticks +
-				_sixteenths * 240 +
-				_beat * 240 * 4 +
-				_bar * 240 * 4 * 4;
+		void skipTo(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
+			_totalTicks = ticksFromPosition(bar, beat, sixteenths, ticks);
 
 			recalculate();
 		}
