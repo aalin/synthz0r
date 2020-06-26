@@ -31,7 +31,7 @@ namespace Devices::Instruments {
 				const int maxWf = Waveform::WAVEFORMS.size() - 1;
 
 				setupParameters({
-					Parameter("pitchBendRange",      -24,    24,   2, _pitchBendRange),
+					Parameter("pitchBendRange",        0,    24,   2, _pitchBendRange),
 					Parameter("transpose",           -24,    24,   0, _transpose),
 					Parameter("panning",            -127,   127,   0, _panning),
 					Parameter("amplitude",             0,   128, 100, _amplitude),
