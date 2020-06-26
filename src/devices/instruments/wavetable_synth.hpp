@@ -6,16 +6,16 @@
 #include "../../units/phase.hpp"
 #include "../../waveform.hpp"
 #include "../../utils.hpp"
-#include "utils/voices.hpp"
+#include "voices/voice_list.hpp"
 
 namespace Devices::Instruments {
 	class WavetableSynth : public InstrumentDevice {
 		public:
-			class Voice {
+			class Voice : public Voices::AbstractVoice {
 				public:
 					Voice(size_t waveformIndex, Units::ADSR2::Settings envelopeSettings);
 
-					float update(const Transport &transport, const VoiceData &voiceData, float transpose);
+					float update(const Transport &transport, const Voices::VoiceData &voiceData, const float &transpose);
 
 					bool hasStopped() {
 						return _envelope.isOff();
@@ -58,7 +58,7 @@ namespace Devices::Instruments {
 			int _panning;
 			int _waveformIndex;
 
-			Voices<Voice> _voices;
+			Voices::VoiceList _voices;
 
 			float amplitude() const {
 				return _amplitude / 100.0;
@@ -78,8 +78,11 @@ namespace Devices::Instruments {
 							_voices.play(
 								transport,
 								event.note,
-								event.velocity / 128.0,
-								Voice(_waveformIndex, _envelopeSettings)
+								event.velocity / 128.f,
+								std::make_unique<Voice>(
+									_waveformIndex,
+									_envelopeSettings
+								)
 							);
 							break;
 						case NoteEvent::Type::NOTE_OFF:

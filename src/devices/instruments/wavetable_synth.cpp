@@ -6,20 +6,20 @@ namespace Devices::Instruments {
 	  _envelope(envelopeSettings)
 	{}
 
-	float WavetableSynth::Voice::update(const Transport &transport, const VoiceData &voiceData, float transpose) {
-		float freq = Utils::noteToFrequency(voiceData.note + transpose);
+	float WavetableSynth::Voice::update(const Transport &transport, const Voices::VoiceData &voiceData, const float &transpose) {
+		float freq = ::Utils::noteToFrequency(voiceData.note() + transpose);
 
 		float env = _envelope.update(
 			transport.timer(),
-			voiceData.noteOnTime,
-			voiceData.noteOffTime
+			voiceData.noteOnTime(),
+			voiceData.noteOffTime()
 		);
 
 		float value = _waveform.getValue(
 			_phase.update(freq, transport.sampleRate())
 		);
 
-		return value * voiceData.velocity * env;
+		return value * voiceData.velocity() * env;
 	}
 
 	StereoSample WavetableSynth::apply(const Transport &transport, const NoteEventList &events) {
@@ -31,7 +31,7 @@ namespace Devices::Instruments {
 
 		float v = _voices.update(transport, transpose);
 
-		return Utils::pan(
+		return ::Utils::pan(
 			v * amplitude() * 0.2,
 			panning()
 		);
