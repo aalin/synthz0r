@@ -1,7 +1,7 @@
 const path = require('path');
-const Protocol = require('./protocol');
-const Client = require('./client');
-const { notesToArray } = require('./note');
+const Protocol = require('./lib/protocol');
+const Client = require('./lib/client');
+const { notesToArray } = require('./lib/note');
 
 async function createSynthWithSequencer(client, deviceName, sequencerData, opts = {}) {
   const createChannelResponse =

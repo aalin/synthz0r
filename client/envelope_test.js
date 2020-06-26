@@ -1,7 +1,7 @@
 const path = require('path');
-const Protocol = require('./protocol');
-const Client = require('./client');
-const { notesToArray } = require('./note');
+const Protocol = require('./lib/protocol');
+const Client = require('./lib/client');
+const { notesToArray } = require('./lib/note');
 
 async function main({ port }) {
   const protocol = await Protocol.initialize(path.join(__dirname, 'messages.proto'), 'synthz0r.messages');
