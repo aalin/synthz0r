@@ -55,6 +55,7 @@ namespace Devices::Instruments {
 		private:
 			Units::ADSR2::Settings _envelopeSettings;
 			Units::StateVariableFilter _filter;
+			Voices::VoiceList _voices;
 
 			int _oscillatorType;
 			int _amplitude;
@@ -70,8 +71,6 @@ namespace Devices::Instruments {
 			float panning() const {
 				return _panning / 127.0;
 			}
-
-			Voices::VoiceList _voices;
 
 			void handleEvents(const Transport &transport, const NoteEventList &events) {
 				for (const auto &event : events) {
