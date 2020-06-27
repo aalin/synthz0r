@@ -1,4 +1,3 @@
-#FILES = $(basename $(wildcard *.cpp) $(wildcard **/*.cpp))
 FILES = $(basename $(shell find . -name "*.cpp"))
 OBJS = $(addsuffix .o, $(FILES))
 TARGET = ../synthz0r
@@ -12,12 +11,16 @@ CC=g++
 CFLAGS=-Wall -Wextra -Wnon-virtual-dtor -pedantic -ggdb -std=c++2a
 LFLAGS=-lpulse-simple -lpulse -lm -lpthread -lprotobuf
 
-%.o: %.cpp %.hpp
+all: $(TARGET)
+
+-include $(addprefix .makedefs/, $(addsuffix .d,$(FILES)))
+
+%.o: %.cpp
 	@echo -e "$(YELLOW)Compiling $< => $@$(RESET)"
 	@$(CC) -c $(CFLAGS) $< -o $@
+	@mkdir -p .makedefs/$(dir $@)
+	@$(CC) -MM -MT $@ $< > .makedefs/$(@:.o=.d)
 	@echo -e "$(GREEN)Compiled $< => $@$(RESET)"
-
-all: $(TARGET)
 
 release: CFLAGS += -O3
 release: CFLAGS := $(filter-out -ggdb,$(CFLAGS))
@@ -65,6 +68,7 @@ $(TARGET): waveform.cpp protobuf/messages.pb.o $(OBJS)
 clean:
 	rm -f $(OBJS) $(TARGET)
 	rm -f protobuf/*.cc protobuf/*.h
+	rm -rf .makedefs/
 
 .PHONY: info all demo clean
 
