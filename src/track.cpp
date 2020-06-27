@@ -19,13 +19,23 @@ bool Track::eraseSequence(uint64_t position) {
 		_sequences.end(),
 		[&](const Sequence &sequence) -> bool {
 			return sequence.positionInside(position);
-		});
+		}
+	);
 
-	if (it == std::end(_sequences)) {
+	if (it == _sequences.end()) {
 		return false;
 	}
 
 	_sequences.erase(it);
 
 	return true;
+}
+
+void Track::getEventsAt(std::list<NoteEvent> &events, uint64_t position) const {
+	for (const auto &sequence : _sequences) {
+		if (sequence.positionInside(position)) {
+			sequence.getEventsAt(events, position);
+			return;
+		}
+	}
 }

@@ -32,3 +32,17 @@ bool Sequence::eraseNote(const uint64_t &position, const uint8_t &value) {
 
 	return true;
 }
+
+void Sequence::getEventsAt(std::list<NoteEvent> &events, uint64_t position) const {
+	for (const auto &note : _notes) {
+		if (position == note.start) {
+			events.push_back(NoteEvent::noteOn(note.value, note.velocity));
+			return;
+		}
+
+		if (position == note.start + note.length) {
+			events.push_back(NoteEvent::noteOff(note.value, note.velocity));
+			return;
+		}
+	}
+}
