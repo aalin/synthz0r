@@ -2,6 +2,7 @@
 #define POSITION_HPP
 
 #include <ostream>
+#include <string>
 
 class Position {
 	public:
@@ -9,7 +10,9 @@ class Position {
 		static constexpr unsigned int BEAT_LENGTH = SIXTEENTH_LENGTH * 4;
 		static constexpr unsigned int BAR_LENGTH = BEAT_LENGTH * 4;
 
-		static unsigned long ticksFromPosition(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
+		static uint64_t parse(const std::string &str);
+
+		static uint64_t ticksFromPosition(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
 			return (
 				bar * BAR_LENGTH +
 				beat * BEAT_LENGTH +
@@ -77,6 +80,8 @@ class Position {
 		bool ticksChanged() const {
 			return _ticksChanged;
 		}
+
+		std::string toString() const;
 
 	private:
 		double _totalTicks;
