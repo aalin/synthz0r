@@ -5,18 +5,23 @@
 
 class Position {
 	public:
-		static constexpr unsigned int SIXTEENTHS_LENGTH = 240;
-		static constexpr unsigned int BEAT_LENGTH = SIXTEENTHS_LENGTH * 4;
+		static constexpr unsigned int SIXTEENTH_LENGTH = 240;
+		static constexpr unsigned int BEAT_LENGTH = SIXTEENTH_LENGTH * 4;
 		static constexpr unsigned int BAR_LENGTH = BEAT_LENGTH * 4;
 
 		static unsigned long ticksFromPosition(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
 			return (
-				ticks +
-				sixteenths * SIXTEENTHS_LENGTH +
+				bar * BAR_LENGTH +
 				beat * BEAT_LENGTH +
-				bar * BAR_LENGTH
+				sixteenths * SIXTEENTH_LENGTH +
+				ticks
 			);
 		}
+
+		Position()
+		: _totalTicks(0.0),
+		  _ticksChanged(true)
+		{}
 
 		void update(const float &bpm, const float &sampleRate);
 
@@ -69,8 +74,13 @@ class Position {
 			return _totalTicks;
 		}
 
+		bool ticksChanged() const {
+			return _ticksChanged;
+		}
+
 	private:
 		double _totalTicks;
+		bool _ticksChanged;
 
 		void recalculate();
 };

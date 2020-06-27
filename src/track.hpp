@@ -12,6 +12,8 @@ class Track {
 
 		bool eraseSequence(uint64_t position);
 
+		void getEventsAt(std::list<NoteEvent> &events, uint64_t position) const;
+
 	private:
 		std::list<Sequence> _sequences;
 };

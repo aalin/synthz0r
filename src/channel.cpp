@@ -4,6 +4,10 @@ StereoSample Channel::update(const Transport &transport, std::list<NoteEvent> ev
 	events.insert(events.end(), _events.begin(), _events.end());
 	_events.clear();
 
+	if (transport.position().ticksChanged()) {
+		_track.getEventsAt(events, transport.position().totalTicks());
+	}
+
 	for (auto &event : events) {
 		std::cout << "Channel " << id() << " event " << event << std::endl;
 	}

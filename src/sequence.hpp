@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <list>
 #include "identifier.hpp"
+#include "note_event.hpp"
 
 class Sequence {
 	public:
@@ -43,8 +44,10 @@ class Sequence {
 		}
 
 		bool positionInside(uint64_t position) const {
-			return position >= start() && position <= end();
+			return position >= start() && position < end();
 		}
+
+		void getEventsAt(std::list<NoteEvent> &events, uint64_t position) const;
 
 	private:
 		const Identifier _id;

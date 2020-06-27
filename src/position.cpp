@@ -18,11 +18,14 @@ void Position::update(const float &bpm, const float &sampleRate) {
 }
 
 void Position::recalculate() {
-	uint32_t tmp = _totalTicks;
+	uint64_t oldTicks = _totalTicks;
+	uint64_t tmp = _totalTicks;
 	ticks = tmp % 240;
 	tmp /= 240;
 	sixteenths = tmp % 4;
 	tmp /= 4;
 	beat = tmp % 4;
 	bar = tmp / 4;
+
+	_ticksChanged = static_cast<uint64_t>(_totalTicks) != oldTicks;
 }
