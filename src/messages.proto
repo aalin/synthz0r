@@ -133,22 +133,22 @@ message UpdateDeviceTablesResponse {
 
 message CreateDeviceRequest {
   string name = 1;
-  int32 channelId = 2;
+  uint32 channelId = 2;
   DeviceType type = 3;
 }
 
 message CreateDeviceResponse {
-  int32 channelId = 1;
+  uint32 channelId = 1;
   Device device = 2;
 }
 
 message NoteOn {
-  int32 channelId = 1;
+  uint32 channelId = 1;
   uint32 note = 2;
   uint32 velocity = 3;
 }
 
 message NoteOff {
-  int32 channelId = 1;
+  uint32 channelId = 1;
   uint32 note = 2;
 }
