@@ -13,6 +13,7 @@
 #include "utils.hpp"
 #include "transport.hpp"
 #include "channel.hpp"
+#include "id_weak_map.hpp"
 
 class Engine {
 	public:
@@ -27,20 +28,11 @@ class Engine {
 		}
 
 		void registerDevice(Devices::DevicePtr device) {
-			_devices[device->id()] = device;
-			cleanExpiredDevices();
+			_devices.add(device);
 		}
 
 		Devices::DevicePtr findDeviceById(uint32_t id) {
-			cleanExpiredDevices();
-
-			auto it = _devices.find(id);
-
-			if (it == _devices.end()) {
-				return nullptr;
-			}
-
-			return it->second.lock();
+			return _devices.get(id);
 		}
 
 		ChannelPtr createChannel(std::string name) {
@@ -122,21 +114,10 @@ class Engine {
 
 		AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;
-		std::map<uint32_t, std::weak_ptr<Devices::BaseDevice> > _devices;
+
+		IdWeakMap<Devices::BaseDevice> _devices;
 
 		std::list<NoteEvent> _noteEvents;
-
-		void cleanExpiredDevices() {
-			auto it = _devices.begin();
-
-			while (it != _devices.end()) {
-				if (it->second.expired()) {
-					it = _devices.erase(it);
-				} else {
-					it++;
-				}
-			}
-		}
 };
 
 #endif
