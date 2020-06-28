@@ -34,7 +34,7 @@ class FileOutput : public AudioOutput {
 		void write(int32_t buf[], unsigned int length) { write2(buf, length); }
 		void write(float buf[], unsigned int length) { write2(buf, length); }
 
-		void drain() {
+		~FileOutput() {
 			if (_out.bad()) {
 				std::cout << "Out is bad" << std::endl;
 				return;
@@ -45,6 +45,7 @@ class FileOutput : public AudioOutput {
 			_out.write(reinterpret_cast<const char*>(&fileSize), 4);
 			_out.seekp(40, std::ios::beg);
 			_out.write(reinterpret_cast<const char*>(&_bytesWritten), 4);
+			_out.close();
 		}
 
 	private:

@@ -56,22 +56,27 @@ PulseAudio::PulseAudio(
 void PulseAudio::drain() {
 	int error;
 	pa_simple_drain(_s, &error);
-	handleError("pa_simple_drain", error);
+	handleError("pa_simple_drain", error, false);
 }
 
 PulseAudio::~PulseAudio() {
 	std::cout << "Destroying PulseAudio" << std::endl;
+
+	drain();
 
 	if (_s != 0) {
 		pa_simple_free(_s);
 	}
 }
 
-void PulseAudio::handleError(const char *function, int error) const {
+void PulseAudio::handleError(const char *function, int error, bool throwError) const {
 	if (error >= 0) {
 		return;
 	}
 
 	std::cerr << function << " failed: " << pa_strerror(error) << std::endl;
-	throw std::runtime_error("PulseAudio failed");
+
+	if (throwError) {
+		throw std::runtime_error("PulseAudio failed");
+	}
 }

@@ -17,15 +17,11 @@
 
 class Engine {
 	public:
-		Engine(unsigned int sampleRate, AudioBufferPtr buffer, AudioOutputPtr audioOutput)
+		Engine(unsigned int sampleRate, AudioBufferPtr buffer, std::list<AudioOutputPtr> audioOutputs)
 		: _transport(sampleRate),
-		  _audioOutput(audioOutput),
+		  _audioOutputs(audioOutputs),
 		  _buffer(buffer)
 		{}
-
-		~Engine() {
-			_audioOutput->drain();
-		}
 
 		void registerDevice(Devices::DevicePtr device) {
 			_devices.add(device);
@@ -102,7 +98,9 @@ class Engine {
 				_transport.update();
 			}
 
-			_buffer->write(_audioOutput);
+			for (auto &output : _audioOutputs) {
+				_buffer->write(output);
+			}
 
 			return _transport.secondsElapsedSinceStart();
 		}
@@ -132,7 +130,7 @@ class Engine {
 		Transport _transport;
 		bool _hasRequestedExit = false;
 
-		AudioOutputPtr _audioOutput;
+		std::list<AudioOutputPtr> _audioOutputs;
 
 		AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;

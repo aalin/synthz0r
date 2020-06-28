@@ -28,21 +28,39 @@ uint16_t getPort(const ArgumentParser &args) {
 	return DEFAULT_PORT;
 }
 
-std::shared_ptr<AudioOutput> getOutput(const ArgumentParser &args, AudioBufferPtr buffer) {
+std::list<AudioOutputPtr> setupOutputs(const ArgumentParser &args, AudioBufferPtr buffer) {
+	std::list<AudioOutputPtr> outputs;
+
+	outputs.push_back(
+		std::make_shared<PulseAudio>(
+			args.get(0).c_str(),
+			buffer->sampleFormat(),
+			SAMPLE_RATE,
+			NUM_CHANNELS
+		)
+	);
+
 	const auto filename = args.get("-f");
 
 	if (filename.found) {
-		return std::make_shared<FileOutput>(filename.value, buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+		outputs.push_back(
+			std::make_shared<FileOutput>(
+				filename.value,
+				buffer->sampleFormat(),
+				SAMPLE_RATE,
+				NUM_CHANNELS
+			)
+		);
 	}
 
-	return std::make_shared<PulseAudio>(args.get(0).c_str(), buffer->sampleFormat(), SAMPLE_RATE, NUM_CHANNELS);
+	return outputs;
 }
 
 Engine setupEngine(const ArgumentParser &args) {
 	auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
-	auto output = getOutput(args, buffer);
+	auto outputs = setupOutputs(args, buffer);
 
-	return Engine(SAMPLE_RATE, buffer, output);
+	return Engine(SAMPLE_RATE, buffer, outputs);
 }
 
 Application::Application(const ArgumentParser &args)
