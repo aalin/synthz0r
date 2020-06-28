@@ -67,13 +67,20 @@ async function main({ port }) {
           sequenceId,
           note,
           velocity: 100,
-          start: position + Math.floor(Math.random() * 240 * 4),
+          start: position + Math.floor(Math.random() * 240),
           length: Math.floor(length * Math.random())
         })
       }
 
       position += length;
     }
+
+    client.request('SetBPM', { bpm: 80 });
+    client.request('SetMarkers', {
+      left: 0,
+      right: calculatePosition(4, 0, 0, 0),
+      loop: true
+    })
 
     await client.request('PlayRequest');
   });
