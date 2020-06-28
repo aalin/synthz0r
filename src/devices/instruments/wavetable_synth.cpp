@@ -32,7 +32,7 @@ namespace Devices::Instruments {
 		float v = _voices.update(transport, transpose);
 
 		return ::Utils::pan(
-			v * amplitude() * 0.2,
+			v * amplitude() * 0.5,
 			panning()
 		);
 	}
