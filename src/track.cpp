@@ -1,24 +1,28 @@
 #include "track.hpp"
 #include <algorithm>
 
-void Track::insertSequence(uint64_t start, uint64_t length) {
+SequencePtr Track::insertSequence(uint32_t start, uint32_t length) {
 	const auto it = std::find_if(
 		_sequences.begin(),
 		_sequences.end(),
-		[&](const Sequence &sequence) -> bool {
-			return sequence.start() >= start;
+		[&](const SequencePtr sequence) -> bool {
+			return sequence->start() >= start;
 		}
 	);
 
-	_sequences.insert(it, { start, length });
+	const SequencePtr sequence = std::make_shared<Sequence>(start, length);
+
+	_sequences.insert(it, sequence);
+
+	return sequence;
 }
 
-bool Track::eraseSequence(uint64_t position) {
+bool Track::eraseSequence(uint32_t position) {
 	const auto it = std::find_if(
 		_sequences.begin(),
 		_sequences.end(),
-		[&](const Sequence &sequence) -> bool {
-			return sequence.positionInside(position);
+		[&](const SequencePtr sequence) -> bool {
+			return sequence->positionInside(position);
 		}
 	);
 
@@ -31,10 +35,10 @@ bool Track::eraseSequence(uint64_t position) {
 	return true;
 }
 
-void Track::getEventsAt(std::list<NoteEvent> &events, uint64_t position) const {
-	for (const auto &sequence : _sequences) {
-		if (sequence.positionInside(position)) {
-			sequence.getEventsAt(events, position);
+void Track::getEventsAt(std::list<NoteEvent> &events, uint32_t position) const {
+	for (const SequencePtr sequence : _sequences) {
+		if (sequence->positionInside(position)) {
+			sequence->getEventsAt(events, position);
 			return;
 		}
 	}

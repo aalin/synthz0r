@@ -5,17 +5,14 @@
 
 class Track {
 	public:
-		Track() {
-		}
+		SequencePtr insertSequence(uint32_t start, uint32_t length);
 
-		void insertSequence(uint64_t start, uint64_t length);
+		bool eraseSequence(uint32_t position);
 
-		bool eraseSequence(uint64_t position);
-
-		void getEventsAt(std::list<NoteEvent> &events, uint64_t position) const;
+		void getEventsAt(std::list<NoteEvent> &events, uint32_t position) const;
 
 	private:
-		std::list<Sequence> _sequences;
+		std::list<SequencePtr> _sequences;
 };
 
 #endif
