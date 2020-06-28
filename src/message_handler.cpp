@@ -326,7 +326,7 @@ ProtobufMessagePtr handleRequest(messages::SetMarkers &message, Engine &engine) 
 	engine.transport().setMarkerLeft(message.left());
 	engine.transport().setMarkerRight(message.right());
 
-	engine.transport().setLoop(message.loop());
+	engine.transport().setLooping(message.loop());
 
 	return std::make_unique<messages::SuccessResponse>();
 }
