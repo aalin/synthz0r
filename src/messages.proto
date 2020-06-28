@@ -182,3 +182,13 @@ message RemoveSequenceNoteRequest {
   uint32 position = 2;
   uint32 note = 3;
 }
+
+message SetBPM {
+  float bpm = 1;
+}
+
+message SetMarkers {
+  uint32 left = 1;
+  uint32 right = 2;
+  bool loop = 3;
+}

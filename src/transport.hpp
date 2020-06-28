@@ -16,7 +16,10 @@ class Transport {
 		: _state(PAUSED),
 		  _timer(sampleRate),
 		  _bpm(120.0),
-		  _sampleRate(sampleRate)
+		  _sampleRate(sampleRate),
+		  _markerLeft(0),
+		  _markerRight(240 * 4 * 4),
+		  _loop(false)
 		{}
 
 		void setBpm(float bpm) {
@@ -66,6 +69,10 @@ class Transport {
 				_position.update(_bpm, _sampleRate);
 
 				if (_position.ticksChanged() && _position.ticks == 0) {
+					if (static_cast<uint32_t>(_position.totalTicks()) == _markerRight) {
+						_position.skipTo(_markerLeft);
+					}
+
 					std::cout << _position << std::endl;
 				}
 			}
@@ -75,12 +82,31 @@ class Transport {
 			return _state == State::PLAYING && _position.ticksChanged();
 		}
 
+		void setMarkerLeft(uint32_t position) {
+			_markerLeft = position;
+		}
+
+		void setMarkerRight(uint32_t position) {
+			_markerRight = position;
+		}
+
+		void setLoop(bool value) {
+			_loop = value;
+		}
+
+		bool isLooping() {
+			return _loop;
+		}
+
 	private:
 		State _state;
 		Position _position;
 		Timer _timer;
 		float _bpm;
 		const unsigned int _sampleRate;
+		uint32_t _markerLeft;
+		uint32_t _markerRight;
+		bool _loop;
 };
 
 #endif
