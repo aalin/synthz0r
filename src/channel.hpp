@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "devices.hpp"
-#include "track.hpp"
+#include "sequences/track.hpp"
 #include "channel/device_container.hpp"
 
 class Channel {
@@ -75,7 +75,7 @@ class Channel {
 			_events.push_back(event);
 		}
 
-		SequencePtr insertSequence(uint32_t start, uint32_t length) {
+		Sequences::SequencePtr insertSequence(uint32_t start, uint32_t length) {
 			return _track.insertSequence(start, length);
 		}
 
@@ -90,7 +90,7 @@ class Channel {
 		Devices::InstrumentDevicePtr _instrumentDevice;
 		ChannelNS::DeviceContainer<Devices::EffectDevicePtr> _effectDevices;
 		std::list<NoteEvent> _events;
-		Track _track;
+		Sequences::Track _track;
 };
 
 typedef std::shared_ptr<Channel> ChannelPtr;

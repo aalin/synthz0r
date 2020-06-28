@@ -66,20 +66,20 @@ class Engine {
 			return _channels;
 		}
 
-		SequencePtr insertSequence(uint32_t channelId, uint32_t start, uint32_t length) {
+		Sequences::SequencePtr insertSequence(uint32_t channelId, uint32_t start, uint32_t length) {
 			ChannelPtr channel = getChannelById(channelId);
 
 			if (channel == nullptr) {
 				return nullptr;
 			}
 
-			SequencePtr sequence = channel->insertSequence(start, length);
+			Sequences::SequencePtr sequence = channel->insertSequence(start, length);
 			_sequences.add(sequence);
 			return sequence;
 		}
 
 		void addSequenceNote(uint32_t sequenceId, uint32_t start, uint32_t length, uint8_t note, uint8_t velocity) {
-			SequencePtr sequence = _sequences.get(sequenceId);
+			Sequences::SequencePtr sequence = _sequences.get(sequenceId);
 
 			if (sequence == nullptr) {
 				return;
@@ -138,7 +138,7 @@ class Engine {
 		std::list<ChannelPtr> _channels;
 
 		ObjPtrIndex<Devices::BaseDevice> _devices;
-		ObjPtrIndex<Sequence> _sequences;
+		ObjPtrIndex<Sequences::Sequence> _sequences;
 
 		std::list<NoteEvent> _noteEvents;
 };
