@@ -1,8 +1,8 @@
-#ifndef ID_WEAK_MAP_HPP
-#define ID_WEAK_MAP_HPP
+#ifndef OBJ_PTR_INDEX_HPP
+#define OBJ_PTR_INDEX_HPP
 
 template<typename T>
-class IdWeakMap {
+class ObjPtrIndex {
 	public:
 		void add(std::shared_ptr<T> objectPtr) {
 			_map[objectPtr->id()] = objectPtr;

@@ -13,7 +13,7 @@
 #include "utils.hpp"
 #include "transport.hpp"
 #include "channel.hpp"
-#include "id_weak_map.hpp"
+#include "obj_ptr_index.hpp"
 
 class Engine {
 	public:
@@ -137,8 +137,8 @@ class Engine {
 		AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;
 
-		IdWeakMap<Devices::BaseDevice> _devices;
-		IdWeakMap<Sequence> _sequences;
+		ObjPtrIndex<Devices::BaseDevice> _devices;
+		ObjPtrIndex<Sequence> _sequences;
 
 		std::list<NoteEvent> _noteEvents;
 };
