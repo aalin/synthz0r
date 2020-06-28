@@ -22,6 +22,10 @@ function calculatePosition(bars, beats, sixteenths, ticks) {
   );
 }
 
+function randomRange(min, max) {
+  return min + Math.random() * (max - min);
+}
+
 async function main({ port }) {
   const protocol = await Protocol.initialize(path.join(__dirname, 'messages.proto'), 'synthz0r.messages');
   const client = new Client(protocol, `ws://localhost:${port}`, { log: true });
@@ -43,10 +47,10 @@ async function main({ port }) {
       id: createInstrumentResponse.device.id,
       parameters: {
         waveformIndex: 3,
-        "envelope.attackMs": 50,
+        "envelope.attackMs": 20,
         "envelope.decayMs": 100,
         "envelope.sustain": 50,
-        "envelope.releaseMs": 500,
+        "envelope.releaseMs": 1000,
       }
     });
 
@@ -59,21 +63,32 @@ async function main({ port }) {
     const sequenceId = createSequenceResponse.sequence.id;
     let position = 0;
 
+    const promises = [];
+
     for (let chord of CHORDS) {
       const length = calculatePosition(0, 2, 0, 0);
 
-      for (let note of chord) {
-        await client.request('AddSequenceNoteRequest', {
+      chord.forEach((note, i) => {
+        let startOffset = Math.floor(i * 240 / 2);
+
+        let length2 = randomRange(
+          calculatePosition(0, 0, 0, 120),
+          calculatePosition(0, 0, 1, 0),
+        );
+
+        promises.push(client.request('AddSequenceNoteRequest', {
           sequenceId,
           note,
           velocity: 100,
-          start: position + Math.floor(Math.random() * 240),
-          length: Math.floor(length * Math.random())
-        })
-      }
+          start: position + startOffset,
+          length: Math.floor(length2)
+        }))
+      });
 
       position += length;
     }
+
+    await Promise.all(promises);
 
     client.request('SetBPM', { bpm: 80 });
     client.request('SetMarkers', {
