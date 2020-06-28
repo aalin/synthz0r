@@ -3,19 +3,35 @@
 
 #include <cstdint>
 #include <list>
+#include <memory>
 #include "identifier.hpp"
 #include "note_event.hpp"
 
 class Sequence {
 	public:
-		struct Note {
-			uint64_t start;
-			uint64_t length;
-			uint8_t value;
-			uint8_t velocity;
+		class Note {
+			public:
+				Note(uint32_t start, uint32_t length, uint8_t value, uint8_t velocity)
+				: _start(start),
+				  _length(length),
+				  _value(value),
+				  _velocity(velocity)
+				{}
+
+				uint32_t start()    const { return _start; }
+				uint32_t length()   const { return _length; }
+				uint32_t end()      const { return _start + _length; }
+				uint8_t  value()    const { return _value; }
+				uint8_t  velocity() const { return _velocity; }
+
+			private:
+				uint32_t _start;
+				uint32_t _length;
+				uint8_t _value;
+				uint8_t _velocity;
 		};
 
-		Sequence(uint64_t start, uint64_t length)
+		Sequence(uint32_t start, uint32_t length)
 		: _start(start),
 		  _length(length)
 		{}
@@ -24,37 +40,39 @@ class Sequence {
 			return _id;
 		}
 
-		void insertNote(uint64_t start, uint64_t length, uint8_t value, uint8_t velocity);
-		bool eraseNote(const uint64_t &position, const uint8_t &value);
+		void insertNote(uint32_t start, uint32_t length, uint8_t value, uint8_t velocity);
+		bool eraseNote(const uint32_t &position, const uint8_t &value);
 
 		const std::list<Note> getNotes() const {
 			return _notes;
 		}
 
-		uint64_t start() const {
+		uint32_t start() const {
 			return _start;
 		}
 
-		uint64_t length() const {
+		uint32_t length() const {
 			return _length;
 		}
 
-		uint64_t end() const {
+		uint32_t end() const {
 			return _start + _length;
 		}
 
-		bool positionInside(uint64_t position) const {
+		bool positionInside(uint32_t position) const {
 			return position >= start() && position < end();
 		}
 
-		void getEventsAt(std::list<NoteEvent> &events, uint64_t position) const;
+		void getEventsAt(std::list<NoteEvent> &events, uint32_t position) const;
 
 	private:
 		const Identifier _id;
 		std::list<Note> _notes;
 
-		uint64_t _start;
-		uint64_t _length;
+		uint32_t _start;
+		uint32_t _length;
 };
+
+typedef std::shared_ptr<Sequence> SequencePtr;
 
 #endif

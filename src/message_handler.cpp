@@ -290,6 +290,33 @@ ProtobufMessagePtr handleRequest(messages::NoteOff &message, Engine &engine) {
 	return std::make_unique<messages::SuccessResponse>();
 }
 
+ProtobufMessagePtr handleRequest(messages::CreateSequenceRequest &message, Engine &engine) {
+	auto sequence = engine.insertSequence(message.channelid(), message.start(), message.length());
+	auto response = std::make_unique<messages::CreateSequenceResponse>();
+
+	response->mutable_sequence()->set_id(sequence->id());
+	response->mutable_sequence()->set_start(sequence->start());
+	response->mutable_sequence()->set_length(sequence->length());
+
+	return response;
+}
+
+ProtobufMessagePtr handleRequest(messages::AddSequenceNoteRequest &message, Engine &engine) {
+	engine.addSequenceNote(
+		message.sequenceid(),
+		message.start(),
+		message.length(),
+		message.note(),
+		message.velocity()
+	);
+
+	return std::make_unique<messages::SuccessResponse>();
+}
+
+ProtobufMessagePtr handleRequest(messages::RemoveSequenceNoteRequest &, Engine &) {
+	return createErrorResponse("Could not parse message");
+}
+
 template<typename T>
 ProtobufMessagePtr parseAndHandle(Request &request, Engine &engine) {
 	T message;
@@ -317,6 +344,9 @@ static const std::map<std::string, std::function<ProtobufMessagePtr(Request &req
 	HANDLER(PauseRequest),
 	HANDLER(NoteOn),
 	HANDLER(NoteOff),
+	HANDLER(CreateSequenceRequest),
+	HANDLER(AddSequenceNoteRequest),
+	HANDLER(RemoveSequenceNoteRequest),
 };
 
 void MessageHandler::handleMessage(Engine &engine, Websocket::MessagePtr message) {

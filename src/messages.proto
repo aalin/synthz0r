@@ -152,3 +152,33 @@ message NoteOff {
   uint32 channelId = 1;
   uint32 note = 2;
 }
+
+message CreateSequenceRequest {
+  uint32 channelId = 1;
+  uint32 start = 2;
+  uint32 length = 3;
+}
+
+message Sequence {
+  uint32 id = 1;
+  uint32 start = 2;
+  uint32 length = 3;
+}
+
+message CreateSequenceResponse {
+  Sequence sequence = 1;
+}
+
+message AddSequenceNoteRequest {
+  uint32 sequenceId = 1;
+  uint32 start = 2;
+  uint32 length = 3;
+  uint32 note = 4;
+  uint32 velocity = 5;
+}
+
+message RemoveSequenceNoteRequest {
+  uint32 sequenceId = 1;
+  uint32 position = 2;
+  uint32 note = 3;
+}

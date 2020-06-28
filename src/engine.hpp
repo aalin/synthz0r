@@ -66,6 +66,28 @@ class Engine {
 			return _channels;
 		}
 
+		SequencePtr insertSequence(uint32_t channelId, uint32_t start, uint32_t length) {
+			ChannelPtr channel = getChannelById(channelId);
+
+			if (channel == nullptr) {
+				return nullptr;
+			}
+
+			SequencePtr sequence = channel->insertSequence(start, length);
+			_sequences.add(sequence);
+			return sequence;
+		}
+
+		void addSequenceNote(uint32_t sequenceId, uint32_t start, uint32_t length, uint8_t note, uint8_t velocity) {
+			SequencePtr sequence = _sequences.get(sequenceId);
+
+			if (sequence == nullptr) {
+				return;
+			}
+
+			sequence->insertNote(start, length, note, velocity);
+		}
+
 		float update() {
 			for (unsigned int i = 0; i < _buffer->size() / _buffer->numChannels(); i++) {
 				StereoSample out;
@@ -116,6 +138,7 @@ class Engine {
 		std::list<ChannelPtr> _channels;
 
 		IdWeakMap<Devices::BaseDevice> _devices;
+		IdWeakMap<Sequence> _sequences;
 
 		std::list<NoteEvent> _noteEvents;
 };

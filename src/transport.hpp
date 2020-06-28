@@ -64,8 +64,15 @@ class Transport {
 
 			if (_state == State::PLAYING) {
 				_position.update(_bpm, _sampleRate);
-				// std::cout << _bpm << " " << _sampleRate << " " << _position << std::endl;
+
+				if (_position.ticksChanged() && _position.ticks == 0) {
+					std::cout << _position << std::endl;
+				}
 			}
+		}
+
+		bool shouldTriggerNotes() const {
+			return _state == State::PLAYING && _position.ticksChanged();
 		}
 
 	private:

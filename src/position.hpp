@@ -10,9 +10,9 @@ class Position {
 		static constexpr unsigned int BEAT_LENGTH = SIXTEENTH_LENGTH * 4;
 		static constexpr unsigned int BAR_LENGTH = BEAT_LENGTH * 4;
 
-		static uint64_t parse(const std::string &str);
+		static uint32_t parse(const std::string &str);
 
-		static uint64_t ticksFromPosition(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
+		static uint32_t ticksFromPosition(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
 			return (
 				bar * BAR_LENGTH +
 				beat * BEAT_LENGTH +
@@ -34,15 +34,11 @@ class Position {
 		uint8_t ticks = 0;
 
 		void skipTo(double ticks) {
-			_totalTicks = ticks;
-
-			recalculate();
+			recalculate(ticks);
 		}
 
 		void skipTo(uint32_t bar, uint8_t beat, uint8_t sixteenths, uint8_t ticks) {
-			_totalTicks = ticksFromPosition(bar, beat, sixteenths, ticks);
-
-			recalculate();
+			recalculate(ticksFromPosition(bar, beat, sixteenths, ticks));
 		}
 
 		float total4ths() const {
@@ -87,7 +83,7 @@ class Position {
 		double _totalTicks;
 		bool _ticksChanged;
 
-		void recalculate();
+		void recalculate(double newPosition);
 };
 
 std::ostream & operator<<(std::ostream &, const Position &);

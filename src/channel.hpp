@@ -75,11 +75,11 @@ class Channel {
 			_events.push_back(event);
 		}
 
-		void insertSequence(uint64_t start, uint64_t length) {
-			_track.insertSequence(start, length);
+		SequencePtr insertSequence(uint32_t start, uint32_t length) {
+			return _track.insertSequence(start, length);
 		}
 
-		void eraseSequence(uint64_t position) {
+		void eraseSequence(uint32_t position) {
 			_track.eraseSequence(position);
 		}
 
