@@ -42,10 +42,10 @@ async function main({ port }) {
     await client.request('UpdateDeviceParametersRequest', {
       id: createInstrumentResponse.device.id,
       parameters: {
-        waveformIndex: 4,
-        "envelope.attackMs": 100,
+        waveformIndex: 3,
+        "envelope.attackMs": 50,
         "envelope.decayMs": 100,
-        "envelope.sustain": 20,
+        "envelope.sustain": 50,
         "envelope.releaseMs": 500,
       }
     });
