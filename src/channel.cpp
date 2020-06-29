@@ -20,10 +20,13 @@ StereoSample Channel::update(const Transport &transport, std::list<NoteEvent> ev
 		noteDevice->apply(transport, events);
 	}
 
-	StereoSample out = _instrumentDevice->apply(transport, events);
+	_instrumentDevice->handleEvents(transport, events);
+
+	StereoSample out = _instrumentDevice->apply(transport);
 
 	for (auto effectDevice : _effectDevices) {
-		out = effectDevice->apply(transport, out, events);
+		effectDevice->handleEvents(transport, events);
+		out = effectDevice->apply(transport, out);
 	}
 
 	return out;

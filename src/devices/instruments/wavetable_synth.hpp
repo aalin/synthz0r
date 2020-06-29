@@ -48,25 +48,7 @@ namespace Devices::Instruments {
 				return Waveform::WAVEFORMS.at(_waveformIndex).name;
 			}
 
-			StereoSample apply(const Transport &transport, const NoteEventList &events);
-
-		private:
-			Units::ADSR2::Settings _envelopeSettings;
-			int _amplitude;
-			int _pitchBendRange;
-			int _transpose;
-			int _panning;
-			int _waveformIndex;
-
-			Voices::VoiceList _voices;
-
-			float amplitude() const {
-				return _amplitude / 100.0;
-			}
-
-			float panning() const {
-				return _panning / 127.0;
-			}
+			StereoSample apply(const Transport &transport);
 
 			void handleEvents(const Transport &transport, const NoteEventList &events) {
 				for (const auto &event : events) {
@@ -92,6 +74,24 @@ namespace Devices::Instruments {
 							break;
 					}
 				}
+			}
+
+		private:
+			Units::ADSR2::Settings _envelopeSettings;
+			int _amplitude;
+			int _pitchBendRange;
+			int _transpose;
+			int _panning;
+			int _waveformIndex;
+
+			Voices::VoiceList _voices;
+
+			float amplitude() const {
+				return _amplitude / 100.0;
+			}
+
+			float panning() const {
+				return _panning / 127.0;
 			}
 	};
 }

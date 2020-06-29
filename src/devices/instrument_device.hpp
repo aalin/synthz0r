@@ -12,7 +12,9 @@ namespace Devices {
 
 			virtual ~InstrumentDevice() {}
 
-			virtual StereoSample apply(const Transport &, const NoteEventList &) = 0;
+			virtual void handleEvents(const Transport &, const NoteEventList &) = 0;
+
+			virtual StereoSample apply(const Transport &) = 0;
 	};
 
 	typedef std::shared_ptr<InstrumentDevice> InstrumentDevicePtr;

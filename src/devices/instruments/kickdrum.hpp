@@ -14,7 +14,21 @@ namespace Devices {
 			public:
 				Kickdrum();
 
-				StereoSample apply(const Transport &transport, const NoteEventList &events);
+				StereoSample apply(const Transport &transport);
+
+				void handleEvents(const Transport &transport, const NoteEventList &events) {
+					for (const auto &event : events) {
+						switch (event.type) {
+							case NoteEvent::Type::PAUSE_ALL:
+								return;
+							case NoteEvent::Type::NOTE_ON:
+								noteOn(transport, event.note, event.velocity / 100.0);
+								break;
+							default:
+								break;
+						}
+					}
+				}
 
 			private:
 				Units::Oscillator _oscillator;
@@ -32,20 +46,6 @@ namespace Devices {
 
 				float panning() {
 					return _panning / 127.f;
-				}
-
-				void handleEvents(const Transport &transport, const NoteEventList &events) {
-					for (const auto &event : events) {
-						switch (event.type) {
-							case NoteEvent::Type::PAUSE_ALL:
-								return;
-							case NoteEvent::Type::NOTE_ON:
-								noteOn(transport, event.note, event.velocity / 100.0);
-								break;
-							default:
-								break;
-						}
-					}
 				}
 
 				void noteOn(const Transport &transport, int, float) {

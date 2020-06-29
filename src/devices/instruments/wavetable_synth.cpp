@@ -22,9 +22,7 @@ namespace Devices::Instruments {
 		return value * voiceData.velocity() * env;
 	}
 
-	StereoSample WavetableSynth::apply(const Transport &transport, const NoteEventList &events) {
-		handleEvents(transport, events);
-
+	StereoSample WavetableSynth::apply(const Transport &transport) {
 		float pitchBend = 0.0;
 
 		float transpose = _transpose + _pitchBendRange * pitchBend;

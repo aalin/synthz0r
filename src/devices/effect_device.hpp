@@ -12,13 +12,9 @@ namespace Devices {
 
 			virtual ~EffectDevice() {}
 
-			virtual StereoSample apply(const Transport &transport, const StereoSample &stereoSample, const NoteEventList &) {
-				return apply(transport, stereoSample);
-			}
+			virtual void handleEvents(const Transport &, const NoteEventList &) {}
 
-			virtual StereoSample apply(const Transport &, const StereoSample &) {
-				return StereoSample();
-			}
+			virtual StereoSample apply(const Transport &, const StereoSample &) = 0;
 	};
 
 	typedef std::shared_ptr<EffectDevice> EffectDevicePtr;

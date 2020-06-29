@@ -15,9 +15,7 @@ namespace Devices::Instruments {
 		return value * voiceData.velocity() * env;
 	}
 
-	StereoSample Synth::apply(const Transport &transport, const NoteEventList &events) {
-		handleEvents(transport, events);
-
+	StereoSample Synth::apply(const Transport &transport) {
 		const Timer &timer = transport.timer();
 
 		float pitchBend = 0.0;

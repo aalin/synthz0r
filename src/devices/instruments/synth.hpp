@@ -50,27 +50,7 @@ namespace Devices::Instruments {
 				});
 			}
 
-			StereoSample apply(const Transport &transport, const NoteEventList &events);
-
-		private:
-			Units::ADSR2::Settings _envelopeSettings;
-			Units::StateVariableFilter _filter;
-			Voices::VoiceList _voices;
-
-			int _oscillatorType;
-			int _amplitude;
-			int _pitchBendRange;
-			int _transpose;
-			int _panning;
-			int _filterEnabled;
-
-			float amplitude() const {
-				return _amplitude / 100.0;
-			}
-
-			float panning() const {
-				return _panning / 127.0;
-			}
+			StereoSample apply(const Transport &transport);
 
 			void handleEvents(const Transport &transport, const NoteEventList &events) {
 				for (const auto &event : events) {
@@ -96,6 +76,26 @@ namespace Devices::Instruments {
 							break;
 					}
 				}
+			}
+
+		private:
+			Units::ADSR2::Settings _envelopeSettings;
+			Units::StateVariableFilter _filter;
+			Voices::VoiceList _voices;
+
+			int _oscillatorType;
+			int _amplitude;
+			int _pitchBendRange;
+			int _transpose;
+			int _panning;
+			int _filterEnabled;
+
+			float amplitude() const {
+				return _amplitude / 100.0;
+			}
+
+			float panning() const {
+				return _panning / 127.0;
 			}
 	};
 }
