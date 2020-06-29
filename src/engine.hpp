@@ -8,8 +8,8 @@
 #include <list>
 #include <cmath>
 #include "devices/base_device.hpp"
-#include "pulse_audio.hpp"
-#include "audio_buffer.hpp"
+#include "audio/pulse_audio.hpp"
+#include "audio/audio_buffer.hpp"
 #include "utils.hpp"
 #include "transport.hpp"
 #include "channel.hpp"
@@ -17,7 +17,7 @@
 
 class Engine {
 	public:
-		Engine(unsigned int sampleRate, AudioBufferPtr buffer, std::list<AudioOutputPtr> audioOutputs)
+		Engine(unsigned int sampleRate, Audio::AudioBufferPtr buffer, std::list<Audio::AudioOutputPtr> audioOutputs)
 		: _transport(sampleRate),
 		  _audioOutputs(audioOutputs),
 		  _buffer(buffer)
@@ -130,9 +130,9 @@ class Engine {
 		Transport _transport;
 		bool _hasRequestedExit = false;
 
-		std::list<AudioOutputPtr> _audioOutputs;
+		std::list<Audio::AudioOutputPtr> _audioOutputs;
 
-		AudioBufferPtr _buffer;
+		Audio::AudioBufferPtr _buffer;
 		std::list<ChannelPtr> _channels;
 
 		ObjPtrIndex<Devices::BaseDevice> _devices;

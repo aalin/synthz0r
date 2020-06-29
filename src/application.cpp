@@ -7,7 +7,7 @@
 #include "utils.hpp"
 #include "note.hpp"
 
-#include "file_output.hpp"
+#include "audio/file_output.hpp"
 
 constexpr unsigned int BUFFER_SIZE = 512;
 constexpr unsigned int SAMPLE_RATE = 44100;
@@ -28,11 +28,11 @@ uint16_t getPort(const ArgumentParser &args) {
 	return DEFAULT_PORT;
 }
 
-std::list<AudioOutputPtr> setupOutputs(const ArgumentParser &args, AudioBufferPtr buffer) {
-	std::list<AudioOutputPtr> outputs;
+std::list<Audio::AudioOutputPtr> setupOutputs(const ArgumentParser &args, Audio::AudioBufferPtr buffer) {
+	std::list<Audio::AudioOutputPtr> outputs;
 
 	outputs.push_back(
-		std::make_shared<PulseAudio>(
+		std::make_shared<Audio::PulseAudio>(
 			args.get(0).c_str(),
 			buffer->sampleFormat(),
 			SAMPLE_RATE,
@@ -44,7 +44,7 @@ std::list<AudioOutputPtr> setupOutputs(const ArgumentParser &args, AudioBufferPt
 
 	if (filename.found) {
 		outputs.push_back(
-			std::make_shared<FileOutput>(
+			std::make_shared<Audio::FileOutput>(
 				filename.value,
 				buffer->sampleFormat(),
 				SAMPLE_RATE,
@@ -57,7 +57,7 @@ std::list<AudioOutputPtr> setupOutputs(const ArgumentParser &args, AudioBufferPt
 }
 
 Engine setupEngine(const ArgumentParser &args) {
-	auto buffer = std::make_shared<AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
+	auto buffer = std::make_shared<Audio::AudioBuffer32Bit>(NUM_CHANNELS, BUFFER_SIZE);
 	auto outputs = setupOutputs(args, buffer);
 
 	return Engine(SAMPLE_RATE, buffer, outputs);
