@@ -40,6 +40,10 @@ namespace Units {
 
 			float update(const Timer &timer, float noteOnTime, float noteOffTime);
 
+			const Settings & settings() const {
+				return _settings;
+			}
+
 		private:
 			const Settings _settings;
 			State _state;

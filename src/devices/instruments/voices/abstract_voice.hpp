@@ -3,6 +3,7 @@
 
 #include "../../../transport.hpp"
 #include "voice_data.hpp"
+#include <memory>
 
 namespace Devices::Instruments::Voices {
 	class AbstractVoice {

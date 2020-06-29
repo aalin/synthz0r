@@ -73,9 +73,11 @@ class Transport {
 						_position.skipTo(_markerLeft);
 					}
 
+					/*
 					if (_position.ticks == 0) {
 						std::cout << _position << std::endl;
 					}
+					*/
 				}
 			}
 		}

@@ -18,7 +18,7 @@ async function main({ port }) {
 
     const createInstrumentResponse =
       await client.request('CreateDeviceRequest', {
-        name: "WavetableSynth",
+        name: "Drumkit",
         type: client.protocol.enumValues('DeviceType').INSTRUMENT_DEVICE,
         channelId: createChannelResponse.channel.id
       });

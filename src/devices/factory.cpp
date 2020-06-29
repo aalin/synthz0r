@@ -4,6 +4,7 @@
 #include "effects/delay.hpp"
 #include "effects/overdrive.hpp"
 #include "instruments/kickdrum.hpp"
+#include "instruments/drumkit.hpp"
 #include "instruments/synth.hpp"
 #include "instruments/wavetable_synth.hpp"
 #include "notes/sequencer.hpp"
@@ -30,6 +31,7 @@ static const std::map<std::string, std::function<Devices::InstrumentDevicePtr()>
 	INSTRUMENT_HANDLER(Synth),
 	INSTRUMENT_HANDLER(WavetableSynth),
 	INSTRUMENT_HANDLER(Kickdrum),
+	INSTRUMENT_HANDLER(Drumkit),
 };
 
 static const std::map<std::string, std::function<Devices::NoteDevicePtr()> > NoteDeviceHandlers = {
