@@ -38,14 +38,19 @@ class Engine {
 		}
 
 		bool removeChannel(uint32_t id) {
-			for (auto it = _channels.begin(); it != _channels.end(); it++) {
-				if ((*it)->id() == id) {
-					_channels.erase(it);
-					return true;
-				}
+			const auto it = std::find_if(
+				_channels.begin(),
+				_channels.end(),
+				[&id](auto channel) -> bool { return channel->id() == id; }
+			);
+
+			if (it == _channels.end()) {
+				return false;
 			}
 
-			return false;
+			_channels.erase(it);
+
+			return true;
 		}
 
 		ChannelPtr getChannelById(uint32_t id) {
