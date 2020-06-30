@@ -8,6 +8,7 @@
 #include "voices/voice_list.hpp"
 #include "drums/kick.hpp"
 #include "drums/hihat.hpp"
+#include "drums/snare.hpp"
 
 namespace Devices::Instruments {
 	class Drumkit : public InstrumentDevice {
@@ -22,6 +23,7 @@ namespace Devices::Instruments {
 			Voices::VoiceList _voices;
 			Drums::Kick _kick;
 			Drums::Hihat _hihat;
+			Drums::Snare _snare;
 
 			Voices::VoicePtr makeVoice(uint8_t note) const;
 	};

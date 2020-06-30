@@ -42,6 +42,8 @@ namespace Devices::Instruments {
 			case 0:
 				return _kick.makeVoice();
 			case 1:
+				return _snare.makeVoice();
+			case 2:
 				return _hihat.makeVoice();
 			default:
 				return nullptr;
