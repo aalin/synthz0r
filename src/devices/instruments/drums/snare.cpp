@@ -27,6 +27,8 @@ namespace Devices::Instruments::Drums {
 
 		v += _toneOsc.update(200, timer) * _toneEnv.update(timer, noteOnTime, noteOffTime);
 
+		v *= voiceData.velocity();
+
 		return v;
 	}
 

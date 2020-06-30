@@ -42,6 +42,8 @@ namespace Devices::Instruments::Drums {
 
 		v *= _volumeEnvelope.update(timer, noteOnTime, noteOffTime);
 
+		v *= voiceData.velocity();
+
 		return v;
 	}
 

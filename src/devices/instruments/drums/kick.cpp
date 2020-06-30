@@ -17,7 +17,7 @@ namespace Devices::Instruments::Drums {
 
 		float freq = _pitch * _pitchEnvelope.update(timer, noteOnTime, -1.0f);
 
-		return _oscillator.update(freq, timer) * _volumeEnvelope.update(timer, noteOnTime, noteOffTime);
+		return _oscillator.update(freq, timer) * _volumeEnvelope.update(timer, noteOnTime, noteOffTime) * voiceData.velocity();
 	}
 
 	Kick::Kick() {
