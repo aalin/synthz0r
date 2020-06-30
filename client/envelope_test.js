@@ -36,31 +36,34 @@ async function main({ port }) {
 
     await client.request('PlayRequest');
 
-    let noteOn = false;
+    let i = 0;
 
     async function play() {
-      if (noteOn) {
-        console.log('NoteOff');
+      const promises = [];
 
-        await client.request('NoteOff', {
+      client.request('NoteOn', {
+        channelId: createChannelResponse.channel.id,
+        note: 62, // hihat
+        velocity: 100,
+      });
+
+      if (i % 4 == 0 || i % 8 == 3) {
+        client.request('NoteOn', {
           channelId: createChannelResponse.channel.id,
-          note: 60,
-        });
-
-        noteOn = false;
-      } else {
-        console.log('NoteOn');
-
-        await client.request('NoteOn', {
-          channelId: createChannelResponse.channel.id,
-          note: 60,
+          note: 60, // kick
           velocity: 100,
         });
-
-        noteOn = true;
+      } else if (i % 4 == 2) {
+        client.request('NoteOn', {
+          channelId: createChannelResponse.channel.id,
+          note: 61, // snare
+          velocity: 100,
+        });
       }
 
-      setTimeout(play, 2000);
+      i++;
+
+      setTimeout(play, 300);
     }
 
     play();
