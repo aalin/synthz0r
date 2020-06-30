@@ -26,7 +26,6 @@ namespace Devices::Instruments::Drums {
 		v = _noiseFilter.update(timer, v);
 
 		v += _toneOsc.update(200, timer) * _toneEnv.update(timer, noteOnTime, noteOffTime);
-		std::cout << "Making snare" << std::endl;
 
 		return v;
 	}
