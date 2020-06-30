@@ -32,9 +32,12 @@ namespace Devices::Instruments::Drums {
 		public:
 			Hihat();
 
-			Voices::VoicePtr makeVoice() const {
+			Voices::VoicePtr makeVoice(float decayRatio) const {
+				Units::ADSR2::Settings volumeEnvSettings = volumeEnvelopeSettings;
+				volumeEnvSettings._decayMs *= decayRatio;
+
 				return std::make_unique<Voice>(
-					volumeEnvelopeSettings,
+					volumeEnvSettings,
 					static_cast<float>(pitch)
 				);
 			}

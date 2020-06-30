@@ -35,17 +35,15 @@ namespace Devices::Instruments {
 				default:
 					break;
 			}
-		}
+		}0
 	}
 
 	Voices::VoicePtr Drumkit::makeVoice(uint8_t note) const {
 		switch (note % 12) {
-			case 0:
-				return _kick.makeVoice();
-			case 1:
-				return _snare.makeVoice();
-			case 2:
-				return _hihat.makeVoice();
+			case 0: return _kick.makeVoice();
+			case 1: return _hihat.makeVoice(1.0);
+			case 2: return _snare.makeVoice();
+			case 3: return _hihat.makeVoice(4.0);
 			default:
 				return nullptr;
 		}
