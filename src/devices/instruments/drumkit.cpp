@@ -3,7 +3,7 @@
 namespace Devices::Instruments {
 	Drumkit::Drumkit() : InstrumentDevice("Drumkit") {
 		setupParameters({
-			Parameter("kick.pitch",            1,   1600,   300, _kick.pitch),
+			Parameter("kick.pitch",            1,   1600,   150, _kick.pitch),
 		});
 	}
 

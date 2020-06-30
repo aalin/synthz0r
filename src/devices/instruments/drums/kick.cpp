@@ -23,12 +23,12 @@ namespace Devices::Instruments::Drums {
 	Kick::Kick() {
 		pitchEnvelopeSettings._attackStart = 100;
 		pitchEnvelopeSettings._attackMs = 0;
-		pitchEnvelopeSettings._decayMs = 200;
+		pitchEnvelopeSettings._decayMs = 100;
 		pitchEnvelopeSettings._sustain = 0;
 		pitchEnvelopeSettings._releaseMs = 0;
 
 		volumeEnvelopeSettings._attackMs = 20;
-		volumeEnvelopeSettings._decayMs = 200;
+		volumeEnvelopeSettings._decayMs = 100;
 		volumeEnvelopeSettings._sustain = 0;
 		volumeEnvelopeSettings._releaseMs = 0;
 	}
