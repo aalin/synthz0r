@@ -3,7 +3,8 @@
 namespace Devices::Instruments {
 	Drumkit::Drumkit() : InstrumentDevice("Drumkit") {
 		setupParameters({
-			Parameter("kick.pitch",            1,   1600,   150, _kick.pitch),
+			Parameter("kick.pitch",           1,   1600,   150, _kick.pitch),
+			Parameter("amplitude",            0,   127,     40, _amplitude),
 		});
 	}
 
@@ -51,7 +52,7 @@ namespace Devices::Instruments {
 	}
 
 	StereoSample Drumkit::apply(const Transport &transport) {
-		float v = _voices.update(transport, 0.0f);
+		float v = _voices.update(transport, 0.0f) * amplitude();
 		return StereoSample(v);
 	}
 }

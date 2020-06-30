@@ -20,6 +20,12 @@ namespace Devices::Instruments {
 			StereoSample apply(const Transport &transport);
 
 		private:
+			int _amplitude;
+
+			float amplitude() const {
+				return _amplitude / 100.0;
+			}
+
 			Voices::VoiceList _voices;
 			Drums::Kick _kick;
 			Drums::Hihat _hihat;
