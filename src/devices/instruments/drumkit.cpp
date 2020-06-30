@@ -35,7 +35,7 @@ namespace Devices::Instruments {
 				default:
 					break;
 			}
-		}0
+		}
 	}
 
 	Voices::VoicePtr Drumkit::makeVoice(uint8_t note) const {
