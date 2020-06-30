@@ -41,6 +41,8 @@ namespace Devices::Instruments {
 		switch (note % 12) {
 			case 0:
 				return _kick.makeVoice();
+			case 1:
+				return _hihat.makeVoice();
 			default:
 				return nullptr;
 		}

@@ -22,7 +22,7 @@ namespace Devices::Instruments {
 
 		float transpose = _transpose + _pitchBendRange * pitchBend;
 
-		float v = _voices.update(transport, transpose);
+		float v = _voices.update(transport, transpose) * 0.5f;
 
 		if (_filterEnabled) {
 			v = _filter.update(timer, v);

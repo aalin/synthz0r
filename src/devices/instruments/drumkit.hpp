@@ -7,6 +7,7 @@
 #include "../../units/state_variable_filter.hpp"
 #include "voices/voice_list.hpp"
 #include "drums/kick.hpp"
+#include "drums/hihat.hpp"
 
 namespace Devices::Instruments {
 	class Drumkit : public InstrumentDevice {
@@ -20,6 +21,7 @@ namespace Devices::Instruments {
 		private:
 			Voices::VoiceList _voices;
 			Drums::Kick _kick;
+			Drums::Hihat _hihat;
 
 			Voices::VoicePtr makeVoice(uint8_t note) const;
 	};
