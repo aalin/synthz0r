@@ -34,10 +34,10 @@ std::ostream & operator<<(std::ostream &out, const NoteEvent &noteEvent) {
 
 	switch (noteEvent.type) {
 		case NoteEvent::Type::NOTE_ON:
-			out << "NOTE_ON" << " " << noteString(noteEvent.note);
+			out << "NOTE_ON" << " " << noteString(noteEvent.note) << " " << (int)noteEvent.velocity;
 			break;
 		case NoteEvent::Type::NOTE_OFF:
-			out << "NOTE_OFF" << " " << noteString(noteEvent.note);
+			out << "NOTE_OFF" << " " << noteString(noteEvent.note) << " " << (int)noteEvent.velocity;
 			break;
 		case NoteEvent::Type::PAUSE_ALL:
 			out << "PAUSE_ALL";
