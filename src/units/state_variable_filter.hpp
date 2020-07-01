@@ -12,9 +12,9 @@ struct StateVariableFilter {
 		NOTCH = 3
 	};
 
-	int _cutoffHz;
-	int _resonance;
-	int _bandwidth;
+	int _cutoffHz = 1000;
+	int _resonance = 100;
+	int _bandwidth = 1000;
 
 	union {
 		Type _type;
