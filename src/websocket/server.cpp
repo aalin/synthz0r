@@ -35,6 +35,10 @@ class WSServer : public Websocket::ServerPimpl {
 		}
 
 		void stop() {
+			if (!_server.is_listening()) {
+				return;
+			}
+
 			std::cout << "Stopping server" << std::endl;
 
 			_server.stop_listening();
