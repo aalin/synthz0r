@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <iterator>
+#include <iomanip>
 
 #include "application.hpp"
 
@@ -163,6 +164,32 @@ void Application::runTest(const std::string &instrumentName, const std::vector<u
 		stop();
 		return;
 	}
+
+	std::cout << std::endl <<
+		"\x1b[1;4m" <<
+		std::setw(21) << std::left <<
+		"Parameter" << std::right <<
+		std::setw(8) << "Value " <<
+		std::setw(8) << "Min " <<
+		std::setw(8) << "Max " <<
+		std::setw(9) << "Default" <<
+		"\x1b[0m " <<
+		std::endl;
+
+	for (auto &param : instrument->parameters()) {
+		std::cout <<
+			std::setw(20) << std::left <<
+			param.name() << " " << std::right <<
+			"\x1b[1;33m" <<
+			std::setw(7) << param.value() << " " <<
+			"\x1b[0m" <<
+			std::setw(7) << param.min() << " " <<
+			std::setw(7) << param.max() << " " <<
+			std::setw(9) << param.defaultValue() <<
+			std::endl;
+	}
+
+	std::cout << std::endl;
 
 	channel->setInstrument(instrument);
 
