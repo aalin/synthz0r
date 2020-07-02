@@ -20,7 +20,7 @@ class Application {
 
 	private:
 		void run();
-		void runTest(const std::string &, const std::vector<uint8_t> &);
+		void runTest(const std::string &, const std::vector<uint8_t> &, const std::map<std::string, int> &);
 
 		bool _running = false;
 

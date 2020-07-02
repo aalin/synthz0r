@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <iterator>
+#include <regex>
 #include <iomanip>
 
 #include "application.hpp"
@@ -115,7 +116,23 @@ void Application::startTest(const ArgumentParser &args) {
 		notes.assign({ 60, 64, 67, 60, 64, 67 });
 	}
 
-	runTest(instrumentName, notes);
+	const auto paramsOption = args.get("-params");
+
+	std::map<std::string, int> params;
+
+	if (paramsOption.found) {
+		std::regex re("(.+?)=([^,]+),?");
+
+		auto paramsBegin = std::sregex_iterator(paramsOption.value.begin(), paramsOption.value.end(), re);
+		auto paramsEnd = std::sregex_iterator();
+
+		for (std::sregex_iterator it = paramsBegin; it != paramsEnd; it++) {
+			std::smatch match = *it;
+			params[match[1].str()] = std::atoi(match[2].str().c_str());
+		}
+	}
+
+	runTest(instrumentName, notes, params);
 }
 
 void Application::stop() {
@@ -152,7 +169,7 @@ void Application::run() {
 	}
 }
 
-void Application::runTest(const std::string &instrumentName, const std::vector<uint8_t> &notes) {
+void Application::runTest(const std::string &instrumentName, const std::vector<uint8_t> &notes, const std::map<std::string, int> &params) {
 	Engine &engine = getEngine();
 
 	auto channel = engine.createChannel("Test channel");
@@ -163,6 +180,15 @@ void Application::runTest(const std::string &instrumentName, const std::vector<u
 		std::cerr << "Could not find instrument" << std::endl;
 		stop();
 		return;
+	}
+
+	for (auto &param : params) {
+		if (instrument->hasParam(param.first)) {
+			std::cout << "Setting " << param.first << " to " << param.second << std::endl;
+			instrument->setParam(param.first, param.second);
+		} else {
+			std::cout << "\x1b[31mParam " << param.first << " not found\x1b[0m" << std::endl;
+		}
 	}
 
 	std::cout << std::endl <<
@@ -176,11 +202,11 @@ void Application::runTest(const std::string &instrumentName, const std::vector<u
 		"\x1b[0m " <<
 		std::endl;
 
-	for (auto &param : instrument->parameters()) {
+	for (const auto &param : instrument->parameters()) {
 		std::cout <<
 			std::setw(20) << std::left <<
 			param.name() << " " << std::right <<
-			"\x1b[1;33m" <<
+			(param.value() == param.defaultValue() ? "\x1b[1;33m" : "\x1b[1;32m") <<
 			std::setw(7) << param.value() << " " <<
 			"\x1b[0m" <<
 			std::setw(7) << param.min() << " " <<
