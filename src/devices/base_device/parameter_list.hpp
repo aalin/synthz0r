@@ -40,10 +40,14 @@ namespace Devices {
 				return value_iterator(_parameters.end());
 			}
 
-			const Parameter & setParam(const std::string &name, const int32_t &value) {
+			const Parameter & set(const std::string &name, const int32_t &value) {
 				Parameter &param = get(name);
 				param.setValue(value);
 				return param;
+			}
+
+			bool has(const std::string &name) const {
+				return _parameters.find(name) != _parameters.end();
 			}
 
 			const Parameter & get(const std::string &name) const {

@@ -32,13 +32,17 @@ namespace Devices {
 				return _parameters.get(name).value();
 			}
 
+			bool hasParam(const std::string &name) {
+				return _parameters.has(name);
+			}
+
 			void setParam(const std::string &name, const int32_t &value) {
 				if (_respondingToParameterChange) {
 					std::cerr << "Error: Can not set parameters from respondToParameterChange" << std::endl;
 					return;
 				}
 
-				const auto &param = _parameters.setParam(name, value);
+				const auto &param = _parameters.set(name, value);
 
 				_respondingToParameterChange = true;
 				respondToParameterChange(param);
