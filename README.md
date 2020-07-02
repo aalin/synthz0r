@@ -26,6 +26,10 @@ Start the client
 
     node client/index.js 5555
 
+While developing, it can be useful to quickly test instrument devices:
+
+    ./synthz0r -test WavetableSynth -notes 60,62,64,65,67,69,71
+
 ## Todo
 
 * MIDI-messages
