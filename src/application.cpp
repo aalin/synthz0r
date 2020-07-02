@@ -1,5 +1,9 @@
 #include <iostream>
 #include <memory>
+
+#include <sstream>
+#include <iterator>
+
 #include "application.hpp"
 
 #include "devices/factory.hpp"
@@ -81,6 +85,38 @@ void Application::start() {
 	run();
 }
 
+void Application::startTest(const ArgumentParser &args) {
+	if (_running) {
+		return;
+	}
+
+	_running = true;
+
+	std::string instrumentName = args.get("-test").value;
+	std::vector<uint8_t> notes;
+
+	const auto notesOption = args.get("-notes");
+
+	if (notesOption.found) {
+		std::string str = notesOption.value;
+		std::replace(str.begin(), str.end(), ',', ' ');
+		std::istringstream iss(str);
+
+		std::copy(
+			std::istream_iterator<uint16_t>(iss),
+			std::istream_iterator<uint16_t>(),
+			std::back_inserter(notes)
+		);
+	}
+
+	if (notes.empty()) {
+		std::cout << "Using default notes" << std::endl;
+		notes.assign({ 60, 64, 67, 60, 64, 67 });
+	}
+
+	runTest(instrumentName, notes);
+}
+
 void Application::stop() {
 	_running = false;
 	_server.stop();
@@ -112,6 +148,49 @@ void Application::run() {
 		std::cerr << "Caught error: " << e.what() << std::endl;
 	} catch (const char *msg) {
 		std::cerr << "Caught error: " << msg << std::endl;
+	}
+}
+
+void Application::runTest(const std::string &instrumentName, const std::vector<uint8_t> &notes) {
+	Engine &engine = getEngine();
+
+	auto channel = engine.createChannel("Test channel");
+
+	auto instrument = Devices::Factory::createInstrumentDevice(instrumentName);
+
+	if (!instrument) {
+		std::cerr << "Could not find instrument" << std::endl;
+		stop();
+		return;
+	}
+
+	channel->setInstrument(instrument);
+
+	unsigned int index = 0;
+
+	while (_running) {
+		unsigned int now = engine.transport().secondsElapsedSinceStart() + 1;
+
+		if (now - 1 > notes.size()) {
+			stop();
+			break;
+		}
+
+		if (now > index) {
+			std::cout << "Timer: " << now << std::endl;
+
+			if (index > 0){
+				channel->addNoteEvent(NoteEvent::noteOff(notes[index - 1]));
+			}
+
+			if (index < notes.size()) {
+				channel->addNoteEvent(NoteEvent::noteOn(notes[index]));
+			}
+
+			index = now;
+		}
+
+		engine.update();
 	}
 }
 

@@ -74,7 +74,11 @@ int main(int argc, char *argv[]) {
 
 	std::signal(SIGINT, signalHandler);
 
-	app.start();
+	if (args.has("-test")) {
+		app.startTest(args);
+	} else {
+		app.start();
+	}
 
 	return 0;
 }

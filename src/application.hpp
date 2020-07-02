@@ -11,6 +11,7 @@ class Application {
 		Application(const ArgumentParser &);
 
 		void start();
+		void startTest(const ArgumentParser &);
 		void stop();
 
 		Engine & getEngine() {
@@ -19,6 +20,7 @@ class Application {
 
 	private:
 		void run();
+		void runTest(const std::string &, const std::vector<uint8_t> &);
 
 		bool _running = false;
 
