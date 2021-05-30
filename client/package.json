@@ -10,6 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "protobufjs": "^6.9.0",
-    "ws": "^7.3.0"
+    "ws": "^7.4.6"
   }
 }
